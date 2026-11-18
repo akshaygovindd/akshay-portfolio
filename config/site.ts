@@ -31,9 +31,8 @@ export type SkillGroup = { category: string; skills: string[] };
 export const site = {
   name: "Akshay Govind",
   title: "Data Analyst & Data Engineer",
-  // TODO: replace with your own one-line pitch
   pitch:
-    "TODO: One-line pitch. (Placeholder: I turn messy data into reliable pipelines and dashboards people actually use.)",
+    "I build reliable data pipelines and clear analytics, from raw ingestion to dashboards that decision-makers trust.",
 
   links: {
     github: "https://github.com/akshaygovindd",
@@ -66,10 +65,11 @@ export const site = {
   projects: [
     {
       title: "JobPulse",
-      summary: "Job market intelligence platform.",
-      impact: "TODO: one-line impact (e.g. postings analyzed, insights surfaced).",
-      tags: ["TODO: tech", "TODO: tech"],
-      githubUrl: "https://github.com/akshaygovindd", // TODO: link to the repo
+      summary: "Daily job market intelligence platform.",
+      impact:
+        "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
+      tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
+      githubUrl: "https://github.com/akshaygovindd/jobpulse",
       metrics: {
         title: "Key metric (TODO)",
         unit: "TODO",
@@ -81,10 +81,11 @@ export const site = {
     },
     {
       title: "Instacart SQL Analytics Platform",
-      summary: "SQL analytics over the Instacart dataset at scale.",
-      impact: "Analyzed 33.8M rows. TODO: add query / insight outcomes.",
-      tags: ["SQL", "TODO: database", "TODO: tech"],
-      githubUrl: "https://github.com/akshaygovindd", // TODO: link to the repo
+      summary: "End-to-end grocery retail analytics platform.",
+      impact:
+        "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
+      tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
+      githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
       metrics: {
         title: "Data scale",
         unit: "M rows",
@@ -98,9 +99,10 @@ export const site = {
     {
       title: "FoodLens ELT Pipeline",
       summary: "End-to-end ELT pipeline from raw data to BI dashboards.",
-      impact: "TODO: one-line impact (e.g. rows processed, refresh time).",
-      tags: ["Databricks", "Airflow", "Delta Lake", "Power BI"],
-      githubUrl: "https://github.com/akshaygovindd", // TODO: link to the repo
+      impact:
+        "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
+      tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
+      githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
       metrics: {
         title: "Key metric (TODO)",
         unit: "TODO",
@@ -112,25 +114,26 @@ export const site = {
     },
     {
       title: "Wildfire Cause Prediction",
-      summary: "Machine learning model that predicts wildfire causes.",
-      impact: "TODO: one-line impact (e.g. accuracy / F1 achieved).",
-      tags: ["Python", "Pandas", "TODO: ML library"],
-      githubUrl: "https://github.com/akshaygovindd", // TODO: link to the repo
+      summary: "Predicts whether a wildfire was human-caused or lightning-caused.",
+      impact:
+        "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
+      tags: ["Python", "Jupyter", "Machine Learning"],
+      githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       metrics: {
-        title: "Model performance (TODO)",
+        title: "Model performance",
         unit: "%",
         data: [
-          { name: "Accuracy", value: null },
-          { name: "F1", value: null },
+          { name: "RF tuned F1", value: 95.98 },
+          { name: "TODO", value: null },
         ],
       },
     },
     {
       title: "Emergency Response Multi-Agent System",
-      summary: "Multi-agent system that coordinates emergency response workflows.",
-      impact: "TODO: one-line impact.",
+      summary: "Multi-agent LLM system for emergency resource coordination.",
+      impact: "TODO: one-line impact (e.g. scenarios simulated, response-time improvement).",
       tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
-      githubUrl: "https://github.com/akshaygovindd", // TODO: link to the repo
+      githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
       metrics: {
         title: "Key metric (TODO)",
         unit: "TODO",
