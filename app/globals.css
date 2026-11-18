@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colors are RGB channels so Tailwind opacity modifiers work (e.g. bg-accent/10). */
+:root {
+  --bg: 250 252 252;
+  --surface: 241 246 246;
+  --border: 215 225 226;
+  --fg: 15 23 25;
+  --muted: 88 105 108;
+  --accent: 13 148 136; /* teal-600, readable on light */
+}
+
+.dark {
+  --bg: 11 15 16;
+  --surface: 17 23 24;
+  --border: 31 42 44;
+  --fg: 230 237 238;
+  --muted: 138 154 157;
+  --accent: 45 212 191; /* teal-400 */
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply bg-bg text-fg font-sans antialiased;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.3);
+}
+
+@layer components {
+  .section {
+    @apply mx-auto w-full max-w-5xl px-5 py-20 sm:px-8;
+  }
+  .section-title {
+    @apply mb-10 font-mono text-2xl font-semibold tracking-tight sm:text-3xl;
+  }
+  .section-title::before {
+    content: "## ";
+    @apply text-accent;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 font-mono text-sm transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+  .btn-primary {
+    @apply border-accent bg-accent text-bg hover:bg-transparent hover:text-accent;
+  }
+  .tag {
+    @apply rounded border border-border bg-surface px-2 py-0.5 font-mono text-xs text-muted;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
