@@ -56,8 +56,43 @@ body {
   }
 }
 
+/* Animated "data flowing" connector between pipeline stages */
+.flow-line {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(var(--accent)) 0 6px,
+    transparent 6px 12px
+  );
+  background-size: 100% 12px;
+  animation: flow-y 0.8s linear infinite;
+}
+@media (min-width: 768px) {
+  .flow-line {
+    background-image: repeating-linear-gradient(
+      to right,
+      rgb(var(--accent)) 0 6px,
+      transparent 6px 12px
+    );
+    background-size: 12px 100%;
+    animation: flow-x 0.8s linear infinite;
+  }
+}
+@keyframes flow-x {
+  to {
+    background-position: 12px 0;
+  }
+}
+@keyframes flow-y {
+  to {
+    background-position: 0 12px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .flow-line {
+    animation: none;
   }
 }

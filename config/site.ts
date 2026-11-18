@@ -117,6 +117,55 @@ export const site = {
     },
   ] satisfies Project[],
 
+  /**
+   * FoodLens pipeline diagram stages, shown left to right.
+   * Edit the text freely. Verify these against how you actually built it.
+   */
+  pipeline: {
+    stages: [
+      {
+        id: "sources",
+        name: "Sources",
+        tech: "Chicago & Dallas open data",
+        description:
+          "Raw food inspection records from the Chicago and Dallas open data portals, each with its own schema and quirks.",
+      },
+      {
+        id: "bronze",
+        name: "Bronze",
+        tech: "Databricks · Delta Lake",
+        description:
+          "Raw data lands as-is in Delta tables. Nothing is dropped or fixed here, so there is always an untouched copy to replay from.",
+      },
+      {
+        id: "silver",
+        name: "Silver",
+        tech: "PySpark · Delta Lake",
+        description:
+          "PySpark cleans and standardizes both cities into one consistent schema: types, dates, duplicates and missing values.",
+      },
+      {
+        id: "gold",
+        name: "Gold",
+        tech: "Delta Lake",
+        description:
+          "Business-ready tables and aggregates shaped for reporting, such as inspection outcomes by city, facility type and time.",
+      },
+      {
+        id: "bi",
+        name: "Power BI",
+        tech: "Power BI",
+        description:
+          "Dashboards read the gold layer so analysts can explore inspection results without touching raw data.",
+      },
+    ],
+    orchestrator: {
+      name: "Airflow",
+      description:
+        "Airflow schedules and sequences the stages above, so each layer runs after the previous one succeeds and failures are visible and retryable.",
+    },
+  },
+
   skills: [
     { category: "Languages", skills: ["SQL", "Python", "Java", "Oracle SQL/PL-SQL"] },
     { category: "Libraries", skills: ["Pandas", "NumPy"] },
