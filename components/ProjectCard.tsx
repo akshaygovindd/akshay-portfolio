@@ -9,7 +9,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       <p className="mt-2 text-sm text-muted">{project.summary}</p>
       <p className="mt-3 text-sm">{project.impact}</p>
 
-      {project.metrics && <MetricChart metrics={project.metrics} />}
+      {project.metrics && project.metrics.data.length > 0 && <MetricChart metrics={project.metrics} />}
 
       <ul className="mt-4 flex flex-wrap gap-2">
         {project.tags.map((t, i) => (

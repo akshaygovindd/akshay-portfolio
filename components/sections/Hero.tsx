@@ -14,18 +14,24 @@ export default function Hero() {
       <p className="mt-6 max-w-2xl text-base text-muted sm:text-lg">{site.pitch}</p>
 
       <div className="mt-8 flex flex-wrap gap-3">
-        <a href={links.resume} download className="btn btn-primary">
-          <Download size={16} /> Resume
-        </a>
+        {links.resume && (
+          <a href={links.resume} download className="btn btn-primary">
+            <Download size={16} /> Resume
+          </a>
+        )}
         <a href={links.github} target="_blank" rel="noopener noreferrer" className="btn">
           <Github size={16} /> GitHub
         </a>
-        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
-          <Linkedin size={16} /> LinkedIn
-        </a>
-        <a href={`mailto:${links.email}`} className="btn">
-          <Mail size={16} /> Email
-        </a>
+        {links.linkedin && (
+          <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
+            <Linkedin size={16} /> LinkedIn
+          </a>
+        )}
+        {links.email && (
+          <a href={`mailto:${links.email}`} className="btn">
+            <Mail size={16} /> Email
+          </a>
+        )}
       </div>
     </section>
   );

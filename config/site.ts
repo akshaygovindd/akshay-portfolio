@@ -10,8 +10,8 @@ export type MetricChartData = {
   title: string;
   /** Unit label shown next to values, e.g. "M rows", "%", "sec" */
   unit: string;
-  /** Use `value: null` for numbers you haven't filled in yet (renders as a TODO placeholder). */
-  data: { name: string; value: number | null }[];
+  /** Only real values. The card shows no chart if this is empty or the field is omitted. */
+  data: { name: string; value: number }[];
 };
 
 export type Project = {
@@ -36,16 +36,15 @@ export const site = {
 
   links: {
     github: "https://github.com/akshaygovindd",
-    linkedin: "TODO: https://www.linkedin.com/in/your-handle", // TODO
-    email: "TODO@example.com", // TODO: your real email
-    resume: "/resume.pdf", // TODO: drop your real PDF at public/resume.pdf (placeholder file is there now)
+    // Leave a value as "" and its button is hidden from the site.
+    linkedin: "", // TODO: e.g. "https://www.linkedin.com/in/your-handle"
+    email: "", // TODO: your email address
+    resume: "", // TODO: drop your PDF at public/resume.pdf, then set this to "/resume.pdf"
   },
 
   about: {
     summary:
-      "Data professional with 2+ years of experience as a Business Intelligence Analyst, now building data engineering depth through graduate study.",
-    // TODO: add 1-2 more sentences about what you enjoy / your strengths
-    extra: "TODO: Add a short personal paragraph here.",
+      "Data professional with 2+ years as a Business Intelligence Analyst, now pursuing an MS in Information Systems at Northeastern and building end-to-end data pipelines and analytics.",
     education: [
       {
         degree: "MS, Information Systems",
@@ -55,7 +54,7 @@ export const site = {
       {
         degree: "B.E., Computer Engineering",
         school: "University of Mumbai",
-        when: "TODO: graduation year",
+        when: "May 2022",
       },
     ],
     experience: "2+ years as a Business Intelligence Analyst",
@@ -70,14 +69,7 @@ export const site = {
         "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
-      metrics: {
-        title: "Key metric (TODO)",
-        unit: "TODO",
-        data: [
-          { name: "TODO", value: null },
-          { name: "TODO", value: null },
-        ],
-      },
+      // metrics: add a chart here once you have real numbers
     },
     {
       title: "Instacart SQL Analytics Platform",
@@ -89,11 +81,7 @@ export const site = {
       metrics: {
         title: "Data scale",
         unit: "M rows",
-        data: [
-          { name: "Total rows", value: 33.8 },
-          { name: "TODO", value: null },
-          { name: "TODO", value: null },
-        ],
+        data: [{ name: "Total rows", value: 33.8 }],
       },
     },
     {
@@ -103,45 +91,29 @@ export const site = {
         "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
       tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
-      metrics: {
-        title: "Key metric (TODO)",
-        unit: "TODO",
-        data: [
-          { name: "TODO", value: null },
-          { name: "TODO", value: null },
-        ],
-      },
+      // metrics: add a chart here once you have real numbers
     },
     {
       title: "Wildfire Cause Prediction",
       summary: "Predicts whether a wildfire was human-caused or lightning-caused.",
       impact:
         "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
-      tags: ["Python", "Jupyter", "Machine Learning"],
+      tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       metrics: {
         title: "Model performance",
         unit: "%",
-        data: [
-          { name: "RF tuned F1", value: 95.98 },
-          { name: "TODO", value: null },
-        ],
+        data: [{ name: "RF tuned F1", value: 95.98 }],
       },
     },
     {
       title: "Emergency Response Multi-Agent System",
       summary: "Multi-agent LLM system for emergency resource coordination.",
-      impact: "TODO: one-line impact (e.g. scenarios simulated, response-time improvement).",
+      impact:
+        "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
       tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
       githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
-      metrics: {
-        title: "Key metric (TODO)",
-        unit: "TODO",
-        data: [
-          { name: "TODO", value: null },
-          { name: "TODO", value: null },
-        ],
-      },
+      // metrics: add a chart here once you have real numbers (see MetricChartData above)
     },
   ] satisfies Project[],
 

@@ -9,7 +9,6 @@ export default function About() {
       <div className="grid gap-10 md:grid-cols-2">
         <div className="space-y-4 text-muted">
           <p>{about.summary}</p>
-          <p>{about.extra}</p>
           <p className="font-mono text-sm text-accent">{about.seeking}</p>
         </div>
 
