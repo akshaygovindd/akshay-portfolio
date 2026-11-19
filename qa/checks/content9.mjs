@@ -27,7 +27,7 @@ chk("coursework line under the MS",/Relevant coursework: Theory and Practical Ap
 const edu=await p.evaluate(()=>{const lis=[...document.querySelectorAll("#about ul li")];return lis.map(l=>l.innerText.replace(/\n+/g," | "))}); console.log("  ",JSON.stringify(edu));
 console.log("\n== project facts ==");
 const facts=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll("[data-stack]")].map(a=>[a.querySelector("h3").textContent.trim().slice(0,12),[...a.querySelectorAll("ul li span:last-child")].map(s=>s.textContent)])));
-chk("FoodLens facts",JSON.stringify(facts["FoodLens ELT"])===JSON.stringify(["4 Power BI dashboards","Idempotent Gold MERGE loads + quarantine table"]),JSON.stringify(facts["FoodLens ELT"]));
+chk("FoodLens facts",JSON.stringify(facts["FoodLens ELT"])===JSON.stringify(["4 Power BI dashboards","Idempotent Gold MERGE loads"]),JSON.stringify(facts["FoodLens ELT"]));
 chk("JobPulse facts",JSON.stringify(facts["JobPulse"])===JSON.stringify(["38 employers · 50 dbt tests","LLM extraction at $0.39 per 1K postings","OIDC-secured Terraform + GitHub Actions"]),JSON.stringify(facts["JobPulse"]));
 console.log("\n== contact ==");
 const avail=await p.evaluate(()=>{const c=document.getElementById("contact");const h=c.querySelector("h2");const line=[...c.querySelectorAll("p")].find(p=>p.textContent.trim()==="Boston or remote");const R=e=>e.getBoundingClientRect();return{text:line?.textContent.trim(),belowHeading:line&&R(line).top>=R(h).bottom-4,bodyHasPrefix:/Co-op:/.test(c.innerText)}});

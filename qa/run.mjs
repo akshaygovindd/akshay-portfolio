@@ -144,7 +144,7 @@ if (wanted("lighthouse")) {
       const s = Object.fromEntries(Object.entries(r.categories).map(([k, v]) => [k, Math.round(v.score * 100)]));
       const cls = r.audits["cumulative-layout-shift"].numericValue;
       const bad = [];
-      if (s.performance < 90) bad.push(`performance ${s.performance}`);
+      if (s.performance < 95) bad.push(`performance ${s.performance}`);
       for (const k of ["accessibility", "best-practices", "seo"]) if (s[k] < 100) bad.push(`${k} ${s[k]}`);
       if (cls > 0.01) bad.push(`CLS ${cls.toFixed(3)}`);
       record(`Lighthouse ${label}`, !bad.length, bad.length ? bad.join(", ") : `perf ${s.performance} a11y ${s.accessibility} bp ${s["best-practices"]} seo ${s.seo}, CLS ${cls.toFixed(3)}`);

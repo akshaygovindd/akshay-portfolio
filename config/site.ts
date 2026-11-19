@@ -156,7 +156,7 @@ export const site = {
       summary:
         "Unified 387K+ food inspection records from two structurally different city datasets using a Medallion architecture, data quality validation and Kimball dimensional modeling.",
       stats: [{ value: "1.18M", label: "fact violation rows" }],
-      facts: ["4 Power BI dashboards", "Idempotent Gold MERGE loads + quarantine table"],
+      facts: ["4 Power BI dashboards", "Idempotent Gold MERGE loads"],
       highlights: [
         {
           title: "Schema harmonization",
@@ -200,9 +200,9 @@ export const site = {
       title: "Instacart SQL Analytics Platform",
       summary: "End-to-end grocery retail analytics platform.",
       impact:
-        "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
-      stats: [{ value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" }],
-      facts: ["7 indexes tuned with EXPLAIN ANALYZE", "RFM segmentation, cohort retention, CLV tiers"],
+        "Analyzed 33.8M order-product rows from 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
+      stats: [{ value: "33.8M", label: "order-product rows from 3M+ real Instacart orders" }],
+      facts: ["7 indexes on the main query paths", "RFM segmentation, cohort retention, CLV tiers"],
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
       liveUrl: "https://instacart-sql-dashboard.streamlit.app",
@@ -225,12 +225,9 @@ export const site = {
       title: "Wildfire Cause Prediction",
       summary: "Predicts whether a wildfire was human-caused or lightning-caused.",
       impact:
-        "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
-      stats: [
-        { value: "F1 0.96", label: "tuned Random Forest, strongest of 5 models" },
-        { value: "ROC-AUC 0.9579", label: "same tuned Random Forest" },
-      ],
-      facts: ["1.88M rows · 83.8% class imbalance handled"],
+        "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, ROC-AUC 0.958.",
+      stats: [{ value: "ROC-AUC 0.958", label: "tuned Random Forest, strongest of 5 models" }],
+      facts: ["F1 0.96 human-caused / 0.78 lightning-caused", "1.88M rows · 83.8% class imbalance handled"],
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       image: { src: "/projects/wildfire.webp", alt: "Wildfire counts by state and a US map of fire locations coloured by human or natural cause" },
@@ -248,7 +245,7 @@ export const site = {
         name: "Sources",
         tech: "Chicago & Dallas open data",
         description:
-          "Chicago Open Data Portal (308,161 raw rows) and Dallas Open Data Portal (78,984 raw rows). Chicago stores violations as one pipe-delimited string, Dallas across 25 columns.",
+          "CSV exports from the Chicago Open Data Portal (308,161 raw rows) and the Dallas Open Data Portal (78,984 raw rows). Chicago stores violations as one pipe-delimited string, Dallas across 25 columns.",
       },
       {
         id: "raw",
@@ -291,7 +288,7 @@ export const site = {
       label: "Run metadata tracks every stage ↓",
       name: "Run metadata",
       description:
-        "parent_metadata drives which sources run. child_metadata logs status, row counts and batch IDs for every execution, and every load is idempotent.",
+        "parent_metadata drives which sources run. child_metadata logs status, row counts and batch IDs for every execution. Every load is idempotent: Bronze and Silver overwrite, Gold uses MERGE.",
     },
   },
 
