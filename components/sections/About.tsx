@@ -29,6 +29,11 @@ export default function About() {
                   <p className="font-semibold">{e.degree}</p>
                   <p className="text-sm text-muted">{e.school}</p>
                   <p className="mt-1 font-mono text-xs text-accent">{e.when}</p>
+                  {e.coursework && (
+                    <p className="mt-2 text-sm leading-snug text-muted">
+                      <span className="font-medium text-fg">Relevant coursework:</span> {e.coursework}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

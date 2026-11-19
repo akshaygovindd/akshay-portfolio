@@ -48,14 +48,14 @@ export type SkillGroup = { category: string; skills: string[] };
 
 export const site = {
   name: "Akshay Govind",
-  title: "Data Analyst & Data Engineer",
+  title: "Data Engineer, Data Analyst & AI Engineer",
   /** Used for the meta description, Open Graph / Twitter cards and the web manifest. */
   description:
-    "Data Analyst & Data Engineer building data pipelines, SQL analytics and BI dashboards. MS Information Systems at Northeastern University, open to co-op and internship roles.",
+    "Data Engineer, Data Analyst & AI Engineer building the data pipelines analytics and AI run on. MS Information Systems at Northeastern, open to co-ops.",
   /** Theme colour for the browser UI, the web manifest and splash screens. */
   themeColor: "#101014",
   pitch:
-    "I build reliable data pipelines and clear analytics, from raw ingestion to dashboards that decision-makers trust.",
+    "I make messy data reliable enough for dashboards and for LLMs: tested, documented and monitored.",
 
   /** Badges in the scrolling tools marquee under the hero. */
   tools: [
@@ -69,13 +69,15 @@ export const site = {
     "dbt",
     "AWS S3",
     "PostgreSQL",
+    "OpenAI Agents SDK",
+    "LLM extraction",
   ],
 
   hero: {
     label: "AKSHAY GOVIND / PORTFOLIO",
     badge: "OPEN TO CO-OP & INTERNSHIPS",
-    subheadline: "I build data systems that drive decisions.",
-    roles: "Data Analyst · Data Engineer · BI Developer",
+    subheadline: "I build the data pipelines that analytics and AI run on.",
+    roles: "Data Engineer · Data Analyst · AI Engineer",
     credentials:
       "MS Information Systems @ Northeastern University · Dec\u00A02027 · 2+ yrs BI experience",
   },
@@ -114,6 +116,18 @@ export const site = {
     linkedin: "https://www.linkedin.com/in/akshaygovind06/",
     email: "govind.ak@northeastern.edu",
     resume: "/resume.pdf", // file lives at public/resume.pdf
+    /** Shown under the Download resume button (hidden if empty). The PDF was created 2026-11-17. */
+    resumeUpdated: "Nov 2026",
+  },
+
+  /**
+   * Availability line under the Contact heading: "<dates> · <location>".
+   * While `dates` is empty only the location shows ("Boston or remote"), so no placeholder
+   * ever appears on the site. Fill `dates` in when you have them, e.g. "Jan–Jun 2027".
+   */
+  availability: {
+    dates: "",
+    location: "Boston or remote",
   },
 
   about: {
@@ -124,6 +138,7 @@ export const site = {
         degree: "MS, Information Systems",
         school: "Northeastern University",
         when: "Expected Dec 2027",
+        coursework: "Theory and Practical Applications of AI Generative Modeling (CSYE 7380)",
       },
       {
         degree: "B.E., Computer Engineering",
@@ -132,7 +147,7 @@ export const site = {
       },
     ],
     experience: "2+ years as a Business Intelligence Analyst",
-    seeking: "Seeking Data Analyst / Data Engineer / BI co-op roles.",
+    seeking: "Seeking Data Engineer, Data Analyst and AI Engineer co-op roles.",
   },
 
   projects: [
@@ -141,7 +156,7 @@ export const site = {
       summary:
         "Unified 387K+ food inspection records from two structurally different city datasets using a Medallion architecture, data quality validation and Kimball dimensional modeling.",
       stats: [{ value: "1.18M", label: "fact violation rows" }],
-      facts: ["4 Power BI dashboards"],
+      facts: ["4 Power BI dashboards", "Idempotent Gold MERGE loads + quarantine table"],
       highlights: [
         {
           title: "Schema harmonization",
@@ -197,7 +212,11 @@ export const site = {
       title: "JobPulse",
       summary:
         "Daily pipeline ingesting postings from 38 employers (Greenhouse, Lever, Ashby) into S3 via Terraform + GitHub Actions, modeled with dbt on MotherDuck, with LLM extraction of job details.",
-      facts: ["38 employers · 50 dbt tests"],
+      facts: [
+        "38 employers · 50 dbt tests",
+        "LLM extraction at $0.39 per 1K postings",
+        "OIDC-secured Terraform + GitHub Actions",
+      ],
       inProgress: "visa evidence and resume matching",
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
@@ -278,6 +297,19 @@ export const site = {
 
   skills: [
     {
+      // Each item is evidenced in the repos: JobPulse (LLM extraction with strict structured
+      // outputs, eval/ harness, versioned prompt) and emergency-response-agents (OpenAI Agents SDK).
+      category: "AI Engineering",
+      skills: [
+        "OpenAI Agents SDK",
+        "Multi-agent systems",
+        "LLM extraction",
+        "Structured outputs",
+        "LLM evaluation",
+        "Prompt engineering",
+      ],
+    },
+    {
       category: "Programming & SQL",
       skills: ["SQL", "Python", "PySpark", "PL/pgSQL", "Oracle SQL/PL-SQL (coursework)"],
     },
@@ -301,9 +333,6 @@ export const site = {
         "GridSearchCV",
         "Feature engineering",
         "LLMs",
-        "Prompt engineering",
-        "OpenAI Agents SDK",
-        "Multi-agent systems",
       ],
     },
     { category: "Tools", skills: ["Git", "GitHub", "GitHub Actions", "pytest", "Jira"] },

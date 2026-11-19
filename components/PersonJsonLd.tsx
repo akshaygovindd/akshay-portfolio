@@ -1,9 +1,6 @@
 import { site } from "@/config/site";
 import { SITE_URL } from "@/lib/site-url";
 
-/** "Tableau (coursework)" -> "Tableau" */
-const cleanSkill = (s: string) => s.replace(/\s*\(coursework\)\s*$/i, "");
-
 /**
  * schema.org Person for search engines. Everything comes from config/site.ts (so it follows
  * later positioning changes) and the site URL from NEXT_PUBLIC_SITE_URL, nothing is hard-coded.
@@ -21,7 +18,8 @@ export function personJsonLd() {
       name: e.school,
     })),
     sameAs: [site.links.linkedin, site.links.github].filter(Boolean),
-    knowsAbout: [...new Set(site.skills.flatMap((g) => g.skills.map(cleanSkill)))],
+    // Labels such as "Tableau (coursework)" are kept, so the markup is as honest as the page.
+    knowsAbout: [...new Set(site.skills.flatMap((g) => g.skills))],
   };
 }
 

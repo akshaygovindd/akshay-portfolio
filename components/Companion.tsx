@@ -34,14 +34,14 @@ function geometry(): { hero: Geometry; corner: Geometry } {
   const vh = window.innerHeight;
   const phone = vw < 640;
   const tablet = vw >= 640 && vw < 1024; // hero copy is stacked above the avatar
-  const heroW = phone ? Math.min(vw * 0.6, 380) : tablet ? Math.min(vw * 0.86, 680) : Math.min(vw * 0.54, 840);
+  const heroW = phone ? Math.min(vw * 0.56, 380) : tablet ? Math.min(vw * 0.86, 680) : Math.min(vw * 0.54, 840);
   const cornerW = 160; // desktop/tablet only: phones hide the companion after the hero
   const margin = 16;
   return {
     // sink the avatar past the bottom edge (the bust is cropped there anyway): 18px on desktop and
-    // tablet so the hat overlaps the headline a little less, 36px on phones so the hat clears the icon row
+    // tablet so the hat overlaps the headline a little less, 44px on phones so the hat clears the icon row and the resume note
     // phones: avatar sits bottom-right so the left side stays free for the 44px buttons and icons
-    hero: { w: heroW, x: phone ? vw - heroW - 8 : (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 36 : 18) },
+    hero: { w: heroW, x: phone ? vw - heroW - 8 : (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 44 : 18) },
     corner: { w: cornerW, x: vw - cornerW - margin, y: vh - cornerW * RATIO - margin },
   };
 }

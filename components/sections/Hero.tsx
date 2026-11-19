@@ -58,7 +58,7 @@ export default function Hero() {
         aria-hidden="true"
         width={1200}
         height={897}
-        className="hero-static-avatar absolute -bottom-9 right-2 w-[60vw] max-w-[380px] sm:-bottom-[18px] sm:left-1/2 sm:right-auto sm:w-[86vw] sm:-translate-x-1/2 sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
+        className="hero-static-avatar absolute -bottom-11 right-2 w-[56vw] max-w-[380px] sm:-bottom-[18px] sm:left-1/2 sm:right-auto sm:w-[86vw] sm:-translate-x-1/2 sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
       />
 
       {/* Copy (left) and actions (right). Both start just below the headline's comma on desktop,
@@ -80,7 +80,7 @@ export default function Hero() {
 
         <div className="mt-6 lg:mt-0 lg:w-56">
           {/* Two primary actions */}
-          <div className="flex flex-wrap gap-3 lg:flex-col">
+          <div className="flex flex-wrap items-start gap-3 lg:flex-col lg:items-stretch">
             <a
               href="#projects"
               className="btn justify-center !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
@@ -88,15 +88,22 @@ export default function Hero() {
               View my work
             </a>
             {links.resume && (
-              <TrackedLink
-                href={links.resume}
-                download
-                event="resume_download"
-                eventProps={{ location: "hero" }}
-                className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
-              >
-                <Download size={16} /> Download resume
-              </TrackedLink>
+              <div className="flex flex-col items-stretch gap-1.5">
+                <TrackedLink
+                  href={links.resume}
+                  download
+                  event="resume_download"
+                  eventProps={{ location: "hero" }}
+                  className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+                >
+                  <Download size={16} /> Download resume
+                </TrackedLink>
+                {links.resumeUpdated && (
+                  <span className="text-center text-xs text-ink-muted">
+                    Updated {links.resumeUpdated}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           {/* Small icon links */}

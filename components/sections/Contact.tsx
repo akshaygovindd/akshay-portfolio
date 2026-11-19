@@ -3,6 +3,8 @@ import { site } from "@/config/site";
 import ScrollTitle from "@/components/ScrollTitle";
 import FloatingShapes from "@/components/FloatingShapes";
 import TrackedLink from "@/components/TrackedLink";
+import CopyEmailButton from "@/components/CopyEmailButton";
+import { formatAvailability } from "@/lib/availability";
 
 /**
  * Flat panel (inverse palette) that continues the About panel above it: the two form one
@@ -10,7 +12,8 @@ import TrackedLink from "@/components/TrackedLink";
  * curtain of its own. Buttons for anything not set in config are hidden.
  */
 export default function Contact() {
-  const { links, about } = site;
+  const { links, about, availability } = site;
+  const availabilityLine = formatAvailability(availability);
   return (
     <section id="contact" className="panel panel-flat relative">
       <FloatingShapes
@@ -21,6 +24,9 @@ export default function Contact() {
       />
       <div className="section relative z-10 !pt-14 pb-24 sm:!pt-20 sm:pb-32">
         <ScrollTitle>Let&apos;s get in touch</ScrollTitle>
+        {availabilityLine && (
+          <p className="-mt-2 mb-5 font-mono text-sm text-accent">{availabilityLine}</p>
+        )}
         <p className="max-w-xl text-lg text-muted">
           {about.seeking} If you have an opportunity or just want to talk data, reach out.
         </p>
@@ -30,6 +36,7 @@ export default function Contact() {
               <Mail size={16} /> {links.email}
             </a>
           )}
+          {links.email && <CopyEmailButton email={links.email} />}
           {links.linkedin && (
             <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
               <Linkedin size={16} /> LinkedIn
