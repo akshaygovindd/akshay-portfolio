@@ -117,7 +117,7 @@ export default function SqlPlayground() {
   }, [status, run]);
 
   return (
-    <div ref={rootRef} className="rounded-lg border border-border bg-surface">
+    <div ref={rootRef} className="rounded-2xl border border-border bg-surface">
       <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
         <span className="font-mono text-xs text-muted">examples:</span>
         {EXAMPLES.map((ex) => (
@@ -151,7 +151,7 @@ export default function SqlPlayground() {
           }}
           spellCheck={false}
           rows={Math.min(12, Math.max(5, sql.split("\n").length + 1))}
-          className="w-full resize-y rounded-md border border-border bg-bg p-3 font-mono text-sm leading-relaxed text-fg focus:border-accent focus:outline-none"
+          className="w-full resize-y rounded-xl border border-border bg-bg p-3 font-mono text-sm leading-relaxed text-fg focus:border-accent focus:outline-none"
         />
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button
@@ -175,7 +175,9 @@ export default function SqlPlayground() {
         </div>
       </div>
 
-      <div className="border-t border-border p-3" aria-live="polite">
+      {/* min-h reserves the tallest possible result (stats line + 320px capped table), so the
+          page below never jumps when the engine finishes loading and the first result renders. */}
+      <div className="min-h-[364px] border-t border-border p-3" aria-live="polite">
         {status === "error" && (
           <div className="font-mono text-sm text-red-500">
             Couldn&apos;t start the SQL engine: {loadError}{" "}
@@ -194,7 +196,7 @@ export default function SqlPlayground() {
               {result.rowCount > result.rows.length && ` (showing first ${result.rows.length})`}
               {elapsed !== null && ` · ${elapsed} ms`}
             </p>
-            <div className="max-h-80 overflow-auto rounded-md border border-border">
+            <div className="max-h-80 overflow-auto rounded-xl border border-border">
               <table className="w-full border-collapse font-mono text-xs">
                 <thead className="sticky top-0 bg-surface">
                   <tr>

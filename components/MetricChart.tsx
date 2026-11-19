@@ -16,7 +16,7 @@ export default function MetricChart({ metrics }: { metrics: MetricChartData }) {
 
   return (
     <figure
-      className="mt-4 rounded-md border border-border bg-bg p-3"
+      className="mt-4 rounded-xl border border-border bg-bg p-3"
       aria-label={`${metrics.title} chart`}
     >
       <figcaption className="mb-1 font-mono text-xs text-muted">{metrics.title}</figcaption>

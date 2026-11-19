@@ -6,3 +6,9 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
+
+# original full-size avatar art (kept locally, not deployed)
+assets/avatar-originals/
+
+# QA screenshots (local only)
+qa-screenshots/

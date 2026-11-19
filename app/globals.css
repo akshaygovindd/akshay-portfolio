@@ -4,26 +4,30 @@
 
 /* Colors are RGB channels so Tailwind opacity modifiers work (e.g. bg-accent/10). */
 :root {
-  --bg: 250 252 252;
-  --surface: 241 246 246;
-  --border: 215 225 226;
-  --fg: 15 23 25;
-  --muted: 88 105 108;
-  --accent: 13 148 136; /* teal-600, readable on light */
+  --bg: 247 246 250;
+  --surface: 255 255 255;
+  --border: 224 221 232;
+  --fg: 22 20 30;
+  --muted: 98 94 112;
+  --accent: 109 66 230; /* purple, darkened for light backgrounds */
+  --warm: 168 64 10; /* orange, darkened for light backgrounds (>=4.5:1 on tinted tag) */
+  --on-accent: 255 255 255;
 }
 
 .dark {
-  --bg: 11 15 16;
-  --surface: 17 23 24;
-  --border: 31 42 44;
-  --fg: 230 237 238;
-  --muted: 138 154 157;
-  --accent: 45 212 191; /* teal-400 */
+  --bg: 16 16 20; /* #101014 */
+  --surface: 25 25 31; /* #19191F */
+  --border: 52 50 61; /* #34323D */
+  --fg: 243 241 247; /* #F3F1F7 */
+  --muted: 180 177 190; /* #B4B1BE */
+  --accent: 155 122 255; /* #9B7AFF */
+  --warm: 255 155 85; /* #FF9B55 */
+  --on-accent: 16 16 20;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -31,28 +35,60 @@ body {
 }
 
 ::selection {
-  background: rgb(var(--accent) / 0.3);
+  background: rgb(var(--accent) / 0.35);
 }
 
 @layer components {
   .section {
-    @apply mx-auto w-full max-w-5xl px-5 py-20 sm:px-8;
+    @apply mx-auto w-full max-w-6xl px-5 py-24 sm:px-8 sm:py-32;
   }
   .section-title {
-    @apply mb-10 font-mono text-2xl font-semibold tracking-tight sm:text-3xl;
+    @apply mb-12 font-display text-6xl uppercase leading-[0.95] tracking-tight sm:text-8xl;
   }
-  .section-title::before {
-    content: "## ";
-    @apply text-accent;
+  .section-title::after {
+    content: "";
+    @apply mt-4 block h-1.5 w-24 rounded-full bg-accent;
   }
   .btn {
-    @apply inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 font-mono text-sm transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-bg px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
   }
   .btn-primary {
-    @apply border-accent bg-accent text-bg hover:bg-transparent hover:text-accent;
+    @apply border-transparent bg-accent text-[rgb(var(--on-accent))] transition-[filter,transform] hover:border-transparent hover:text-[rgb(var(--on-accent))] hover:brightness-110 active:scale-95;
   }
   .tag {
-    @apply rounded border border-border bg-surface px-2 py-0.5 font-mono text-xs text-muted;
+    @apply rounded-full border border-border bg-surface px-3 py-1 font-mono text-xs text-muted;
+  }
+  .card {
+    @apply rounded-2xl border border-border bg-surface transition-colors hover:border-accent/60;
+  }
+}
+
+/* Keep page content out from under the fixed corner companion (160px wide + margins).
+   The right padding grows only as much as needed: 0 extra on wide screens where the
+   centered column already leaves a free margin. */
+@media (min-width: 640px) {
+  .section {
+    padding-right: max(2rem, calc(12rem - max(0px, (100vw - 72rem) / 2)));
+  }
+}
+
+/* ---------- Hero / companion ---------- */
+
+/* Static hero avatar: only shown when the animated companion is disabled. */
+.hero-static-avatar {
+  display: none;
+}
+
+.hero-float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
@@ -66,7 +102,7 @@ body {
   background-size: 100% 12px;
   animation: flow-y 0.8s linear infinite;
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .flow-line {
     background-image: repeating-linear-gradient(
       to right,
@@ -92,7 +128,11 @@ body {
   html {
     scroll-behavior: auto;
   }
-  .flow-line {
+  .flow-line,
+  .hero-float {
     animation: none;
+  }
+  .hero-static-avatar {
+    display: block;
   }
 }

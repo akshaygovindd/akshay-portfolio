@@ -22,8 +22,20 @@ export type Project = {
   impact: string;
   tags: string[];
   githubUrl: string;
+  /** Featured projects get large cards; the rest get compact cards. */
+  featured?: boolean;
   /** Small Recharts visual on the card. Omit to hide. */
   metrics?: MetricChartData;
+};
+
+export type WorkBlock = {
+  /** Large headline number/statement */
+  value: string;
+  /** Short title under it */
+  title: string;
+  description: string;
+  /** Optional highlighted tag */
+  tag?: string;
 };
 
 export type SkillGroup = { category: string; skills: string[] };
@@ -33,6 +45,43 @@ export const site = {
   title: "Data Analyst & Data Engineer",
   pitch:
     "I build reliable data pipelines and clear analytics, from raw ingestion to dashboards that decision-makers trust.",
+
+  hero: {
+    label: "AKSHAY GOVIND / PORTFOLIO",
+    badge: "OPEN TO CO-OP & INTERNSHIPS",
+    subheadline: "I build data systems that drive decisions.",
+    roles: "Data Analyst · Data Engineer · BI Developer",
+    credentials:
+      "MS Information Systems @ Northeastern University · Dec 2027 · 2+ yrs BI experience",
+  },
+
+  work: {
+    role: "Business Intelligence Analyst",
+    company: "Vaishnav Publications and Digitalization",
+    location: "Pune, India",
+    dates: "Jan 2023 – Apr 2025",
+    blocks: [
+      {
+        value: "4 hrs → under 30 min",
+        title: "Reporting automation",
+        description:
+          "Automated a manual weekly SQL/Python reporting workflow for the Operations team, cutting preparation time from 4 hours to under 30 minutes.",
+        tag: "87.5%+ time reduction",
+      },
+      {
+        value: "8+",
+        title: "Power BI dashboards",
+        description:
+          "Designed and maintained 8+ Power BI dashboards and status reports, giving leadership stakeholders clear visibility into KPI performance and progress.",
+      },
+      {
+        value: "10,000+ rows",
+        title: "Data quality and reconciliation",
+        description:
+          "Performed data quality checks and reconciled report outputs against source data to resolve integrity issues across a 10,000+ row multi-client dataset.",
+      },
+    ] satisfies WorkBlock[],
+  },
 
   links: {
     github: "https://github.com/akshaygovindd",
@@ -63,16 +112,18 @@ export const site = {
 
   projects: [
     {
-      title: "JobPulse",
-      summary: "Daily job market intelligence platform.",
+      title: "FoodLens ELT Pipeline",
+      featured: true,
+      summary: "End-to-end ELT pipeline from raw data to BI dashboards.",
       impact:
-        "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
-      tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
-      githubUrl: "https://github.com/akshaygovindd/jobpulse",
+        "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
+      tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
+      githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
       // metrics: add a chart here once you have real numbers
     },
     {
       title: "Instacart SQL Analytics Platform",
+      featured: true,
       summary: "End-to-end grocery retail analytics platform.",
       impact:
         "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
@@ -85,13 +136,23 @@ export const site = {
       },
     },
     {
-      title: "FoodLens ELT Pipeline",
-      summary: "End-to-end ELT pipeline from raw data to BI dashboards.",
+      title: "JobPulse",
+      featured: true,
+      summary: "Daily job market intelligence platform.",
       impact:
-        "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
-      tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
-      githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
+        "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
+      tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
+      githubUrl: "https://github.com/akshaygovindd/jobpulse",
       // metrics: add a chart here once you have real numbers
+    },
+    {
+      title: "Emergency Response Multi-Agent System",
+      summary: "Multi-agent LLM system for emergency resource coordination.",
+      impact:
+        "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
+      tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
+      githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
+      // metrics: add a chart here once you have real numbers (see MetricChartData above)
     },
     {
       title: "Wildfire Cause Prediction",
@@ -105,15 +166,6 @@ export const site = {
         unit: "%",
         data: [{ name: "RF tuned F1", value: 95.98 }],
       },
-    },
-    {
-      title: "Emergency Response Multi-Agent System",
-      summary: "Multi-agent LLM system for emergency resource coordination.",
-      impact:
-        "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
-      tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
-      githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
-      // metrics: add a chart here once you have real numbers (see MetricChartData above)
     },
   ] satisfies Project[],
 
