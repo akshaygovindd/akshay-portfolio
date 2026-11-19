@@ -24,7 +24,7 @@ export default function ScrollEffects() {
     mm.add(
       {
         reduce: "(prefers-reduced-motion: reduce)",
-        desktop: "(min-width: 1024px) and (min-height: 780px)",
+        desktop: "(min-width: 1200px) and (min-height: 790px)",
         shapes: "(min-width: 640px)",
       },
       (ctx) => {

@@ -22,12 +22,17 @@ export default function ProjectCard({
       className={`stack-card mb-6 lg:mb-10 ${
         // The last card is positioned (relative) too: otherwise the sticky cards before it
         // would paint on top of it as it scrolls up.
-        last ? "relative" : "[@media(min-width:1024px)_and_(min-height:780px)]:sticky"
+        last ? "relative" : "[@media(min-width:1200px)_and_(min-height:790px)]:sticky"
       }`}
-      style={{ top: `calc(5.5rem + ${index * 14}px)` }}
+      style={{ top: `calc(4.5rem + ${index * 10}px)` }}
     >
       <div className="card grid gap-6 p-6 sm:p-8 lg:grid-cols-5 lg:gap-x-10 lg:gap-y-6">
         <div className="flex flex-col lg:col-span-3">
+          {project.label && (
+            <p className="mb-2 self-start rounded-full border border-border bg-bg px-2.5 py-0.5 font-mono text-[11px] text-muted">
+              {project.label}
+            </p>
+          )}
           <div className="flex items-baseline gap-4">
             <span
               aria-hidden="true"
@@ -40,20 +45,20 @@ export default function ProjectCard({
             </h3>
           </div>
 
-          <p className="mt-4 text-lg leading-snug">{project.summary}</p>
+          <p className="mt-3 text-lg leading-snug">{project.summary}</p>
           {project.impact && (
             <p className="mt-2 leading-relaxed text-muted">{project.impact}</p>
           )}
 
           {project.stats && project.stats.length > 0 && (
-            <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+            <dl className="mt-3 flex flex-wrap gap-x-7 gap-y-2.5">
               {project.stats.map((st) => (
                 <div key={st.value}>
                   <dt className="sr-only">{st.label}</dt>
-                  <dd className="font-display text-4xl uppercase leading-none text-accent sm:text-5xl">
+                  <dd className="font-display text-3xl uppercase leading-none text-accent sm:text-4xl">
                     {st.value}
                   </dd>
-                  <p aria-hidden="true" className="mt-1 max-w-[16rem] text-xs text-muted sm:text-sm">
+                  <p aria-hidden="true" className="mt-1 max-w-[13rem] text-xs leading-snug text-muted">
                     {st.label}
                   </p>
                 </div>
@@ -62,7 +67,7 @@ export default function ProjectCard({
           )}
 
           {project.facts && project.facts.length > 0 && (
-            <ul className="mt-4 space-y-1.5 text-sm">
+            <ul className="mt-3 space-y-1 text-sm">
               {project.facts.map((f) => (
                 <li key={f} className="flex items-start gap-2.5">
                   <span
@@ -81,7 +86,7 @@ export default function ProjectCard({
             </p>
           )}
 
-          <ul className="mt-5 flex flex-wrap gap-2">
+          <ul className="mt-4 flex flex-wrap gap-2">
             {project.tags.map((t, i) => (
               <li key={`${t}-${i}`} className="tag">
                 {t}
@@ -89,16 +94,21 @@ export default function ProjectCard({
             ))}
           </ul>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap items-start gap-3">
             {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-              >
-                <ExternalLink size={16} /> Live demo
-              </a>
+              <div className="flex flex-col items-start gap-1.5">
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                >
+                  <ExternalLink size={16} /> Live demo
+                </a>
+                {project.liveNote && (
+                  <span className="px-1 text-xs text-muted">{project.liveNote}</span>
+                )}
+              </div>
             )}
             <a
               href={project.githubUrl}

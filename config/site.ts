@@ -17,6 +17,10 @@ export type Project = {
   facts?: string[];
   /** Adds a "Live demo" button. */
   liveUrl?: string;
+  /** Small note under the Live demo button (e.g. free-tier apps that sleep). */
+  liveNote?: string;
+  /** Small label above the title (e.g. the course a project was built for). */
+  label?: string;
   /** Things that are not built yet. Shown as "In progress: ...". */
   inProgress?: string;
   /** Short highlights shown as a strip along the bottom of the card (facts from the README). */
@@ -152,6 +156,27 @@ export const site = {
       image: { src: "/projects/foodlens.webp", alt: "FoodLens Power BI overview dashboard: inspections, pass rate, violations by type and city" },
     },
     {
+      title: "Emergency Response Multi-Agent System",
+      label: "CSYE 7380 midterm project",
+      summary:
+        "Four LLM agents (OpenAI Agents SDK) negotiate over ambulances and hospital beds in a seeded city simulation. Agents only propose; Python validates every action.",
+      stats: [
+        { value: "794", label: "infeasible proposals blocked, 0 executed" },
+        { value: "+10.9 to +23.3 pts", label: "critical service rate vs naive baseline" },
+        { value: "$0.09", label: "per agent run, at list price" },
+      ],
+      facts: [
+        "4 systems + oracle ablation × 3 scenarios, 5–10 seeds; 95% CIs, paired and permutation tests",
+        "306 offline tests + CI; cached LLM calls let reruns reproduce saved results",
+        "Honest result: comparable to a strong greedy rule, no detectable gain",
+      ],
+      tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
+      githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
+      liveUrl: "https://emergency-response-agents.streamlit.app",
+      liveNote: "May take ~30 s to wake",
+      image: { src: "/projects/emergency.webp", alt: "Emergency response dashboard replaying a simulation where two incidents contest one ambulance" },
+    },
+    {
       title: "Instacart SQL Analytics Platform",
       summary: "End-to-end grocery retail analytics platform.",
       impact:
@@ -171,17 +196,6 @@ export const site = {
       inProgress: "visa evidence and resume matching",
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
-    },
-    {
-      title: "Emergency Response Multi-Agent System",
-      summary: "Multi-agent LLM system for emergency resource coordination.",
-      impact:
-        "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
-      facts: ["306 tests + CI"],
-      tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
-      githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
-      liveUrl: "https://emergency-response-agents.streamlit.app",
-      image: { src: "/projects/emergency.webp", alt: "Emergency response dashboard replaying a simulation where two incidents contest one ambulance" },
     },
     {
       title: "Wildfire Cause Prediction",
