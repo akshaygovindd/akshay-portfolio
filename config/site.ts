@@ -96,9 +96,9 @@ export const site = {
   links: {
     github: "https://github.com/akshaygovindd",
     // Leave a value as "" and its button is hidden from the site.
-    linkedin: "", // TODO: e.g. "https://www.linkedin.com/in/your-handle"
-    email: "", // TODO: your email address
-    resume: "", // TODO: drop your PDF at public/resume.pdf, then set this to "/resume.pdf"
+    linkedin: "https://www.linkedin.com/in/akshaygovind06/",
+    email: "govind.ak@northeastern.edu",
+    resume: "/resume.pdf", // file lives at public/resume.pdf
   },
 
   about: {

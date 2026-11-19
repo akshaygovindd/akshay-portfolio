@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
 import FitLine from "@/components/FitLine";
 
@@ -90,6 +90,26 @@ export default function Hero() {
               className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
             >
               <Download size={16} /> Download resume
+            </a>
+          )}
+          {links.linkedin && (
+            <a
+              href={links.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+            >
+              <Linkedin size={16} />
+              <span className="sr-only sm:not-sr-only">LinkedIn</span>
+            </a>
+          )}
+          {links.email && (
+            <a
+              href={`mailto:${links.email}`}
+              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+            >
+              <Mail size={16} />
+              <span className="sr-only sm:not-sr-only">Email</span>
             </a>
           )}
         </div>
