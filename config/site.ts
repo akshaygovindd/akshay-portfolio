@@ -189,7 +189,7 @@ export const site = {
       ],
       tags: ["Databricks", "PySpark", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
-      image: { src: "/projects/foodlens.webp", alt: "FoodLens Power BI overview dashboard: inspections, pass rate, violations by type and city" },
+      image: { src: "/projects/foodlens-crop.webp", alt: "FoodLens Power BI dashboard, cropped to the total inspections (279,603) and pass rate (79.53%) cards and the inspections-by-result bar chart" },
     },
     {
       title: "Emergency Response Multi-Agent System",
@@ -211,7 +211,7 @@ export const site = {
       githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
       liveUrl: "https://emergency-response-agents.streamlit.app",
       liveNote: "May take ~30 s to wake",
-      image: { src: "/projects/emergency.webp", alt: "Emergency response dashboard replaying a simulation where two incidents contest one ambulance" },
+      image: { src: "/projects/emergency-crop.webp", alt: "Emergency response dashboard map at minute 6, where two incidents both want Ambulance 1 and a conflict notice is showing" },
     },
     {
       title: "Instacart SQL Analytics Platform",
@@ -224,7 +224,7 @@ export const site = {
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
       liveUrl: "https://instacart-sql-dashboard.streamlit.app",
-      image: { src: "/projects/instacart.webp", alt: "Instacart Analytics Platform Streamlit dashboard home page with order, product and customer totals" },
+      image: { src: "/projects/instacart-crop.webp", alt: "Instacart dashboard Overview page: bar chart of total orders by department, with produce and dairy eggs the largest, coloured by reorder percentage" },
     },
     {
       title: "JobPulse",
@@ -249,7 +249,7 @@ export const site = {
       facts: ["F1 0.96 human-caused / 0.78 lightning-caused", "1.88M rows · 83.8% class imbalance handled"],
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
-      image: { src: "/projects/wildfire.webp", alt: "Wildfire counts by state and a US map of fire locations coloured by human or natural cause" },
+      image: { src: "/projects/wildfire-crop.webp", alt: "US map of wildfire locations coloured by cause, human (red) or natural (blue), with longitude and latitude axes" },
     },
   ] satisfies Project[],
 

@@ -43,6 +43,8 @@ The tuned Random Forest on the test set:
 - The top forest feature importances are longitude (0.267), latitude (0.168) and owner type (0.097).
 - For context: a model that always predicts "human" would score about 0.91 F1 on that class, which is why I report ROC-AUC and both classes.
 
+<ImportanceChart />
+
 ## What I'd do next
 
 My limits: the dataset has no weather data, and it ends in 2015, so it may not match recent fire patterns. Next I would add weather features, try gradient boosting such as XGBoost or LightGBM, build a multi-class cause model and serve predictions through an API.
@@ -59,7 +61,7 @@ All files are in the [Wildfire repository](https://github.com/akshaygovindd/Wild
 | Metrics for every model, per-class precision, recall and F1 | `WILDFIRE_FINAL.ipynb` (output of the model cells) |
 | GridSearchCV: 81 fits, best parameters | `WILDFIRE_FINAL.ipynb` (output) |
 | 5-fold CV 0.9590, standard deviation 0.0003 | `WILDFIRE_FINAL.ipynb` (output) |
-| Feature importances | `WILDFIRE_FINAL.ipynb` (output) |
+| Feature importances and the bar chart (top 10 of 12) | `WILDFIRE_FINAL.ipynb` (output) |
 | Limits and future work | `INFO6105 Team 6 Report.docx`, sections 6.1 and 6.2 |
 | About 0.91 F1 for a model that always predicts "human" | My arithmetic: 2 x 0.838 x 1 / (0.838 + 1) |
 
