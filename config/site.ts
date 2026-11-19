@@ -68,7 +68,7 @@ export const site = {
     subheadline: "I build data systems that drive decisions.",
     roles: "Data Analyst · Data Engineer · BI Developer",
     credentials:
-      "MS Information Systems @ Northeastern University · Dec 2027 · 2+ yrs BI experience",
+      "MS Information Systems @ Northeastern University · Dec\u00A02027 · 2+ yrs BI experience",
   },
 
   work: {

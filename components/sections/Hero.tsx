@@ -116,11 +116,18 @@ export default function Hero() {
                     key={label}
                     href={href}
                     aria-label={label}
-                    title={label}
                     {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-border sm:h-10 sm:w-10 text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF]"
+                    className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF] sm:h-10 sm:w-10"
                   >
                     <Icon size={18} />
+                    {/* Tooltip: visual only (the link already has an aria-label). Shows on hover
+                        and on keyboard focus, sits below the icon so it never covers the buttons. */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#F3F1F7] px-2.5 py-1 text-xs font-medium text-[#101014] opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                    >
+                      {label}
+                    </span>
                   </a>
                 );
               })}
