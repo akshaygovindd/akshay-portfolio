@@ -39,6 +39,8 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // The QA runner builds into its own folder so it never fights a running `next dev` over .next
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

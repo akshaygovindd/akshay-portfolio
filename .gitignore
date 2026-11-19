@@ -12,3 +12,8 @@ assets/avatar-originals/
 
 # QA screenshots (local only)
 qa-screenshots/
+
+# QA runner: outputs and its own dependencies (the scripts themselves are committed)
+qa/node_modules
+qa/out
+.next-qa

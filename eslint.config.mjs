@@ -3,5 +3,5 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 
 export default defineConfig([
   ...nextVitals,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "assets/**", "qa-screenshots/**"]),
+  globalIgnores([".next/**", ".next-qa/**", "qa/**", "out/**", "build/**", "next-env.d.ts", "assets/**", "qa-screenshots/**"]),
 ]);

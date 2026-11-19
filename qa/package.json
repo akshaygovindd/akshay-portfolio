@@ -1,0 +1,16 @@
+{
+  "name": "portfolio-qa",
+  "private": true,
+  "type": "module",
+  "description": "Full regression suite for the portfolio. Run from the repo root with `npm run qa`.",
+  "scripts": {
+    "qa": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON run.mjs"
+  },
+  "dependencies": {
+    "axe-core": "^4.14.1",
+    "lighthouse": "^13.6.0",
+    "playwright": "^1.65.1",
+    "puppeteer-core": "^25.18.1",
+    "sharp": "^0.35.5"
+  }
+}
