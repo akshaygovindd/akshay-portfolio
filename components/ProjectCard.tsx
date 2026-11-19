@@ -1,5 +1,6 @@
 import { ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/config/site";
+import TrackedLink from "@/components/TrackedLink";
 
 /**
  * Big project card. On tall desktop screens the cards stack: each is sticky, and ScrollEffects
@@ -97,27 +98,31 @@ export default function ProjectCard({
           <div className="mt-5 flex flex-wrap items-start gap-3">
             {project.liveUrl && (
               <div className="flex flex-col items-start gap-1.5">
-                <a
+                <TrackedLink
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  event="live_demo_click"
+                  eventProps={{ project: project.title }}
                   className="btn btn-primary"
                 >
                   <ExternalLink size={16} /> Live demo
-                </a>
+                </TrackedLink>
                 {project.liveNote && (
                   <span className="px-1 text-xs text-muted">{project.liveNote}</span>
                 )}
               </div>
             )}
-            <a
+            <TrackedLink
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
+              event="project_github_click"
+              eventProps={{ project: project.title }}
               className="btn"
             >
               <Github size={16} /> View on GitHub
-            </a>
+            </TrackedLink>
           </div>
         </div>
 

@@ -10,10 +10,12 @@ import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Demos from "@/components/sections/Demos";
 import Contact from "@/components/sections/Contact";
+import PersonJsonLd from "@/components/PersonJsonLd";
 
 export default function Home() {
   return (
     <>
+      <PersonJsonLd />
       <Navbar />
       <Companion />
       <ScrollEffects />

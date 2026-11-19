@@ -49,6 +49,11 @@ export type SkillGroup = { category: string; skills: string[] };
 export const site = {
   name: "Akshay Govind",
   title: "Data Analyst & Data Engineer",
+  /** Used for the meta description, Open Graph / Twitter cards and the web manifest. */
+  description:
+    "Data Analyst & Data Engineer building data pipelines, SQL analytics and BI dashboards. MS Information Systems at Northeastern University, open to co-op and internship roles.",
+  /** Theme colour for the browser UI, the web manifest and splash screens. */
+  themeColor: "#101014",
   pitch:
     "I build reliable data pipelines and clear analytics, from raw ingestion to dashboards that decision-makers trust.",
 

@@ -40,7 +40,8 @@ function geometry(): { hero: Geometry; corner: Geometry } {
   return {
     // sink the avatar past the bottom edge (the bust is cropped there anyway): 18px on desktop and
     // tablet so the hat overlaps the headline a little less, 36px on phones so the hat clears the icon row
-    hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 36 : 18) },
+    // phones: avatar sits bottom-right so the left side stays free for the 44px buttons and icons
+    hero: { w: heroW, x: phone ? vw - heroW - 8 : (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 36 : 18) },
     corner: { w: cornerW, x: vw - cornerW - margin, y: vh - cornerW * RATIO - margin },
   };
 }

@@ -1,6 +1,7 @@
 import { Download, Github, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
 import FitLine from "@/components/FitLine";
+import TrackedLink from "@/components/TrackedLink";
 
 // font-size / container-width that makes each line span the full width (measured for Anton)
 const R_FULL = 0.1963;
@@ -57,7 +58,7 @@ export default function Hero() {
         aria-hidden="true"
         width={1200}
         height={897}
-        className="hero-static-avatar absolute -bottom-9 left-1/2 w-[60vw] max-w-[380px] -translate-x-1/2 sm:-bottom-[18px] sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
+        className="hero-static-avatar absolute -bottom-9 right-2 w-[60vw] max-w-[380px] sm:-bottom-[18px] sm:left-1/2 sm:right-auto sm:w-[86vw] sm:-translate-x-1/2 sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
       />
 
       {/* Copy (left) and actions (right). Both start just below the headline's comma on desktop,
@@ -87,13 +88,15 @@ export default function Hero() {
               View my work
             </a>
             {links.resume && (
-              <a
+              <TrackedLink
                 href={links.resume}
                 download
+                event="resume_download"
+                eventProps={{ location: "hero" }}
                 className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
               >
                 <Download size={16} /> Download resume
-              </a>
+              </TrackedLink>
             )}
           </div>
           {/* Small icon links */}
@@ -117,9 +120,9 @@ export default function Hero() {
                     href={href}
                     aria-label={label}
                     {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF] sm:h-10 sm:w-10"
+                    className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF]"
                   >
-                    <Icon size={18} />
+                    <Icon size={20} />
                     {/* Tooltip: visual only (the link already has an aria-label). Shows on hover
                         and on keyboard focus, sits below the icon so it never covers the buttons. */}
                     <span

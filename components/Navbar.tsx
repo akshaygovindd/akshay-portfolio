@@ -24,7 +24,11 @@ export default function Navbar() {
           <ul className="flex min-w-0 items-center gap-2.5 overflow-x-auto whitespace-nowrap text-[11px] font-medium uppercase tracking-normal [scrollbar-width:none] max-[429px]:gap-1.5 max-[429px]:text-[10px] sm:gap-4 sm:overflow-visible sm:text-xs sm:tracking-wider md:gap-6 md:text-sm [&::-webkit-scrollbar]:hidden">
             {links.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="text-ink-muted transition-colors hover:text-ink-fg">
+                {/* min-h-11: a 44px-tall tap area inside the 56px bar; the text stays visually centered */}
+                <a
+                  href={l.href}
+                  className="flex min-h-11 items-center text-ink-muted transition-colors hover:text-ink-fg"
+                >
                   {l.label}
                 </a>
               </li>

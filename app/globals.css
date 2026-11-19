@@ -55,7 +55,7 @@ body {
     @apply mt-3 block h-1 w-16 rounded-full bg-accent;
   }
   .btn {
-    @apply inline-flex items-center gap-2 rounded-full border border-border bg-bg px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    @apply inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-bg px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
   }
   .btn-primary {
     @apply border-transparent bg-accent text-[rgb(var(--on-accent))] transition-[filter,transform] hover:border-transparent hover:text-[rgb(var(--on-accent))] hover:brightness-110 active:scale-95;
@@ -289,5 +289,32 @@ body {
     position: static !important;
     transform: none !important;
     filter: none !important;
+  }
+}
+
+/* ---------- Skip link: first focusable element, visible only while focused ---------- */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-250%);
+  padding: 0.7rem 1.25rem;
+  border-radius: 9999px;
+  background: #9b7aff;
+  color: #101014;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.4);
+  transition: transform 0.15s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #f3f1f7;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
   }
 }

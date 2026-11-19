@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 
+const subscribe = () => () => {};
+
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // false on the server and during hydration, true afterwards (avoids a hydration mismatch
+  // without calling setState inside an effect).
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   const isDark = resolvedTheme === "dark";
   return (
@@ -15,10 +18,10 @@ export default function ThemeToggle() {
       type="button"
       aria-label="Toggle dark/light mode"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="shrink-0 rounded-full border border-ink-border p-2 text-ink-muted transition-colors hover:border-ink-fg hover:text-ink-fg"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-ink-fg hover:text-ink-fg"
     >
-      {/* Render a fixed-size placeholder until mounted to avoid hydration mismatch */}
-      {mounted ? isDark ? <Sun size={16} /> : <Moon size={16} /> : <span className="block h-4 w-4" />}
+      {/* Fixed-size placeholder until mounted */}
+      {mounted ? isDark ? <Sun size={18} /> : <Moon size={18} /> : <span className="block h-[18px] w-[18px]" />}
     </button>
   );
 }

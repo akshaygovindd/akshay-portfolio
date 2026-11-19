@@ -2,6 +2,7 @@ import { Download, Github, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
 import ScrollTitle from "@/components/ScrollTitle";
 import FloatingShapes from "@/components/FloatingShapes";
+import TrackedLink from "@/components/TrackedLink";
 
 /**
  * Flat panel (inverse palette) that continues the About panel above it: the two form one
@@ -38,9 +39,15 @@ export default function Contact() {
             <Github size={16} /> GitHub
           </a>
           {links.resume && (
-            <a href={links.resume} download className="btn">
+            <TrackedLink
+              href={links.resume}
+              download
+              event="resume_download"
+              eventProps={{ location: "contact" }}
+              className="btn"
+            >
               <Download size={16} /> Resume
-            </a>
+            </TrackedLink>
           )}
         </div>
       </div>

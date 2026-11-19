@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Play } from "lucide-react";
 import { TABLE_NAME, getEngine, runQuery, type QueryResult } from "@/lib/duckdb";
+import { trackEvent } from "@/lib/analytics";
 
 const EXAMPLES = [
   {
@@ -88,8 +89,13 @@ export default function SqlPlayground() {
   }, [load]);
 
   const run = useCallback(
-    async (text: string) => {
+    async (text: string, userInitiated = true) => {
       if (status !== "ready" || running) return;
+      if (userInitiated) {
+        // Which example it is, or "custom". The query text itself is never sent.
+        const example = EXAMPLES.find((ex) => ex.sql === text);
+        trackEvent("sql_query_run", example ? { source: "example", example: example.label } : { source: "custom" });
+      }
       setRunning(true);
       setQueryError("");
       const t0 = performance.now();
@@ -112,7 +118,7 @@ export default function SqlPlayground() {
   useEffect(() => {
     if (status === "ready" && !didAutoRun.current) {
       didAutoRun.current = true;
-      run(EXAMPLES[0].sql);
+      run(EXAMPLES[0].sql, false); // automatic first run: not a user action
     }
   }, [status, run]);
 
