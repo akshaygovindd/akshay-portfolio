@@ -13,14 +13,17 @@ const POSES = ["typing", "think", "point", "music", "wave"] as const;
 type Pose = (typeof POSES)[number];
 
 /**
- * Which desk pose to show while each section is in view.
- * Sections not listed here (About) keep the previous section's pose.
+ * Which desk pose to show for each section, listed in page order.
+ * The active section is the last one whose top has passed 60% of the viewport height, so the
+ * pose depends only on scroll position (same answer scrolling down, up, or jumping from a link).
+ * About has no pose of its own: it keeps Skills' pose.
  */
 const SECTION_POSES: { id: string; pose: Pose }[] = [
   { id: "experience", pose: "typing" },
   { id: "projects", pose: "think" },
-  { id: "skills", pose: "music" },
   { id: "demos", pose: "point" },
+  { id: "skills", pose: "music" },
+  { id: "about", pose: "music" },
   { id: "contact", pose: "wave" },
 ];
 
@@ -192,22 +195,27 @@ export default function Companion() {
         cleanups.push(() => tl.scrollTrigger?.kill());
 
         // Pose follows the section in view (not needed on phones: the avatar is hidden).
-        (phone ? [] : SECTION_POSES).forEach(({ id, pose }) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          const set = () => {
-            sectionPose = pose;
-            applyPose(desired());
+        if (!phone) {
+          const updateSectionPose = () => {
+            const line = window.innerHeight * 0.6;
+            let next: Pose = "typing"; // above the first section: default pose
+            for (const { id, pose } of SECTION_POSES) {
+              const el = document.getElementById(id);
+              if (el && el.getBoundingClientRect().top <= line) next = pose;
+            }
+            if (next !== sectionPose) {
+              sectionPose = next;
+              applyPose(desired());
+            }
           };
           const st = ScrollTrigger.create({
-            trigger: el,
-            start: "top 60%",
-            end: "bottom 60%",
-            onEnter: set,
-            onEnterBack: set,
+            start: 0,
+            end: "max",
+            onUpdate: updateSectionPose,
+            onRefresh: updateSectionPose,
           });
           cleanups.push(() => st.kill());
-        });
+        }
 
         // Hover -> wave (no click action).
         const onEnter = () => {

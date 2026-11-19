@@ -107,6 +107,12 @@ body {
   border-top-right-radius: 32px;
   box-shadow: 0 -24px 60px rgb(0 0 0 / 0.35);
 }
+/* must come after .panel: Contact continues the About panel instead of overlapping it */
+.panel-flat {
+  border-radius: 0;
+  box-shadow: none;
+  border-top: 1px solid rgb(var(--border));
+}
 
 /* ---------- Scroll storytelling ---------- */
 
@@ -120,6 +126,9 @@ body {
   line-height: 0.92;
   letter-spacing: -0.01em;
   font-size: clamp(3.25rem, 12.5vw, 10.5rem);
+}
+.title-wrap--tight {
+  margin-bottom: 0.75rem;
 }
 .title-outline {
   display: block;

@@ -12,7 +12,7 @@ export default function Projects() {
           { kind: "sphere", className: "right-[27%] top-56 h-16 w-16", speed: -60 },
         ]}
       />
-      <div className="section relative z-10 pb-28">
+      <div className="section relative z-10">
         <ScrollTitle>Projects</ScrollTitle>
         <div>
           {site.projects.map((p, i) => (
