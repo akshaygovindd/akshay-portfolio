@@ -30,23 +30,15 @@ function geometry(): { hero: Geometry; corner: Geometry } {
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;
   const phone = vw < 640;
-  const stacked = vw < 1024; // hero copy is stacked above the avatar
-  const heroW = stacked ? Math.min(vw * 0.7, 420) : Math.min(vw * 0.54, 840);
-  const cornerW = phone ? 100 : 160;
-  const margin = phone ? 8 : 16;
+  const tablet = vw >= 640 && vw < 1024; // hero copy is stacked above the avatar
+  const heroW = phone ? Math.min(vw * 0.62, 380) : tablet ? Math.min(vw * 0.86, 680) : Math.min(vw * 0.54, 840);
+  const cornerW = 160; // desktop/tablet only: phones hide the companion after the hero
+  const margin = 16;
   return {
     hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO },
     corner: { w: cornerW, x: vw - cornerW - margin, y: vh - cornerW * RATIO - margin },
   };
 }
-
-/**
- * Tablet/desktop: page content keeps a free gutter (see .section in globals.css), so the
- * corner avatar sits above the page at z-40 and never overlaps anything.
- * Phones have no room for a gutter, so the avatar goes *behind* the content (z-index -1):
- * text and buttons always render on top of it.
- */
-const cornerZ = () => (document.documentElement.clientWidth < 640 ? "-1" : "40");
 
 export default function Companion() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -79,23 +71,29 @@ export default function Companion() {
     const mm = gsap.matchMedia();
 
     mm.add(
-      { reduce: "(prefers-reduced-motion: reduce)", motion: "(prefers-reduced-motion: no-preference)" },
+      {
+        reduce: "(prefers-reduced-motion: reduce)",
+        motion: "(prefers-reduced-motion: no-preference)",
+        phone: "(max-width: 639px)",
+      },
       (ctx) => {
         const reduce = !!ctx.conditions?.reduce;
+        const phone = !!ctx.conditions?.phone;
         const cleanups: (() => void)[] = [];
 
         /* ---------------- Reduced motion: static corner avatar ---------------- */
         if (reduce) {
           const place = () => {
             const g = geometry().corner;
-            gsap.set(root, { width: g.w, x: g.x, y: g.y, zIndex: Number(cornerZ()) });
+            gsap.set(root, { width: g.w, x: g.x, y: g.y });
           };
           gsap.set(avatar, { opacity: 0 });
           gsap.set(desk, { opacity: 1 });
           deskImgs.forEach((i) => gsap.set(i, { opacity: i.dataset.pose === "typing" ? 1 : 0 }));
           place();
 
-          const show = (on: boolean) => gsap.set(root, { opacity: on ? 1 : 0 });
+          // Phones: no corner avatar at all (the hero's static avatar is enough).
+          const show = (on: boolean) => gsap.set(root, { opacity: on && !phone ? 1 : 0 });
           let heroGone = false;
           whenReady.then(() => {
             revealed = true;
@@ -159,8 +157,7 @@ export default function Companion() {
               progress = self.progress;
               const corner = inCorner();
               // Hover (wave) needs pointer events, only once docked in the corner.
-              root.style.pointerEvents = corner ? "auto" : "none";
-              root.style.zIndex = corner ? cornerZ() : "40";
+              root.style.pointerEvents = corner && !phone ? "auto" : "none";
               floatEl.classList.toggle("hero-float", progress < 0.02);
               if (!corner) hovering = false;
               applyPose(desired());
@@ -183,12 +180,17 @@ export default function Companion() {
           },
           0,
         );
-        tl.fromTo(avatar, { opacity: 1 }, { opacity: 0, ease: "none", duration: 0.35 }, 0.6);
-        tl.fromTo(desk, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.35 }, 0.6);
+        if (phone) {
+          // Phones: the avatar just fades out as the hero scrolls away and never docks.
+          tl.fromTo(floatEl, { opacity: 1 }, { opacity: 0, ease: "none", duration: 0.45 }, 0);
+        } else {
+          tl.fromTo(avatar, { opacity: 1 }, { opacity: 0, ease: "none", duration: 0.35 }, 0.6);
+          tl.fromTo(desk, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.35 }, 0.6);
+        }
         cleanups.push(() => tl.scrollTrigger?.kill());
 
-        // Pose follows the section in view.
-        SECTION_POSES.forEach(({ id, pose }) => {
+        // Pose follows the section in view (not needed on phones: the avatar is hidden).
+        (phone ? [] : SECTION_POSES).forEach(({ id, pose }) => {
           const el = document.getElementById(id);
           if (!el) return;
           const set = () => {
@@ -214,12 +216,14 @@ export default function Companion() {
           hovering = false;
           applyPose(desired());
         };
-        root.addEventListener("pointerenter", onEnter);
-        root.addEventListener("pointerleave", onLeave);
-        cleanups.push(() => {
-          root.removeEventListener("pointerenter", onEnter);
-          root.removeEventListener("pointerleave", onLeave);
-        });
+        if (!phone) {
+          root.addEventListener("pointerenter", onEnter);
+          root.addEventListener("pointerleave", onLeave);
+          cleanups.push(() => {
+            root.removeEventListener("pointerenter", onEnter);
+            root.removeEventListener("pointerleave", onLeave);
+          });
+        }
 
         // 3D tilt toward the cursor (fine pointers only), smoothed with quickTo.
         const canTilt = window.matchMedia("(hover: hover) and (pointer: fine)").matches;

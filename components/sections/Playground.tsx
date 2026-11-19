@@ -3,7 +3,7 @@ import { TABLE_NAME } from "@/lib/duckdb";
 
 export default function Playground() {
   return (
-    <section id="playground" className="section">
+    <section id="playground" className="section section-compact">
       <h2 className="section-title">SQL Playground</h2>
       <p className="mb-6 max-w-2xl text-muted">
         Run SQL right in your browser. Queries execute locally with DuckDB-WASM against a small{" "}

@@ -11,7 +11,7 @@ const links = [
 /** Always dark: sits over the hero and stays legible on both themes. */
 export default function Navbar() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-ink-border bg-ink/90 text-ink-fg backdrop-blur">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-ink-border bg-ink/95 text-ink-fg backdrop-blur">
       <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-8">
         <a
           href="#top"

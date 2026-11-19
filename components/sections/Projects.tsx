@@ -1,29 +1,25 @@
 import { site } from "@/config/site";
 import ProjectCard from "@/components/ProjectCard";
+import ScrollTitle from "@/components/ScrollTitle";
+import FloatingShapes from "@/components/FloatingShapes";
 
 export default function Projects() {
-  const featured = site.projects.filter((p) => p.featured);
-  const more = site.projects.filter((p) => !p.featured);
   return (
-    <section id="projects" className="section">
-      <h2 className="section-title">Projects</h2>
-      <div className="space-y-6">
-        {featured.map((p) => (
-          <ProjectCard key={p.title} project={p} />
-        ))}
+    <section id="projects" className="relative">
+      <FloatingShapes
+        shapes={[
+          { kind: "cube", className: "right-[10%] top-20 h-28 w-28", speed: -120, rotate: 18 },
+          { kind: "sphere", className: "right-[27%] top-56 h-16 w-16", speed: -60 },
+        ]}
+      />
+      <div className="section relative z-10 pb-28">
+        <ScrollTitle>Projects</ScrollTitle>
+        <div>
+          {site.projects.map((p, i) => (
+            <ProjectCard key={p.title} project={p} index={i} />
+          ))}
+        </div>
       </div>
-      {more.length > 0 && (
-        <>
-          <h3 className="mb-5 mt-14 text-sm font-medium uppercase tracking-wider text-muted">
-            More projects
-          </h3>
-          <div className="grid gap-5 md:grid-cols-2">
-            {more.map((p) => (
-              <ProjectCard key={p.title} project={p} />
-            ))}
-          </div>
-        </>
-      )}
     </section>
   );
 }

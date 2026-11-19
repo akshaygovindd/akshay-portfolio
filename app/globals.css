@@ -40,14 +40,19 @@ body {
 
 @layer components {
   .section {
-    @apply mx-auto w-full max-w-6xl px-5 py-24 sm:px-8 sm:py-32;
+    @apply mx-auto w-full max-w-6xl px-5 py-20 sm:px-8 sm:py-28;
   }
+  /* Short sections (skills, demos) take less scroll length */
+  .section-compact {
+    @apply py-14 sm:py-16;
+  }
+  /* Small, plain title for secondary sections */
   .section-title {
-    @apply mb-12 font-display text-6xl uppercase leading-[0.95] tracking-tight sm:text-8xl;
+    @apply mb-8 font-display text-4xl uppercase leading-[0.95] tracking-tight sm:text-6xl;
   }
   .section-title::after {
     content: "";
-    @apply mt-4 block h-1.5 w-24 rounded-full bg-accent;
+    @apply mt-3 block h-1 w-16 rounded-full bg-accent;
   }
   .btn {
     @apply inline-flex items-center gap-2 rounded-full border border-border bg-bg px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
@@ -67,8 +72,117 @@ body {
    The right padding grows only as much as needed: 0 extra on wide screens where the
    centered column already leaves a free margin. */
 @media (min-width: 640px) {
-  .section {
+  .section,
+  body .gutter /* body prefix: must outrank Tailwind's sm:px-* utilities */ {
     padding-right: max(2rem, calc(12rem - max(0px, (100vw - 72rem) / 2)));
+  }
+}
+
+/* ---------- Curtain panels: the inverse palette of the page ---------- */
+/* Dark theme -> light panel (#F3F1F7 / #101014). Light theme -> dark panel. */
+.dark .panel {
+  --bg: 243 241 247;
+  --surface: 255 255 255;
+  --border: 214 210 226;
+  --fg: 16 16 20;
+  --muted: 84 80 98;
+  --accent: 109 66 230;
+  --warm: 168 64 10;
+  --on-accent: 255 255 255;
+}
+:root:not(.dark) .panel {
+  --bg: 16 16 20;
+  --surface: 25 25 31;
+  --border: 52 50 61;
+  --fg: 243 241 247;
+  --muted: 180 177 190;
+  --accent: 155 122 255;
+  --warm: 255 155 85;
+  --on-accent: 16 16 20;
+}
+.panel {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  box-shadow: 0 -24px 60px rgb(0 0 0 / 0.35);
+}
+
+/* ---------- Scroll storytelling ---------- */
+
+/* Huge outline title that fills with solid colour as you scroll through it */
+.title-wrap {
+  position: relative;
+  display: block;
+  margin-bottom: 2.5rem;
+  font-family: var(--font-display), Impact, sans-serif;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  font-size: clamp(3.25rem, 12.5vw, 10.5rem);
+}
+.title-outline {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px rgb(var(--fg));
+}
+.title-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: rgb(var(--fg));
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Tools marquee */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Floating decorative shapes (stand-ins for 3D objects) */
+.shape {
+  position: absolute;
+  will-change: transform;
+}
+.shape-sphere {
+  border-radius: 9999px;
+  background: radial-gradient(circle at 32% 28%, #cdbdff, #9b7aff 48%, #4a2fb0 100%);
+  box-shadow: 0 24px 60px rgb(155 122 255 / 0.35);
+  opacity: 0.9;
+}
+.shape-ring {
+  border-radius: 9999px;
+  border: 14px solid rgb(var(--accent) / 0.55);
+}
+.shape-cube {
+  border-radius: 26%;
+  background: linear-gradient(135deg, #ffc08f, #ff9b55 52%, #d8682a);
+  box-shadow: 0 24px 50px rgb(255 155 85 / 0.3);
+  opacity: 0.9;
+}
+
+/* Project card image placeholder (until a screenshot is set in config) */
+.img-placeholder {
+  background:
+    radial-gradient(60% 80% at 20% 15%, rgb(155 122 255 / 0.55), transparent 60%),
+    radial-gradient(55% 70% at 85% 85%, rgb(255 155 85 / 0.4), transparent 60%),
+    linear-gradient(rgb(var(--border) / 0.35) 1px, transparent 1px) 0 0 / 100% 28px,
+    linear-gradient(90deg, rgb(var(--border) / 0.35) 1px, transparent 1px) 0 0 / 28px 100%,
+    rgb(var(--bg));
+}
+
+/* Pulsing availability dot */
+.pulse-dot {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 155 85 / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgb(255 155 85 / 0);
   }
 }
 
@@ -129,10 +243,42 @@ body {
     scroll-behavior: auto;
   }
   .flow-line,
-  .hero-float {
+  .hero-float,
+  .pulse-dot {
     animation: none;
   }
   .hero-static-avatar {
     display: block;
+  }
+  /* titles: solid, no outline-to-fill animation */
+  .title-fill {
+    clip-path: none;
+  }
+  .title-outline {
+    visibility: hidden;
+  }
+  /* marquee: static wrapped list, single copy */
+  .marquee-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    transform: none !important;
+    width: auto !important;
+  }
+  .marquee-dup {
+    display: none;
+  }
+  .marquee-mask {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* shapes: static */
+  .shape {
+    transform: none !important;
+  }
+  /* project cards: plain list, no sticky stacking */
+  .stack-card {
+    position: static !important;
+    transform: none !important;
+    filter: none !important;
   }
 }

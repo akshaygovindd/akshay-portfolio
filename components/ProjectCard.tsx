@@ -1,66 +1,74 @@
 import { Github } from "lucide-react";
 import type { Project } from "@/config/site";
-import MetricChart from "./MetricChart";
 
-export default function ProjectCard({ project }: { project: Project }) {
-  const hasChart = !!project.metrics && project.metrics.data.length > 0;
-
-  const links = (
-    <a
-      href={project.githubUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 self-start text-sm font-medium text-accent hover:underline"
+/**
+ * Big project card. On desktop the cards stack: each is sticky, and ScrollEffects scales the
+ * previous one down as the next slides over it. On smaller screens it is a plain list.
+ */
+export default function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const n = String(index + 1).padStart(2, "0");
+  return (
+    <article
+      data-stack
+      className="stack-card mb-6 lg:sticky lg:mb-10"
+      style={{ top: `calc(5.5rem + ${index * 14}px)` }}
     >
-      <Github size={16} /> View on GitHub
-    </a>
-  );
-  const tags = (
-    <ul className="flex flex-wrap gap-2">
-      {project.tags.map((t, i) => (
-        <li key={`${t}-${i}`} className="tag">
-          {t}
-        </li>
-      ))}
-    </ul>
-  );
-
-  /* Featured: large, full-width card; chart (if any) sits beside the text */
-  if (project.featured) {
-    return (
-      <article
-        className={`card grid gap-8 p-6 sm:p-9 ${hasChart ? "lg:grid-cols-5" : ""}`}
-      >
-        <div className={`flex flex-col ${hasChart ? "lg:col-span-3" : ""}`}>
-          <p className="font-mono text-xs uppercase tracking-widest text-accent">Featured</p>
-          <h3 className="mt-2 font-display text-4xl uppercase leading-tight sm:text-6xl">
+      <div className="card grid gap-8 p-6 sm:p-9 lg:grid-cols-5 lg:gap-10">
+        <div className="flex flex-col lg:col-span-3">
+          <span
+            aria-hidden="true"
+            className="font-display text-7xl leading-none text-accent sm:text-8xl"
+          >
+            {n}
+          </span>
+          <h3 className="mt-4 font-display text-4xl uppercase leading-[1.05] sm:text-5xl">
             {project.title}
           </h3>
-          <p className="mt-3 text-muted">{project.summary}</p>
-          <p className="mt-3 max-w-2xl text-lg leading-snug">{project.impact}</p>
-          <div className="mt-6">{tags}</div>
-          <div className="mt-6">{links}</div>
-        </div>
-        {hasChart && (
-          <div className="flex items-center lg:col-span-2">
-            <div className="w-full">
-              <MetricChart metrics={project.metrics!} />
-            </div>
-          </div>
-        )}
-      </article>
-    );
-  }
+          <p className="mt-3 text-lg leading-snug">{project.summary}</p>
+          <p className="mt-2 leading-relaxed text-muted">{project.impact}</p>
 
-  /* Compact */
-  return (
-    <article className="card flex flex-col p-5">
-      <h3 className="font-display text-2xl uppercase leading-tight">{project.title}</h3>
-      <p className="mt-2 text-sm text-muted">{project.summary}</p>
-      <p className="mt-3 text-sm">{project.impact}</p>
-      {hasChart && <MetricChart metrics={project.metrics!} />}
-      <div className="mt-4">{tags}</div>
-      <div className="mt-5">{links}</div>
+          {project.metric && (
+            <div className="mt-5">
+              <p className="font-display text-5xl uppercase leading-none text-accent sm:text-6xl">
+                {project.metric.value}
+              </p>
+              <p className="mt-1 text-sm text-muted">{project.metric.label}</p>
+            </div>
+          )}
+
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {project.tags.map((t, i) => (
+              <li key={`${t}-${i}`} className="tag">
+                {t}
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn mt-7 self-start"
+          >
+            <Github size={16} /> View on GitHub
+          </a>
+        </div>
+
+        {/* Image area: shows the screenshot from config when set, else a gradient placeholder */}
+        <div className="relative min-h-[220px] overflow-hidden rounded-xl border border-border lg:col-span-2 lg:min-h-0">
+          {project.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={project.image.src}
+              alt={project.image.alt}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div aria-hidden="true" className="img-placeholder absolute inset-0" />
+          )}
+        </div>
+      </div>
     </article>
   );
 }

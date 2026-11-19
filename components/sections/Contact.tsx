@@ -1,36 +1,44 @@
 import { Download, Github, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
+import ScrollTitle from "@/components/ScrollTitle";
+import FloatingShapes from "@/components/FloatingShapes";
 
+/** Curtain panel (inverse palette). Buttons for anything not set in config are hidden. */
 export default function Contact() {
   const { links, about } = site;
   return (
-    <section id="contact" className="section pb-40">
-      <h2 className="section-title">Contact</h2>
-      <p className="font-display text-4xl uppercase leading-tight sm:text-6xl">
-        Let&apos;s turn <span className="text-accent">data</span> into decisions.
-      </p>
-      <p className="mt-6 max-w-xl text-lg text-muted">
-        {about.seeking} If you have an opportunity or just want to talk data, reach out.
-      </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        {links.email && (
-          <a href={`mailto:${links.email}`} className="btn btn-primary">
-            <Mail size={16} /> {links.email}
+    <section id="contact" data-curtain className="panel relative z-20 -mt-8">
+      <FloatingShapes
+        shapes={[
+          { kind: "sphere", className: "right-[8%] top-20 h-28 w-28", speed: -110 },
+          { kind: "cube", className: "right-[24%] top-56 h-16 w-16", speed: -60, rotate: -14 },
+        ]}
+      />
+      <div className="section relative z-10 pb-24 sm:pb-32">
+        <ScrollTitle>Let&apos;s get in touch</ScrollTitle>
+        <p className="max-w-xl text-lg text-muted">
+          {about.seeking} If you have an opportunity or just want to talk data, reach out.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          {links.email && (
+            <a href={`mailto:${links.email}`} className="btn btn-primary">
+              <Mail size={16} /> {links.email}
+            </a>
+          )}
+          {links.linkedin && (
+            <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
+              <Linkedin size={16} /> LinkedIn
+            </a>
+          )}
+          <a href={links.github} target="_blank" rel="noopener noreferrer" className="btn">
+            <Github size={16} /> GitHub
           </a>
-        )}
-        {links.resume && (
-          <a href={links.resume} download className="btn">
-            <Download size={16} /> Resume
-          </a>
-        )}
-        {links.linkedin && (
-          <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
-            <Linkedin size={16} /> LinkedIn
-          </a>
-        )}
-        <a href={links.github} target="_blank" rel="noopener noreferrer" className="btn">
-          <Github size={16} /> GitHub
-        </a>
+          {links.resume && (
+            <a href={links.resume} download className="btn">
+              <Download size={16} /> Resume
+            </a>
+          )}
+        </div>
       </div>
     </section>
   );

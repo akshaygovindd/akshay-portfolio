@@ -7,6 +7,9 @@ const R_FULL = 0.1963;
 const R_TOP = 0.4529;
 const R_BOTTOM = 0.3737;
 
+/** Same column as the nav and sections, so left/right edges line up. */
+const COLUMN = "mx-auto w-full max-w-6xl px-5 sm:px-8";
+
 export default function Hero() {
   const { hero, links } = site;
   return (
@@ -15,17 +18,22 @@ export default function Hero() {
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-ink text-ink-fg lg:h-[100svh] lg:min-h-[640px]"
     >
       {/* Label (left) + availability badge (right), just under the nav */}
-      <div className="flex items-start justify-between gap-3 px-4 pt-[4.25rem] sm:px-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted sm:text-xs">
-          {hero.label}
-        </p>
-        <p className="flex shrink-0 items-center gap-2 rounded-full border border-ink-border px-3 py-1 font-mono text-[9px] uppercase tracking-wider text-ink-fg sm:text-[11px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#FF9B55]" aria-hidden="true" />
-          {hero.badge}
-        </p>
+      <div className={`${COLUMN} pt-[4.25rem]`}>
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted sm:text-xs">
+            {hero.label}
+          </p>
+          <p className="flex items-center gap-2.5 rounded-full border border-[#9B7AFF] bg-[#9B7AFF]/15 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-fg sm:text-sm">
+            <span
+              className="pulse-dot h-2.5 w-2.5 shrink-0 rounded-full bg-[#FF9B55]"
+              aria-hidden="true"
+            />
+            {hero.badge}
+          </p>
+        </div>
       </div>
 
-      {/* Headline sits behind the avatar */}
+      {/* Headline stays full-bleed: it sits behind the avatar */}
       <h1
         className="px-3 pt-[3svh] sm:px-5 lg:absolute lg:inset-x-0 lg:top-[17svh] lg:pt-0"
         aria-label="Hi, I'm Akshay"
@@ -49,35 +57,42 @@ export default function Hero() {
         aria-hidden="true"
         width={1200}
         height={897}
-        className="hero-static-avatar absolute bottom-0 left-1/2 w-[70vw] max-w-[420px] -translate-x-1/2 lg:w-[54vw] lg:max-w-[840px]"
+        className="hero-static-avatar absolute bottom-0 left-1/2 w-[62vw] max-w-[380px] -translate-x-1/2 sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
       />
 
-      {/* Copy: stacked under the headline on small screens, anchored bottom-left on desktop */}
-      <div className="relative z-[45] mt-5 px-4 sm:px-8 lg:absolute lg:bottom-10 lg:left-0 lg:mt-0 lg:w-[min(28rem,30vw)] lg:min-w-[16rem]">
-        <p className="text-lg font-semibold leading-snug sm:text-xl lg:text-2xl">{hero.subheadline}</p>
-        <p className="mt-2 font-mono text-xs uppercase tracking-wider text-[#9B7AFF] sm:text-sm lg:tracking-normal">
-          {hero.roles}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-ink-muted">{hero.credentials}</p>
-      </div>
+      {/* Copy + buttons: stacked under the headline on small screens, anchored bottom on desktop */}
+      <div
+        className={`${COLUMN} relative z-[45] mt-5 lg:absolute lg:inset-x-0 lg:bottom-10 lg:top-[50svh] lg:mt-0 lg:flex lg:justify-between`}
+      >
+        <div className="lg:w-[min(24rem,26vw)] lg:min-w-[15rem]">
+          <p className="text-lg font-semibold leading-snug sm:text-2xl lg:text-2xl">
+            {hero.subheadline}
+          </p>
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-normal text-[#9B7AFF] sm:text-sm sm:tracking-wider lg:tracking-normal">
+            {hero.roles}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base lg:text-sm">
+            {hero.credentials}
+          </p>
+        </div>
 
-      {/* Buttons */}
-      <div className="relative z-[45] mt-5 flex flex-wrap gap-3 px-4 sm:px-8 lg:absolute lg:bottom-10 lg:right-0 lg:mt-0 lg:flex-col lg:items-stretch">
-        <a
-          href="#projects"
-          className="btn !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
-        >
-          View my work
-        </a>
-        {links.resume && (
+        <div className="mt-5 flex flex-wrap gap-3 lg:mt-0 lg:flex-col lg:items-stretch lg:self-end">
           <a
-            href={links.resume}
-            download
-            className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+            href="#projects"
+            className="btn !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
           >
-            <Download size={16} /> Download resume
+            View my work
           </a>
-        )}
+          {links.resume && (
+            <a
+              href={links.resume}
+              download
+              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+            >
+              <Download size={16} /> Download resume
+            </a>
+          )}
+        </div>
       </div>
     </section>
   );

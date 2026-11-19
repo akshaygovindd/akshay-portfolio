@@ -2,6 +2,8 @@ import Navbar from "@/components/Navbar";
 import Companion from "@/components/Companion";
 import Footer from "@/components/Footer";
 import Hero from "@/components/sections/Hero";
+import ScrollEffects from "@/components/ScrollEffects";
+import Tools from "@/components/sections/Tools";
 import Experience from "@/components/sections/Experience";
 import Projects from "@/components/sections/Projects";
 import About from "@/components/sections/About";
@@ -14,8 +16,10 @@ export default function Home() {
     <>
       <Navbar />
       <Companion />
+      <ScrollEffects />
       <main>
         <Hero />
+        <Tools />
         <Experience />
         <Projects />
         <About />

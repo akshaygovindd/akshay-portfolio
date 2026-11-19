@@ -5,15 +5,6 @@
  * ============================================================
  */
 
-export type MetricChartData = {
-  /** Small chart title shown above the bars, e.g. "Scale" */
-  title: string;
-  /** Unit label shown next to values, e.g. "M rows", "%", "sec" */
-  unit: string;
-  /** Only real values. The card shows no chart if this is empty or the field is omitted. */
-  data: { name: string; value: number }[];
-};
-
 export type Project = {
   title: string;
   /** One-line description of what it is */
@@ -22,10 +13,13 @@ export type Project = {
   impact: string;
   tags: string[];
   githubUrl: string;
-  /** Featured projects get large cards; the rest get compact cards. */
-  featured?: boolean;
-  /** Small Recharts visual on the card. Omit to hide. */
-  metrics?: MetricChartData;
+  /** One big verified number on the card (omit when there isn't one). */
+  metric?: { value: string; label: string };
+  /**
+   * Optional screenshot for the card's image area. Put the file in /public (e.g.
+   * "/projects/foodlens.webp"). Until you add one, a gradient placeholder is shown.
+   */
+  image?: { src: string; alt: string };
 };
 
 export type WorkBlock = {
@@ -45,6 +39,22 @@ export const site = {
   title: "Data Analyst & Data Engineer",
   pitch:
     "I build reliable data pipelines and clear analytics, from raw ingestion to dashboards that decision-makers trust.",
+
+  /** Badges in the scrolling tools marquee under the hero. */
+  tools: [
+    "SQL",
+    "Python",
+    "Pandas",
+    "Power BI",
+    "Tableau",
+    "Databricks",
+    "Snowflake",
+    "Airflow",
+    "dbt",
+    "AWS S3",
+    "Azure Data Factory",
+    "PostgreSQL",
+  ],
 
   hero: {
     label: "AKSHAY GOVIND / PORTFOLIO",
@@ -113,37 +123,29 @@ export const site = {
   projects: [
     {
       title: "FoodLens ELT Pipeline",
-      featured: true,
       summary: "End-to-end ELT pipeline from raw data to BI dashboards.",
       impact:
         "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
       tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
-      // metrics: add a chart here once you have real numbers
+      // image: { src: "/projects/foodlens.webp", alt: "FoodLens dashboard" },
     },
     {
       title: "Instacart SQL Analytics Platform",
-      featured: true,
       summary: "End-to-end grocery retail analytics platform.",
       impact:
         "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
-      metrics: {
-        title: "Data scale",
-        unit: "M rows",
-        data: [{ name: "Total rows", value: 33.8 }],
-      },
+      metric: { value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" },
     },
     {
       title: "JobPulse",
-      featured: true,
       summary: "Daily job market intelligence platform.",
       impact:
         "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
-      // metrics: add a chart here once you have real numbers
     },
     {
       title: "Emergency Response Multi-Agent System",
@@ -152,7 +154,6 @@ export const site = {
         "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
       tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
       githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
-      // metrics: add a chart here once you have real numbers (see MetricChartData above)
     },
     {
       title: "Wildfire Cause Prediction",
@@ -161,11 +162,7 @@ export const site = {
         "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
-      metrics: {
-        title: "Model performance",
-        unit: "%",
-        data: [{ name: "RF tuned F1", value: 95.98 }],
-      },
+      metric: { value: "F1 0.96", label: "best model: tuned Random Forest" },
     },
   ] satisfies Project[],
 
