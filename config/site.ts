@@ -23,15 +23,30 @@ export type Project = {
   label?: string;
   /** Things that are not built yet. Shown as "In progress: ...". */
   inProgress?: string;
-  /** Short highlights shown as a strip along the bottom of the card (facts from the README). */
+  /** Short highlights shown as a strip along the bottom of the card (facts verified against the repo). */
   highlights?: { title: string; text: string }[];
   /** Big verified numbers on the card. Only use figures that appear in your resume. */
   stats?: { value: string; label: string }[];
+  /** Slug of this project's case study (see `caseStudies` below). Adds a "Read case study" link. */
+  caseStudy?: string;
   /**
    * Optional screenshot for the card's image area. Put the file in /public (e.g.
    * "/projects/foodlens.webp"). Until you add one, a gradient placeholder is shown.
    */
   image?: { src: string; alt: string };
+};
+
+/** Page-level details for /projects/[slug]. The text itself is in content/case-studies/[slug].mdx. */
+export type CaseStudy = {
+  slug: string;
+  /** <title> of the page (the site name is added in the layout title template). */
+  metaTitle: string;
+  /** Meta description and social card text (under 160 characters). */
+  description: string;
+  /** One line under the title: what kind of project it was. */
+  context: string;
+  /** Which architecture diagram the page uses (see config/diagrams.ts). */
+  diagram: "pipeline" | "emergency" | "instacart" | "wildfire";
 };
 
 export type WorkBlock = {
@@ -156,6 +171,7 @@ export const site = {
       summary:
         "Unified 387K+ food inspection records from two structurally different city datasets using a Medallion architecture, data quality validation and Kimball dimensional modeling.",
       stats: [{ value: "1.18M", label: "fact violation rows" }],
+      caseStudy: "foodlens",
       facts: ["4 Power BI dashboards", "Idempotent Gold MERGE loads"],
       highlights: [
         {
@@ -185,6 +201,7 @@ export const site = {
         { value: "+10.9 to +23.3 pts", label: "critical service rate vs naive baseline" },
         { value: "$0.09", label: "per agent run, at list price" },
       ],
+      caseStudy: "emergency-response",
       facts: [
         "4 systems + oracle ablation × 3 scenarios, 5–10 seeds; 95% CIs, paired and permutation tests",
         "306 offline tests + CI; cached LLM calls let reruns reproduce saved results",
@@ -202,6 +219,7 @@ export const site = {
       impact:
         "Analyzed 33.8M order-product rows from 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
       stats: [{ value: "33.8M", label: "order-product rows from 3M+ real Instacart orders" }],
+      caseStudy: "instacart",
       facts: ["7 indexes on the main query paths", "RFM segmentation, cohort retention, CLV tiers"],
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
@@ -227,12 +245,48 @@ export const site = {
       impact:
         "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, ROC-AUC 0.958.",
       stats: [{ value: "ROC-AUC 0.958", label: "tuned Random Forest, strongest of 5 models" }],
+      caseStudy: "wildfire",
       facts: ["F1 0.96 human-caused / 0.78 lightning-caused", "1.88M rows · 83.8% class imbalance handled"],
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       image: { src: "/projects/wildfire.webp", alt: "Wildfire counts by state and a US map of fire locations coloured by human or natural cause" },
     },
   ] satisfies Project[],
+
+  caseStudies: [
+    {
+      slug: "foodlens",
+      metaTitle: "FoodLens case study",
+      description:
+        "How I merged Chicago and Dallas food inspection data into one Gold star schema on Databricks: Medallion layers, DQ rules, SCD Type 2 and Delta MERGE.",
+      context: "Course project · DAMG 7370, Northeastern University, Spring 2026",
+      diagram: "pipeline",
+    },
+    {
+      slug: "emergency-response",
+      metaTitle: "Emergency Response agents case study",
+      description:
+        "Four LLM agents negotiate over ambulances and hospital beds in a simulation. Python validates every action. What the experiments showed, with numbers.",
+      context: "Course project · CSYE 7380 midterm, Northeastern University",
+      diagram: "emergency",
+    },
+    {
+      slug: "instacart",
+      metaTitle: "Instacart SQL analytics case study",
+      description:
+        "A PostgreSQL schema, seven SQL analysis files and a live Streamlit dashboard on 3.4M Instacart orders: what I built and what I could not show.",
+      context: "Personal project · built in April 2026",
+      diagram: "instacart",
+    },
+    {
+      slug: "wildfire",
+      metaTitle: "Wildfire cause prediction case study",
+      description:
+        "Classifying 1.7M US wildfires as human or lightning caused: five models, class imbalance, a tuned Random Forest and per-class results.",
+      context: "Course project · INFO 6105, Northeastern University, Spring 2026 · team of two",
+      diagram: "wildfire",
+    },
+  ] satisfies CaseStudy[],
 
   /**
    * FoodLens pipeline diagram stages, shown left to right.
@@ -283,7 +337,7 @@ export const site = {
           "The star schema feeds a Power BI semantic model and 4 dashboards: overview, violations, restaurants, and an inspection and validation report.",
       },
     ],
-    // Metadata-driven runs (from the README), shown as the bar above the stages.
+    // Metadata-driven runs, shown as the bar above the stages.
     orchestrator: {
       label: "Run metadata tracks every stage ↓",
       name: "Run metadata",

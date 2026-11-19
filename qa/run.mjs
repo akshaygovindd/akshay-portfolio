@@ -9,6 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
+import { site } from "../config/site.ts";
 
 const QA = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(QA, "..");
@@ -88,6 +89,7 @@ const checks = [
     return bad;
   }],
   ["SEO / JSON-LD / head (seo8)", "seo8.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : ["SEO check failed"])],
+  ["case-study pages (casestudies)", "casestudies.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["content + Copy email (content9)", "content9.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About alignment (about-m)", "about-m.mjs", [BASE, "qa"], (t) => {
     const rows = t.split("\n").filter((l) => /card offset/.test(l));
@@ -136,9 +138,12 @@ const stop = () => { try { server?.kill(); } catch {} spawnSync("sh", ["-c", `ls
 process.on("SIGINT", () => { stop(); process.exit(130); });
 
 if (wanted("lighthouse")) {
-  for (const [label, extra] of [["desktop", ["--preset=desktop"]], ["mobile", []]]) {
-    const file = path.join(OUT, `lh-${label}.json`);
-    sh(path.join(QA, "node_modules/.bin/lighthouse"), [BASE, ...extra, "--chrome-flags=--headless=new --no-sandbox", "--output=json", `--output-path=${file}`, "--quiet"]);
+  // the home page and every case-study page
+  const pages = ["/", ...site.caseStudies.map((c) => `/projects/${c.slug}`)];
+  for (const [page, label, extra] of pages.flatMap((pg) => [[pg, "desktop", ["--preset=desktop"]], [pg, "mobile", []]])) {
+    const tag = page === "/" ? "" : ` ${page}`;
+    const file = path.join(OUT, `lh-${label}${page === "/" ? "" : page.replace(/\W+/g, "-")}.json`);
+    sh(path.join(QA, "node_modules/.bin/lighthouse"), [BASE + (page === "/" ? "" : page), ...extra, "--chrome-flags=--headless=new --no-sandbox", "--output=json", `--output-path=${file}`, "--quiet"]);
     try {
       const r = JSON.parse(fs.readFileSync(file, "utf8"));
       const s = Object.fromEntries(Object.entries(r.categories).map(([k, v]) => [k, Math.round(v.score * 100)]));
@@ -147,8 +152,8 @@ if (wanted("lighthouse")) {
       if (s.performance < 95) bad.push(`performance ${s.performance}`);
       for (const k of ["accessibility", "best-practices", "seo"]) if (s[k] < 100) bad.push(`${k} ${s[k]}`);
       if (cls > 0.01) bad.push(`CLS ${cls.toFixed(3)}`);
-      record(`Lighthouse ${label}`, !bad.length, bad.length ? bad.join(", ") : `perf ${s.performance} a11y ${s.accessibility} bp ${s["best-practices"]} seo ${s.seo}, CLS ${cls.toFixed(3)}`);
-    } catch (e) { record(`Lighthouse ${label}`, false, "no report: " + e.message); }
+      record(`Lighthouse ${label}${tag}`, !bad.length, bad.length ? bad.join(", ") : `perf ${s.performance} a11y ${s.accessibility} bp ${s["best-practices"]} seo ${s.seo}, CLS ${cls.toFixed(3)}`);
+    } catch (e) { record(`Lighthouse ${label}${tag}`, false, "no report: " + e.message); }
   }
 }
 

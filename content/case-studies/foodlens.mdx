@@ -1,0 +1,90 @@
+## Problem
+
+For a data-architecture course, I had to merge food inspection records from Chicago and Dallas into one star schema for BI reporting. The two cities share no keys and store violations in completely different shapes. Chicago puts every violation of an inspection in one pipe-delimited string. Dallas spreads them across 25 columns.
+
+## Architecture
+
+- Two CSV exports land in a Databricks Volume: Chicago with 308,161 rows and Dallas with 78,984.
+- **Raw to Bronze:** I write timestamped Parquet, load Bronze Delta tables and log source and target row counts to a metadata table.
+- **Bronze to Silver:** Chicago violations are split out of one string. Dallas violations are unpivoted from 25 columns. Both become one row per violation per inspection, in one shared schema.
+- **Silver:** data quality rules, then business rules, then de-duplication. The result is one Delta table.
+- **Silver to Gold:** Delta MERGE loads a star schema: `dim_date`, `dim_restaurant` (SCD Type 2), `dim_violation_detail`, `fact_inspections` and `fact_violations`.
+- **Power BI:** four dashboards read the Gold tables.
+
+<Diagram id="pipeline" caption="Click a stage to see what it does. The same diagram is in the Demos section of the home page." />
+
+## Key decisions
+
+### Set by the course brief
+
+These were requirements, not my choices:
+
+- the Silver rules: name, date, inspection type and zip format must be valid, the Dallas score must be 0 to 100, and the Chicago result must not be null
+- PASS cannot have a critical or urgent violation
+- a Dallas score of 90 or more cannot have more than 3 violations
+- the Chicago score mapping: Pass is 90, Pass w/ Conditions 80, Fail 70, No Entry 0
+- Medallion layers, SCD Type 2 on one dimension, and one dimension holding both cities' violation codes
+- four BI dashboards
+
+### Mine
+
+1. **MD5 surrogate keys from business fields.** The cities share no identifiers. `restaurant_id` is an MD5 of name, facility type, address and zip. `violation_id` is an MD5 of code, description and detail. Dallas has no inspection id, so I hash name, date, address and zip. The cost: two Dallas inspections of the same place on the same day get the same id.
+2. **One row per violation as the common grain.** I picked the lowest grain both sources can reach. That lets one Silver schema and one violation dimension serve both cities. Fields Dallas does not have are derived or defaulted: facility type by keyword match on the name, and risk set to "Unknown".
+3. **SCD Type 2 on `dim_restaurant`, with the UNION ALL NULL-key MERGE.** The brief asked for SCD2 on one dimension. I chose the restaurant, the hash of the AKA name as the change signal, and the MERGE pattern. Two limits. Dallas AKA equals its name, so Dallas rows never create a new version. And the effective dates are the load time, not the date of the change at the source.
+
+## Data quality and evaluation
+
+- The brief's rules drop bad rows at Silver. The business rules then remove more. PASS with a critical violation removes that violation row only. A Dallas score of 90 or more with more than 3 violations removes the whole inspection.
+- I also drop duplicates on inspection, date, violation code and description. The brief's wording on duplicates is ambiguous, so this step is my reading of it.
+- Row counts are reconciled at every Bronze load and logged. Three logged runs all show SUCCESS with equal counts.
+- After the Silver write, checks confirm zero PASS-with-critical rows, zero Dallas scores over 100, zero Dallas 90+ inspections with more than 3 violations and zero bad zip codes. All passed.
+- Every load is idempotent by design: Bronze and Silver overwrite, and Gold uses MERGE with "insert if not matched". I have not recorded a second Gold run, so this is a design property, not a tested result.
+- I created a `Quarantine_Inspection` table and wrote a loader function for it, but I never call it, so nothing is quarantined.
+- There are no unit tests.
+
+## Results
+
+Violation rows through Silver:
+
+| Step | Chicago | Dallas |
+|---|---|---|
+| Before validation | 1,001,388 | 398,406 |
+| Failed the brief's rules | 49 | 1,300 |
+| Removed by the business rules | 46 | 156,306 |
+| Removed as duplicates | 62,216 | 589 |
+| In Silver | 939,077 | 240,211 |
+
+The 1,300 Dallas rows are 1,186 invalid zip codes, 75 null names and 39 scores out of range.
+
+Gold table sizes:
+
+| Table | Rows |
+|---|---|
+| `dim_date` | 4,518 |
+| `dim_restaurant` (SCD Type 2) | 43,677 |
+| `dim_violation_detail` | 911 |
+| `fact_inspections` | 279,471 |
+| `fact_violations` | 1,179,288 |
+
+I built four Power BI dashboards on these tables: overview, violations, restaurants, and an inspection and validation report.
+
+## What I'd do next
+
+Three things are unfinished. First, the quarantine table exists but nothing writes to it, so bad Gold records are not captured. Second, the Dallas business rules remove about 39% of the Dallas rows after validation. I should check whether the assignment meant that. Third, the Power BI dashboards show slightly more inspections and restaurants than Gold: 279,603 against 279,471, and 43,684 against 43,677. I have not reconciled that gap.
+
+I would also add tests for the transform logic. I would record a second Gold run to show that a MERGE rerun leaves the counts unchanged. And I would take the SCD2 effective dates from the source.
+
+<Sources>
+
+All files are in the [FoodLens repository](https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline).
+
+| Number | File |
+|---|---|
+| 308,161 and 78,984 raw rows; 3 logged Bronze runs | `Notebooks/02_Raw_to_Bronze_Load.ipynb` (output) |
+| Silver row counts, the 49 and 1,300 bad rows, business-rule and duplicate steps | `Notebooks/03_Bronze_to_Silver_Load.ipynb` (output). The 156,306, 46, 62,216 and 589 are my subtractions of the printed counts. |
+| Silver integrity checks | `Notebooks/03_Bronze_to_Silver_Load.ipynb`, step 12 |
+| Gold row counts | `Notebooks/04_Silver_to_Gold_Load.ipynb`, step 8 |
+| 279,603 and 43,684 on the dashboards | `Dashboard Images/Dashboard-1.png`, `Dashboard-3.png` |
+| Rules set by the brief | `Food_Inspections_Chicago_Dallas_Requirement.pdf` |
+
+</Sources>

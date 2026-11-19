@@ -1,0 +1,71 @@
+## Problem
+
+For a graduate course on generative AI, I wanted to know whether LLM agents that negotiate over contested ambulances and hospital beds beat a strong rule-based allocator. That is hard to test honestly. The agents must never do something physically impossible, and every system must run on the same scenarios.
+
+## Architecture
+
+- A seeded scenario generator builds a 20 x 20 km city for 120 minutes. It holds the ground truth. An LLM writes the 911 reports, and they are cached.
+- **Four agents, which only propose.** Incident Assessment reads the reports. Dispatch proposes ambulances and teams. Hospital Coordination handles admissions, and in v3 lends staff between hospitals. Resource Allocation settles conflicts in up to 3 rounds, then falls back to a fixed rule.
+- **Python decides.** A conflict detector finds two proposals that claim the same resource. One validator checks every action. The simulation engine executes the accepted ones and checks again.
+- The engine writes event logs. A Streamlit dashboard replays saved runs, with no simulation and no API calls.
+- I compared five systems on three scenarios (normal, surge, bottleneck): naive, greedy, agents without negotiation, agents with negotiation, and an oracle ablation.
+
+<Diagram id="emergency" caption="The simulation state goes back to the agents at every decision step. The dashed boxes mark who is allowed to change the world." />
+
+## Key decisions
+
+1. **Agents propose, Python validates and executes.** No agent can change the world. The validator never modifies state, and every rejection has a reason code. The engine checks again at execution.
+2. **A strong greedy baseline and paired seeds.** Every system runs the same seeds, so differences are paired. The baselines read ground truth, while the agents must infer urgency from text. I wrote in my assumptions document that this deliberately favours the baselines. The oracle ablation measures how much it costs the agents.
+3. **Reproducibility over fresh sampling.** Every LLM call is cached by agent, model, instructions and prompt, and I keep the cache in the repo. The simulation is deterministic for a seed. Versions v1, v2 and v3 are frozen with tags and never pooled. The cost is that the cache holds one sample per input, so run-to-run model variance is not measured.
+
+## Data quality and evaluation
+
+- 306 tests run offline on every push in GitHub Actions, with no API key.
+- The analysis rebuilds each victim's outcome from the event logs and checks it against the saved metrics. They match for all 206 v1 and v2 runs.
+- Intervals are 95% t-intervals across seeds, paired by seed. I also ran an exact permutation test.
+- The Assessment agent's output was checked against ground truth in v1: severity exactly right for 91.9% of 960 victims, and the critical flag right for 99.6%.
+- The guardrail held. The validator blocked 794 infeasible proposals across all saved agent runs (209 in v1, 334 in v2, 251 in v3), and none was executed. In v3 the engine refused 6 loan commits at execution, which is the second check doing its job.
+
+## Results
+
+The primary metric is the critical service rate (CSR): the share of critical victims first reached within their deadline. Normal scenario, v1, mean over 10 seeds:
+
+| System | CSR |
+|---|---|
+| Naive | 35.8% |
+| Greedy | 58.5% |
+| Agents, no negotiation | 55.0% |
+| Agents with negotiation | 57.8% |
+
+- Agents and negotiation beat naive by 10.9 to 23.3 points. All 12 intervals exclude zero. Eight of them also pass the exact permutation test. The four bottleneck ones do not, because 5 seeds cannot give p below 0.0625.
+- Against greedy, every interval contains zero. The point estimates run from -3.5 to +4.0 points. The intervals are up to about 20 points wide, so I cannot claim equivalence.
+- Negotiation changed a decision in 15 of 50 paired runs. In those 15 it helped 4 times, hurt 2 times and tied 9 times. The other 35 runs never diverged.
+- An agent run costs about $0.09 and 1.5 to 2 minutes of model time at list price. The 106 agent runs in v1 and v2 cost $9.53. With v3, 136 runs cost $12.62.
+- v3, where hospitals lend doctors and nurses to each other, made no measurable difference to critical-patient treatment time. Every interval contains zero.
+
+## What I'd do next
+
+The limits are clear: the seed counts are small: 10, 10 and 5 per scenario. There is one model and one run per seed. The grid is synthetic. The 911 reports come from a formulaic generator and are easier than real calls. So the honest result is "no detectable difference from greedy", not "no difference".
+
+The next step is more seeds, and repeated runs per seed to measure model variance. After that, noisier reports and a scenario where hospital staff is scarce, since v3 found that treatment slots rarely bind. The project is a simulation and is not meant for real dispatch.
+
+<Sources>
+
+All files are in the [Emergency Response repository](https://github.com/akshaygovindd/emergency-response-agents).
+
+| Number | File |
+|---|---|
+| CSR by system and scenario | `results/analysis/01_csr.csv` |
+| +10.9 to +23.3 against naive; 8 of 12 permutation | `results/analysis/01_rq1_vs_naive.csv`, `01_rq1_permutation.csv` |
+| -3.5 to +4.0 against greedy | `results/analysis/01_rq1_paired_vs_greedy.csv` |
+| 50 pairs, 15 diverged, 4 helped, 2 hurt, 9 tied | `results/analysis/02_divergence_summary.csv` |
+| 794 blocked proposals | v1 and v2: `results/analysis/06_invalid_proposals.csv`. v3: `results/v3/coordination.csv`, where mean times seeds adds up to 251. |
+| 6 loans refused at execution | `docs/RESULTS.md`, v3 section |
+| 206 runs match the rebuilt outcomes | `results/analysis/00_reconstruction_check.csv` |
+| Assessment accuracy | `results/v1/assessment_accuracy.json` |
+| $0.09 per run and $9.53 for 106 runs | `results/analysis/07_cost_overall.csv` |
+| $12.62 for 136 runs | the v3 rows of `results/analysis/09_v3_runs.csv` add $3.09 |
+| v3 had no effect | `results/analysis/09_v3_contrasts.csv` |
+| 306 tests | `.github/workflows/tests.yml` and the GitHub Actions run log |
+
+</Sources>

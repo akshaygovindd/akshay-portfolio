@@ -1,0 +1,62 @@
+## Problem
+
+I wanted a SQL project at a real size, where schema design and index choices matter and a live dashboard runs real queries. There was no client or stakeholder. My goal was to show SQL skills from end to end, not on a toy dataset.
+
+## Architecture
+
+- The Instacart Market Basket CSV files from Kaggle are loaded into PostgreSQL by a Python script, in chunks of 100,000 rows.
+- Five tables with primary keys, foreign keys and NOT NULL constraints: `orders`, `order_products`, `products`, `aisles` and `departments`.
+- Seven SQL files, from basic to advanced: joins, CTEs, window functions, RFM and cohort analysis, views, indexing, and stored functions with a trigger.
+- Three views and two materialized views, `mv_department_stats` and `mv_top_products`.
+- A Streamlit dashboard with five pages reads a Neon cloud Postgres database. Query results are cached for 10 minutes.
+
+<Diagram id="instacart" />
+
+## Key decisions
+
+1. **Materialized views for the dashboard.** The Overview and Product pages read `mv_department_stats` and `mv_top_products`. They do not aggregate the 33.8M `order_products` rows on every page view. The cost is that the views need a manual `REFRESH`.
+2. **Seven indexes, including a composite and a partial one.** The partial index covers only `reordered = 1`. I wrote the reason in the file: it speeds up reorder analysis without indexing every row. The cost is index size, which the file also queries.
+3. **Proxies where the data has no money.** The dataset has no prices. So "Monetary" in the RFM query and the customer lifetime value tiers use item counts, with thresholds of 100, 200 and 500 items. "Recency" uses the highest order number, not days. These are weaker signals than real recency and spend, and my SQL comments say so.
+
+## Data quality and evaluation
+
+- Schema constraints: primary keys, foreign keys, NOT NULL, and a composite primary key on `order_products`. The loader fills the tables in foreign-key order.
+- An audit trigger on `products` logs every update and delete to `product_audit_log`.
+- My performance file runs EXPLAIN ANALYZE on three queries before and after the indexes. I did not save the output, so I have no speed-up to report.
+- There are no tests and no row-count check after loading.
+
+## Results
+
+Table sizes:
+
+| Table | Rows |
+|---|---|
+| `orders` | 3,421,083 |
+| `order_products` | 33,819,106 |
+| `products` | 49,688 |
+| `aisles` | 134 |
+| `departments` | 21 |
+
+What I built, counted from the files: 7 SQL files, 7 indexes, 3 views, 2 materialized views, 3 functions, 1 trigger and 5 dashboard pages. The dashboard is live. Its Query Explorer page runs SQL against the cloud database.
+
+I have no timings and no business findings to report, because I did not save the query output. I would rather say that than guess.
+
+## What I'd do next
+
+My limits: no saved timings, no tests, and no row-count check after loading.
+
+Next, I'd script the load into Neon instead of doing it by hand. I would save the EXPLAIN ANALYZE output, so the index work has numbers. I would add row-count checks after loading. And I would replace the item-count proxies with real recency in days, since the data has `days_since_prior_order`.
+
+<Sources>
+
+All files are in the [Instacart repository](https://github.com/akshaygovindd/instacart-sql-analytics). The CSV files are too large for the repo.
+
+| Number | File |
+|---|---|
+| Row counts for the five tables | `README.md`, Database section |
+| 7 SQL files, 7 indexes, 3 views, 2 materialized views, 3 functions, 1 trigger | `analysis/01_basic_queries.sql` to `analysis/07_stored_procedures_triggers.sql` (counted) |
+| 5 dashboard pages | `dashboard/pages/` |
+| 100,000-row chunks | `data/load_data.py` |
+| 10-minute cache | `dashboard/util/db.py` |
+
+</Sources>

@@ -6,6 +6,8 @@ const config: Config = {
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./config/**/*.{ts,tsx}",
+    "./mdx-components.tsx",
+    "./content/**/*.mdx",
   ],
   theme: {
     extend: {

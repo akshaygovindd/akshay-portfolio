@@ -48,10 +48,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable} ${display.variable}`}>
       <body>
-        {/* First focusable element on the page; visible only while focused */}
-        <a href="#projects" className="skip-link">
-          Skip to projects
-        </a>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>

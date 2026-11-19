@@ -9,13 +9,16 @@ const links = [
   { href: "#contact", label: "Contact" },
 ];
 
-/** Always dark: sits over the hero and stays legible on both themes. */
-export default function Navbar() {
+/**
+ * Always dark: sits over the hero and stays legible on both themes.
+ * On other pages pass home="/" so the section links point back to the home page.
+ */
+export default function Navbar({ home = "" }: { home?: string }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink-border bg-ink/95 text-ink-fg backdrop-blur">
       <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 min-[430px]:px-4 sm:gap-3 sm:px-8">
         <a
-          href="#top"
+          href={home ? "/" : "#top"}
           className="hidden shrink-0 font-display text-xl uppercase tracking-wide sm:block"
         >
           Akshay
@@ -26,7 +29,7 @@ export default function Navbar() {
               <li key={l.href}>
                 {/* min-h-11: a 44px-tall tap area inside the 56px bar; the text stays visually centered */}
                 <a
-                  href={l.href}
+                  href={`${home}${l.href}`}
                   className="flex min-h-11 items-center text-ink-muted transition-colors hover:text-ink-fg"
                 >
                   {l.label}

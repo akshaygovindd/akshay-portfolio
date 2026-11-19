@@ -1,0 +1,66 @@
+## Problem
+
+For a data science course, a teammate and I wanted to classify US wildfires as human-caused or lightning-caused from 1.88 million records. It is hard because 83.8% of fires are human-caused, so accuracy alone says nothing.
+
+## Architecture
+
+- The data is the USDA Forest Service fire database for 1992 to 2015, exported from SQLite to one CSV of 1,880,465 rows.
+- Cleaning: I drop the rows with an undefined cause, which leaves 1,713,742. I drop ID and name columns and build the target. Lightning is 0, and every other cause is 1.
+- Features: 12 in total, 5 of them engineered. Categories are label-encoded. The scaler is fit on the training set only.
+- A stratified 80/20 split gives 1,370,993 training rows and 342,749 test rows.
+- Five models are trained and compared. The best one is tuned with GridSearchCV and checked with 5-fold cross-validation.
+
+<Diagram id="wildfire" />
+
+## Key decisions
+
+1. **F1 and ROC-AUC instead of accuracy, with balanced class weights.** An all-"human" model would score 83.8% accuracy and learn nothing. I used `class_weight='balanced'` and not resampling.
+2. **Random Forest, after comparing five models at baseline.** On the same held-out test set, the forest had the best F1 (0.9597) and AUC (0.9547) before any tuning. The decision tree had the highest precision (0.9625) but lower recall. The linear models stopped near an F1 of 0.876. I put that down to non-linear geography.
+3. **Constraints I took on purpose.** KNN trained on a 100,000-row sample because it was too slow on 1.37 million rows. I capped the tree at depth 5 so it stays readable. A smaller weather-enriched dataset (55,000 rows) was too small for the course size requirement. So I used the larger one, without weather.
+
+## Data quality and evaluation
+
+- The stratified split keeps the class ratio the same in train and test: 16.2% lightning and 83.8% human.
+- The scaler is fit on the training set only.
+- Tuning used GridSearchCV on the training set: 27 candidates with 3 folds each, 81 fits, scored on F1.
+- Stability: 5-fold cross-validation gives a mean F1 of 0.9590 with a standard deviation of 0.0003.
+- All models are scored on the same test set: accuracy, precision, recall, F1 and AUC, with confusion matrices and ROC curves.
+- My limits here: I did not hold out a separate validation set, so I chose the model using the test metrics. I also did not try a spatial or temporal split.
+
+## Results
+
+The tuned Random Forest on the test set:
+
+| Class | Precision | Recall | F1 |
+|---|---|---|---|
+| Human-caused | 0.95 | 0.97 | 0.96 |
+| Lightning-caused | 0.82 | 0.75 | 0.78 |
+
+- ROC-AUC is 0.9579, and accuracy is 0.9322.
+- The pooled F1 of 0.9598 is the human-caused class. The lightning-caused class is 0.78.
+- Tuning added +0.0001 F1 over the default forest (0.9597). The best settings were 200 trees, depth 30 and a minimum leaf size of 1.
+- The other models' F1, for the human class: logistic regression 0.8758, LinearSVC 0.8756, KNN 0.9452 and decision tree 0.9103.
+- The top forest feature importances are longitude (0.267), latitude (0.168) and owner type (0.097).
+- For context: a model that always predicts "human" would score about 0.91 F1 on that class, which is why I report ROC-AUC and both classes.
+
+## What I'd do next
+
+My limits: the dataset has no weather data, and it ends in 2015, so it may not match recent fire patterns. Next I would add weather features, try gradient boosting such as XGBoost or LightGBM, build a multi-class cause model and serve predictions through an API.
+
+There is one more limit. Final fire size and containment time are only known after a fire. So this model labels past fires. It does not forecast new ones. Longitude and latitude carry most of the signal, so I would also test the model on held-out regions or years.
+
+<Sources>
+
+All files are in the [Wildfire repository](https://github.com/akshaygovindd/Wildfire-Cause-Prediction).
+
+| Number | File |
+|---|---|
+| 1,880,465 rows, 1,713,742 after cleaning, class counts, split sizes | `WILDFIRE_FINAL.ipynb` (output) |
+| Metrics for every model, per-class precision, recall and F1 | `WILDFIRE_FINAL.ipynb` (output of the model cells) |
+| GridSearchCV: 81 fits, best parameters | `WILDFIRE_FINAL.ipynb` (output) |
+| 5-fold CV 0.9590, standard deviation 0.0003 | `WILDFIRE_FINAL.ipynb` (output) |
+| Feature importances | `WILDFIRE_FINAL.ipynb` (output) |
+| Limits and future work | `INFO6105 Team 6 Report.docx`, sections 6.1 and 6.2 |
+| About 0.91 F1 for a model that always predicts "human" | My arithmetic: 2 x 0.838 x 1 / (0.838 + 1) |
+
+</Sources>

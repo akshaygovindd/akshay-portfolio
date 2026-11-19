@@ -17,10 +17,11 @@ const shapes: React.CSSProperties[] = [
   { border: `10px solid ${O}`, borderRadius: "9999px" }, // ring
 ];
 
-export default function Footer() {
+/** companion=false on pages without the corner avatar: no need for its right-hand gutter. */
+export default function Footer({ companion = true }: { companion?: boolean }) {
   return (
     <footer className="bg-ink text-ink-fg">
-      <div className="gutter mx-auto max-w-6xl px-5 pb-8 pt-16 sm:px-8 sm:pt-24">
+      <div className={`${companion ? "gutter " : ""}mx-auto max-w-6xl px-5 pb-8 pt-16 sm:px-8 sm:pt-24`}>
         <FitLine ratio={0.1854}>{site.name.toUpperCase()}</FitLine>
 
         <div aria-hidden="true" className="mt-10 flex items-end justify-between gap-2">

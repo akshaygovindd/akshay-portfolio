@@ -1,3 +1,5 @@
+import createMDX from "@next/mdx";
+
 const isProd = process.env.NODE_ENV === "production";
 
 /**
@@ -46,4 +48,10 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Case studies live in content/case-studies/*.mdx and are imported by app/projects/[slug]/page.tsx.
+// Plugins are given by name (strings) so they also work with Turbopack.
+const withMDX = createMDX({
+  options: { remarkPlugins: ["remark-gfm"] },
+});
+
+export default withMDX(nextConfig);

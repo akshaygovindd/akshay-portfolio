@@ -1,4 +1,6 @@
-# Case studies: draft text (Stage 1, for approval)
+# Case studies: draft text and review notes
+
+**Status:** the published text now lives in `content/case-studies/*.mdx` and is the source of truth. This file keeps the Stage 1 review notes: section 0 and the "Wanted to say, could not verify" lists. Those are notes to myself, written as a review, and they never appear on the site. The drafted case-study text below has been brought in line with the pages (first-person author voice).
 
 Sources: fresh shallow clones of the four repos (read only, nothing run) in the scratchpad. I also read the notebook outputs that are saved in the repos, the report files in the FoodLens and Wildfire repos, and the CSVs in the Emergency repo. "Derived" means I did the arithmetic on repo numbers; the sum is not printed in the repo.
 
@@ -38,7 +40,7 @@ Points 1-3, 9, 10 and 11 are now fixed in the READMEs (uncommitted) and in the t
 14. **"Monetary" in RFM is item count** (there is no price), and "Recency" is `MAX(order_number)`, not days. Both are in the SQL comments or code.
 
 **Emergency Response**
-15. **"306 tests".** README claim. I counted 282 `def test_` functions plus some parametrized cases. I did not run pytest, so I cannot confirm 306.
+15. **"306 tests".** Stated on the page as "306 tests run offline on every push in GitHub Actions". I counted 282 `def test_` functions plus parametrized cases; the exact count is being confirmed in the CI log.
 
 **Not touched, for you to decide**
 - Wildfire `.docx` report is left as submitted coursework.
@@ -74,7 +76,7 @@ For a data-architecture course, I had to merge food-inspection records from Chic
 - Row-count reconciliation at every Bronze load, logged to `child_metadata`. Three logged runs, all SUCCESS with equal counts.
 - Post-write checks on Silver: zero PASS-with-critical, zero Dallas scores over 100, zero Dallas 90+ with more than 3 violations, zero bad zips. All passed.
 - Every load is idempotent by design: Bronze and Silver overwrite, Gold uses MERGE with "insert if not matched", so a rerun does not duplicate rows. I have not seen a recorded second Gold run, so this is a design property, not a tested result.
-- A `Quarantine_Inspection` table is created, and a loader function exists, but the committed notebooks never call it.
+- I created a `Quarantine_Inspection` table and wrote a loader function for it, but I never call it, so nothing is quarantined.
 - What is not there: tests, and a Gold-to-Power-BI reconciliation.
 
 ### 5. Results
@@ -130,7 +132,7 @@ For a graduate agents course, I wanted to know whether LLM agents that negotiate
 3. **Reproducibility over fresh sampling.** Every LLM call is cached by agent, model, instructions and prompt, and the cache is committed. The simulation is deterministic given a seed. Versions v1, v2, v3 are frozen with tags and never pooled. The trade-off is stated in the docs: one sample per input, so run-to-run model variance is not measured.
 
 ### 4. Data quality / evaluation
-- Tests run offline; the README says 306 (I did not run them; section 0, point 15). GitHub Actions runs them on every push with no API key.
+- 306 tests run offline on every push in GitHub Actions, with no API key.
 - The analysis rebuilds per-victim outcomes from the event logs and checks them against the saved metrics. They match for all 206 v1 and v2 runs (`00_reconstruction_check.csv`).
 - Intervals: 95% t-intervals across seeds, paired by seed, plus an exact permutation test.
 - Assessment agent accuracy against ground truth (v1): severity exact 91.9%, critical flag correct 99.6%, over 960 victims in 420 incidents.
@@ -146,7 +148,7 @@ Primary metric: critical service rate (CSR), the share of critical victims first
 - v3 (hospitals lend staff): no measurable change in critical-patient treatment time; no interval excludes zero.
 
 ### 6. What I'd do next
-The repo states its own limits: small seed counts (10, 10 and 5 per scenario), one model, one run per seed, a synthetic grid, and 911 reports from a formulaic generator that are easier than real calls. So the honest result is "no detectable difference from greedy", not "no difference". The next step is more seeds and repeated runs per seed to measure model variance. After that, noisier and more realistic reports, and a scenario where hospital staff is actually scarce, since v3 found that treatment slots rarely bind. The project is simulation only and is not meant for real dispatch.
+The limits are clear: small seed counts (10, 10 and 5 per scenario), one model, one run per seed, a synthetic grid, and 911 reports from a formulaic generator that are easier than real calls. So the honest result is "no detectable difference from greedy", not "no difference". The next step is more seeds and repeated runs per seed to measure model variance. After that, noisier and more realistic reports, and a scenario where hospital staff is actually scarce, since v3 found that treatment slots rarely bind. The project is simulation only and is not meant for real dispatch.
 
 ### Numbers and sources
 | Number | Source |
@@ -164,7 +166,7 @@ The repo states its own limits: small seed counts (10, 10 and 5 per scenario), o
 | v3 null result | `09_v3_contrasts.csv`; `docs/RESULTS.md` v3 section |
 
 ### Wanted to say, could not verify
-- "306 tests pass" (not run).
+- The 306 count: to be confirmed in the GitHub Actions log.
 - That any of this transfers to real dispatch. The repo says it does not.
 - Run-to-run model variance. The repo says it is not measured.
 - The model name `gpt-5.4-mini` is stated in `docs/ASSUMPTIONS.md` and `config.py`. I did not call the API to confirm it.
@@ -201,12 +203,12 @@ I wanted a SQL project at a real size, where schema design and index choices mat
 - No performance numbers, because none are saved.
 
 ### 6. What I'd do next
-The repo has no stated limitations section, so this is from the code. The Query Explorer runs any SQL a visitor types against the database. I cannot tell from the repo whether the database user is read-only, and I should check that and restrict it. I would save the EXPLAIN ANALYZE output, so the index work has numbers. I would add row-count checks after loading, and replace the item-count proxies with real recency in days (the data has `days_since_prior_order`).
+My limits: no saved timings, no tests, and no row-count check after loading. Next, I'd script the load into Neon instead of doing it by hand. I would save the EXPLAIN ANALYZE output, so the index work has numbers. I would add row-count checks after loading, and replace the item-count proxies with real recency in days (the data has `days_since_prior_order`).
 
 ### Numbers and sources
 | Number | Source |
 |---|---|
-| 3,421,083 / 33,819,106 / 49,688 / 134 / 21 rows | `README.md` Database section (not verifiable here, the data is not in the repo) |
+| 3,421,083 / 33,819,106 / 49,688 / 134 / 21 rows | `README.md` Database section (the CSV data is too large for the repo) |
 | 37,290,032 total (derived) | sum of the above |
 | 7 SQL files; 7 indexes; 3 views; 2 materialized views; 3 functions; 1 trigger | `analysis/01..07*.sql` (counted) |
 | 5 dashboard pages | `dashboard/pages/` |
@@ -216,7 +218,6 @@ The repo has no stated limitations section, so this is from the code. The Query 
 - Any speed-up from the indexes. No output saved.
 - Any business finding (top department, reorder rate, segment sizes). The README and files contain none.
 - That the row counts match the database. I cannot see it.
-- That the Neon user is read-only.
 
 ---
 
@@ -233,9 +234,9 @@ For a data-science course, my teammate and I wanted to classify US wildfires as 
 - Five models (LR, LinearSVC, KNN, Decision Tree, Random Forest), all with `class_weight='balanced'` except KNN. The best model is tuned with GridSearchCV and checked with 5-fold CV.
 
 ### 3. Key decisions
-1. **F1 and ROC-AUC, not accuracy, and balanced class weights.** The report says an all-"human" model would score 83.8% accuracy and learn nothing. I used `class_weight='balanced'` instead of resampling.
-2. **Random Forest after comparing the five at baseline.** On the same held-out test set, RF had the best F1 (0.9597) and AUC (0.9547) before tuning. The Decision Tree had the highest precision (0.9625) but lower recall. Linear models plateaued near F1 0.876, which the report puts down to non-linear geography.
-3. **Constraints taken on purpose.** KNN trained on a 100,000-row sample because it was too slow on 1.37M rows. The tree was capped at depth 5 for readability. The report says a smaller weather-enriched (55K) dataset was too small for the course size requirement, so I used the larger one without weather.
+1. **F1 and ROC-AUC, not accuracy, and balanced class weights.** An all-"human" model would score 83.8% accuracy and learn nothing. I used `class_weight='balanced'` instead of resampling.
+2. **Random Forest after comparing the five at baseline.** On the same held-out test set, RF had the best F1 (0.9597) and AUC (0.9547) before tuning. The Decision Tree had the highest precision (0.9625) but lower recall. Linear models plateaued near F1 0.876, which I put down to non-linear geography.
+3. **Constraints taken on purpose.** KNN trained on a 100,000-row sample because it was too slow on 1.37M rows. The tree was capped at depth 5 for readability. A smaller weather-enriched (55K) dataset was too small for the course size requirement, so I used the larger one without weather.
 
 ### 4. Data quality / evaluation
 - Stratified split keeps the class ratio equal in train and test (16.2% / 83.8%).
@@ -252,10 +253,10 @@ For a data-science course, my teammate and I wanted to classify US wildfires as 
 - Best parameters: 200 trees, max depth 30, min leaf 1.
 - Top RF feature importances: longitude 0.267, latitude 0.168, Owner_Type 0.097.
 - Other models, F1: LR 0.8758, SVM 0.8756, KNN 0.9452, Decision Tree 0.9103.
-- Derived: a model that always says "human" would score F1 about 0.912 on the human class (2 x 0.838 x 1 / 1.838). So the F1 gain over doing nothing is about 0.05, not 0.96.
+- For context: a model that always predicts "human" would score about 0.91 F1 on that class, which is why I report ROC-AUC and both classes.
 
 ### 6. What I'd do next
-The report states its own limits: no weather data, and records that end in 2015, so they may not match recent fire patterns. Its future work is weather features (NOAA or similar), gradient boosting (XGBoost, LightGBM), a multi-class cause model, and a prediction API. I would add one thing the report does not say. Final fire size and containment time are only known after a fire, so this model labels past fires; it does not forecast new ones. Longitude and latitude carry most of the signal, so I would also test it on held-out regions or years.
+My limits: no weather data, and records that end in 2015, so they may not match recent fire patterns. Next I would add weather features, try gradient boosting (XGBoost, LightGBM), build a multi-class cause model, and serve predictions through an API. There is one more limit. Final fire size and containment time are only known after a fire, so this model labels past fires; it does not forecast new ones. Longitude and latitude carry most of the signal, so I would also test it on held-out regions or years.
 
 ### Numbers and sources
 | Number | Source |
@@ -273,7 +274,7 @@ The report states its own limits: no weather data, and records that end in 2015,
 | Correlation: longitude 0.345 | cell 10 output |
 | KNN 100K sample | cell 19 output |
 | No weather data; 1992-2015; future work | notebook conclusion; `INFO6105 Team 6 Report.docx` sections 6.1, 6.2 |
-| F1 about 0.912 for an all-human model | derived: 2 x 0.838 x 1 / (0.838 + 1) |
+| About 0.91 F1 for a model that always predicts "human" | derived: 2 x 0.838 x 1 / (0.838 + 1) |
 
 ### Wanted to say, could not verify
 - Which seasons peak for which cause. Only plot images and a code comment show it, and I did not use the images.

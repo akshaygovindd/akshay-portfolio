@@ -1,6 +1,7 @@
 import { ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/config/site";
 import TrackedLink from "@/components/TrackedLink";
+import CaseStudyLink from "@/components/case-study/CaseStudyLink";
 
 /**
  * Big project card. On tall desktop screens the cards stack: each is sticky, and ScrollEffects
@@ -96,6 +97,7 @@ export default function ProjectCard({
           </ul>
 
           <div className="mt-5 flex flex-wrap items-start gap-3">
+            {project.caseStudy && <CaseStudyLink slug={project.caseStudy} project={project.title} />}
             {project.liveUrl && (
               <div className="flex flex-col items-start gap-1.5">
                 <TrackedLink

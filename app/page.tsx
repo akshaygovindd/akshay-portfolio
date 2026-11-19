@@ -15,6 +15,10 @@ import PersonJsonLd from "@/components/PersonJsonLd";
 export default function Home() {
   return (
     <>
+      {/* First focusable element on the page; visible only while focused */}
+      <a href="#projects" className="skip-link">
+        Skip to projects
+      </a>
       <PersonJsonLd />
       <Navbar />
       <Companion />
