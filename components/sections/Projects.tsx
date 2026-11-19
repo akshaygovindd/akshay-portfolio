@@ -16,7 +16,7 @@ export default function Projects() {
         <ScrollTitle>Projects</ScrollTitle>
         <div>
           {site.projects.map((p, i) => (
-            <ProjectCard key={p.title} project={p} index={i} />
+            <ProjectCard key={p.title} project={p} index={i} last={i === site.projects.length - 1} />
           ))}
         </div>
       </div>

@@ -11,7 +11,7 @@ export default function PipelineDiagram() {
 
   const active =
     activeId === ORCH
-      ? { name: orchestrator.name, tech: "Orchestration", description: orchestrator.description }
+      ? { name: orchestrator.name, tech: "Pipeline metadata", description: orchestrator.description }
       : stages.find((s) => s.id === activeId) ?? stages[0];
 
   return (
@@ -27,7 +27,7 @@ export default function PipelineDiagram() {
             : "border-border text-muted hover:border-accent hover:text-accent"
         }`}
       >
-        {orchestrator.name} orchestrates every stage ↓
+        {orchestrator.label}
       </button>
 
       <div className="flex flex-col items-stretch lg:flex-row lg:items-center">

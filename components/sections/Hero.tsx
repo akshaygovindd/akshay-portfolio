@@ -1,4 +1,4 @@
-import { Download, Linkedin, Mail } from "lucide-react";
+import { Download, Github, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
 import FitLine from "@/components/FitLine";
 
@@ -35,14 +35,14 @@ export default function Hero() {
 
       {/* Headline stays full-bleed: it sits behind the avatar */}
       <h1
-        className="px-3 pt-[3svh] sm:px-5 lg:absolute lg:inset-x-0 lg:top-[17svh] lg:pt-0"
+        className="px-3 pb-[3vw] pt-[3svh] sm:px-5 lg:absolute lg:inset-x-0 lg:top-[17svh] lg:pb-0 lg:pt-0"
         aria-label="Hi, I'm Akshay"
       >
         <span aria-hidden="true">
           <span className="hidden sm:block">
             <FitLine ratio={R_FULL}>HI, I&apos;M AKSHAY</FitLine>
           </span>
-          <span className="block space-y-2 sm:hidden">
+          <span className="block space-y-6 sm:hidden">
             <FitLine ratio={R_TOP}>HI, I&apos;M</FitLine>
             <FitLine ratio={R_BOTTOM}>AKSHAY</FitLine>
           </span>
@@ -57,12 +57,13 @@ export default function Hero() {
         aria-hidden="true"
         width={1200}
         height={897}
-        className="hero-static-avatar absolute -bottom-6 left-1/2 w-[60vw] max-w-[380px] -translate-x-1/2 sm:bottom-0 sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
+        className="hero-static-avatar absolute -bottom-9 left-1/2 w-[60vw] max-w-[380px] -translate-x-1/2 sm:-bottom-[18px] sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
       />
 
-      {/* Copy + buttons: stacked under the headline on small screens, anchored bottom on desktop */}
+      {/* Copy (left) and actions (right). Both start just below the headline's comma on desktop,
+          flanking the avatar's head, instead of hugging the bottom corners. */}
       <div
-        className={`${COLUMN} relative z-[45] mt-5 lg:absolute lg:inset-x-0 lg:bottom-10 lg:top-[50svh] lg:mt-0 lg:flex lg:justify-between`}
+        className={`${COLUMN} relative z-[45] mt-6 lg:absolute lg:inset-x-0 lg:top-[calc(17svh+20.41vw+20px)] lg:mt-0 lg:flex lg:justify-between`}
       >
         <div className="lg:w-[min(24rem,26vw)] lg:min-w-[15rem]">
           <p className="text-lg font-semibold leading-snug sm:text-2xl lg:text-2xl">
@@ -76,42 +77,54 @@ export default function Hero() {
           </p>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-3 lg:mt-0 lg:flex-col lg:items-stretch lg:self-end">
-          <a
-            href="#projects"
-            className="btn !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
-          >
-            View my work
-          </a>
-          {links.resume && (
+        <div className="mt-6 lg:mt-0 lg:w-56">
+          {/* Two primary actions */}
+          <div className="flex flex-wrap gap-3 lg:flex-col">
             <a
-              href={links.resume}
-              download
-              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+              href="#projects"
+              className="btn justify-center !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
             >
-              <Download size={16} /> Download resume
+              View my work
             </a>
-          )}
-          {links.linkedin && (
-            <a
-              href={links.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
-            >
-              <Linkedin size={16} />
-              <span className="sr-only sm:not-sr-only">LinkedIn</span>
-            </a>
-          )}
-          {links.email && (
-            <a
-              href={`mailto:${links.email}`}
-              className="btn !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
-            >
-              <Mail size={16} />
-              <span className="sr-only sm:not-sr-only">Email</span>
-            </a>
-          )}
+            {links.resume && (
+              <a
+                href={links.resume}
+                download
+                className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+              >
+                <Download size={16} /> Download resume
+              </a>
+            )}
+          </div>
+          {/* Small icon links */}
+          <div className="mt-4 flex gap-2.5 sm:gap-3 lg:justify-end">
+            {[
+              links.linkedin && { href: links.linkedin, label: "LinkedIn", Icon: Linkedin, external: true },
+              { href: links.github, label: "GitHub", Icon: Github, external: true },
+              links.email && { href: `mailto:${links.email}`, label: "Email", Icon: Mail, external: false },
+            ]
+              .filter(Boolean)
+              .map((l) => {
+                const { href, label, Icon, external } = l as {
+                  href: string;
+                  label: string;
+                  Icon: typeof Github;
+                  external: boolean;
+                };
+                return (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    title={label}
+                    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-border sm:h-10 sm:w-10 text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF]"
+                  >
+                    <Icon size={18} />
+                  </a>
+                );
+              })}
+          </div>
         </div>
       </div>
     </section>

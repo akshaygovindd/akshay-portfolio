@@ -9,10 +9,18 @@ export type Project = {
   title: string;
   /** One-line description of what it is */
   summary: string;
-  /** Short impact statement */
-  impact: string;
+  /** Optional second line under the summary */
+  impact?: string;
   tags: string[];
   githubUrl: string;
+  /** One-line verified facts shown as a short list (keep each to one line). */
+  facts?: string[];
+  /** Adds a "Live demo" button. */
+  liveUrl?: string;
+  /** Things that are not built yet. Shown as "In progress: ...". */
+  inProgress?: string;
+  /** Short highlights shown as a strip along the bottom of the card (facts from the README). */
+  highlights?: { title: string; text: string }[];
   /** Big verified numbers on the card. Only use figures that appear in your resume. */
   stats?: { value: string; label: string }[];
   /**
@@ -46,13 +54,11 @@ export const site = {
     "Python",
     "Pandas",
     "Power BI",
-    "Tableau",
+    "Tableau (coursework)",
     "Databricks",
-    "Snowflake",
-    "Airflow",
+    "Snowflake (coursework)",
     "dbt",
     "AWS S3",
-    "Azure Data Factory",
     "PostgreSQL",
   ],
 
@@ -123,28 +129,46 @@ export const site = {
   projects: [
     {
       title: "FoodLens ELT Pipeline",
-      summary: "End-to-end ELT pipeline from raw data to BI dashboards.",
-      impact:
-        "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
-      tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
+      summary:
+        "Unified 387K+ food inspection records from two structurally different city datasets using a Medallion architecture, data quality validation and Kimball dimensional modeling.",
+      stats: [{ value: "1.18M", label: "fact violation rows" }],
+      facts: ["4 Power BI dashboards"],
+      highlights: [
+        {
+          title: "Schema harmonization",
+          text: "Chicago stores each inspection's violations as one pipe-delimited string, Dallas spreads them across 25 columns. Both were reshaped to one row per violation.",
+        },
+        {
+          title: "SCD Type 2 dimensional modeling",
+          text: "dim_restaurant is a Type 2 dimension built with Delta MERGE: when a restaurant's AKA name changes, the old version is expired and a new one inserted.",
+        },
+        {
+          title: "Data quality and reconciliation",
+          text: "DQX validation at Silver removed 1,300 bad Dallas rows, and source vs. target row counts are reconciled at every Bronze load.",
+        },
+      ],
+      tags: ["Databricks", "PySpark", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
-      stats: [{ value: "387K+", label: "inspection records unified from Chicago and Dallas" }],
-      // image: { src: "/projects/foodlens.webp", alt: "FoodLens dashboard" },
+      image: { src: "/projects/foodlens.webp", alt: "FoodLens Power BI overview dashboard: inspections, pass rate, violations by type and city" },
     },
     {
       title: "Instacart SQL Analytics Platform",
       summary: "End-to-end grocery retail analytics platform.",
       impact:
         "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
+      stats: [{ value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" }],
+      facts: ["7 indexes tuned with EXPLAIN ANALYZE", "RFM segmentation, cohort retention, CLV tiers"],
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
-      stats: [{ value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" }],
+      liveUrl: "https://instacart-sql-dashboard.streamlit.app",
+      image: { src: "/projects/instacart.webp", alt: "Instacart Analytics Platform Streamlit dashboard home page with order, product and customer totals" },
     },
     {
       title: "JobPulse",
-      summary: "Daily job market intelligence platform.",
-      impact:
-        "Daily pipeline that extracts job postings with LLMs, surfaces visa evidence, and matches roles to a resume.",
+      summary:
+        "Daily pipeline ingesting postings from 38 employers (Greenhouse, Lever, Ashby) into S3 via Terraform + GitHub Actions, modeled with dbt on MotherDuck, with LLM extraction of job details.",
+      facts: ["38 employers · 50 dbt tests"],
+      inProgress: "visa evidence and resume matching",
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
     },
@@ -153,20 +177,25 @@ export const site = {
       summary: "Multi-agent LLM system for emergency resource coordination.",
       impact:
         "Coordinates multiple AI agents to triage incidents and allocate emergency resources, visualized in a Streamlit/Plotly dashboard.",
+      facts: ["306 tests + CI"],
       tags: ["OpenAI Agents SDK", "Streamlit", "Plotly", "Python"],
       githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
+      liveUrl: "https://emergency-response-agents.streamlit.app",
+      image: { src: "/projects/emergency.webp", alt: "Emergency response dashboard replaying a simulation where two incidents contest one ambulance" },
     },
     {
       title: "Wildfire Cause Prediction",
       summary: "Predicts whether a wildfire was human-caused or lightning-caused.",
       impact:
         "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
-      tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
-      githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       stats: [
         { value: "F1 0.96", label: "tuned Random Forest, strongest of 5 models" },
         { value: "ROC-AUC 0.9579", label: "same tuned Random Forest" },
       ],
+      facts: ["1.88M rows · 83.8% class imbalance handled"],
+      tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
+      githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
+      image: { src: "/projects/wildfire.webp", alt: "Wildfire counts by state and a US map of fire locations coloured by human or natural cause" },
     },
   ] satisfies Project[],
 
@@ -181,53 +210,84 @@ export const site = {
         name: "Sources",
         tech: "Chicago & Dallas open data",
         description:
-          "Raw food inspection records from the Chicago and Dallas open data portals, each with its own schema and quirks.",
+          "Chicago Open Data Portal (308,161 raw rows) and Dallas Open Data Portal (78,984 raw rows). Chicago stores violations as one pipe-delimited string, Dallas across 25 columns.",
+      },
+      {
+        id: "raw",
+        name: "Raw",
+        tech: "Databricks Volume · Parquet",
+        description:
+          "Source files are written as Parquet to timestamped paths in a Databricks Volume and are never overwritten.",
       },
       {
         id: "bronze",
         name: "Bronze",
-        tech: "Databricks · Delta Lake",
+        tech: "Delta Lake",
         description:
-          "Raw data lands as-is in Delta tables. Nothing is dropped or fixed here, so there is always an untouched copy to replay from.",
+          "Raw data landed as-is in Delta tables with audit metadata columns. Source vs. target row counts are reconciled at every load.",
       },
       {
         id: "silver",
         name: "Silver",
-        tech: "PySpark · Delta Lake",
+        tech: "PySpark · DQX",
         description:
-          "PySpark cleans and standardizes both cities into one consistent schema: types, dates, duplicates and missing values.",
+          "Cleaned, standardized and deduplicated to one row per violation per inspection. DQX validation rules drop bad rows before anything reaches Gold.",
       },
       {
         id: "gold",
         name: "Gold",
-        tech: "Delta Lake",
+        tech: "Kimball star schema",
         description:
-          "Business-ready tables and aggregates shaped for reporting, such as inspection outcomes by city, facility type and time.",
+          "dim_date, dim_restaurant (SCD Type 2), dim_violation_detail, fact_inspections and fact_violations, loaded with Delta MERGE so reruns never duplicate data.",
       },
       {
         id: "bi",
         name: "Power BI",
-        tech: "Power BI",
+        tech: "Semantic model",
         description:
-          "Dashboards read the gold layer so analysts can explore inspection results without touching raw data.",
+          "The star schema feeds a Power BI semantic model and 4 dashboards: overview, violations, restaurants, and an inspection and validation report.",
       },
     ],
+    // Metadata-driven runs (from the README), shown as the bar above the stages.
     orchestrator: {
-      name: "Airflow",
+      label: "Run metadata tracks every stage ↓",
+      name: "Run metadata",
       description:
-        "Airflow schedules and sequences the stages above, so each layer runs after the previous one succeeds and failures are visible and retryable.",
+        "parent_metadata drives which sources run. child_metadata logs status, row counts and batch IDs for every execution, and every load is idempotent.",
     },
   },
 
   skills: [
-    { category: "Languages", skills: ["SQL", "Python", "Java", "Oracle SQL/PL-SQL"] },
-    { category: "Libraries", skills: ["Pandas", "NumPy"] },
-    { category: "BI & Visualization", skills: ["Power BI", "Tableau"] },
     {
-      category: "Data Platforms & Pipelines",
-      skills: ["Databricks", "Snowflake", "Azure Data Factory", "Airflow"],
+      category: "Programming & SQL",
+      skills: ["SQL", "Python", "PySpark", "PL/pgSQL", "Oracle SQL/PL-SQL (coursework)"],
     },
-    { category: "Tools", skills: ["Git"] },
+    {
+      category: "Analytics & BI",
+      skills: ["Power BI", "Tableau (coursework)", "Excel", "Streamlit", "Plotly", "Pandas", "NumPy"],
+    },
+    {
+      category: "Data Engineering",
+      skills: ["Databricks", "Delta Lake", "Unity Catalog", "Medallion architecture", "ETL/ELT", "SCD Type 2", "dbt"],
+    },
+    {
+      category: "Cloud & Warehousing",
+      skills: ["PostgreSQL", "Neon", "MotherDuck", "AWS S3", "Snowflake (coursework)"],
+    },
+    {
+      category: "AI & ML",
+      skills: [
+        "scikit-learn",
+        "Random Forest",
+        "GridSearchCV",
+        "Feature engineering",
+        "LLMs",
+        "Prompt engineering",
+        "OpenAI Agents SDK",
+        "Multi-agent systems",
+      ],
+    },
+    { category: "Tools", skills: ["Git", "GitHub", "GitHub Actions", "pytest", "Jira"] },
   ] satisfies SkillGroup[],
 };
 

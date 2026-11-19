@@ -24,7 +24,7 @@ export default function ScrollEffects() {
     mm.add(
       {
         reduce: "(prefers-reduced-motion: reduce)",
-        desktop: "(min-width: 1024px)",
+        desktop: "(min-width: 1024px) and (min-height: 780px)",
         shapes: "(min-width: 640px)",
       },
       (ctx) => {
@@ -96,13 +96,19 @@ export default function ScrollEffects() {
           cards.forEach((card, i) => {
             const next = cards[i + 1];
             if (!next) return;
-            gsap.to(card, {
-              scale: 0.94,
-              filter: "brightness(0.7)",
-              transformOrigin: "50% 0%",
-              ease: "none",
-              scrollTrigger: { trigger: next, start: "top 92%", end: "top 22%", scrub: true },
-            });
+            // Explicit start values: GSAP would otherwise read filter "none" as brightness(0)
+            // and the previous card would flash black as the next one starts to cover it.
+            gsap.fromTo(
+              card,
+              { scale: 1, filter: "brightness(1)" },
+              {
+                scale: 0.94,
+                filter: "brightness(0.7)",
+                transformOrigin: "50% 0%",
+                ease: "none",
+                scrollTrigger: { trigger: next, start: "top 92%", end: "top 22%", scrub: true },
+              },
+            );
           });
         }
 

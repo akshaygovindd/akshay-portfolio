@@ -35,9 +35,9 @@ function geometry(): { hero: Geometry; corner: Geometry } {
   const cornerW = 160; // desktop/tablet only: phones hide the companion after the hero
   const margin = 16;
   return {
-    // phones: sink the avatar 24px past the bottom edge (the bust is cropped there anyway)
-    // so its hat clears the hero button row above
-    hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 24 : 0) },
+    // sink the avatar past the bottom edge (the bust is cropped there anyway): 18px on desktop and
+    // tablet so the hat overlaps the headline a little less, 36px on phones so the hat clears the icon row
+    hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 36 : 18) },
     corner: { w: cornerW, x: vw - cornerW - margin, y: vh - cornerW * RATIO - margin },
   };
 }
