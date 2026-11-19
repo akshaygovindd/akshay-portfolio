@@ -27,13 +27,20 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           <p className="mt-3 text-lg leading-snug">{project.summary}</p>
           <p className="mt-2 leading-relaxed text-muted">{project.impact}</p>
 
-          {project.metric && (
-            <div className="mt-5">
-              <p className="font-display text-5xl uppercase leading-none text-accent sm:text-6xl">
-                {project.metric.value}
-              </p>
-              <p className="mt-1 text-sm text-muted">{project.metric.label}</p>
-            </div>
+          {project.stats && project.stats.length > 0 && (
+            <dl className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
+              {project.stats.map((st) => (
+                <div key={st.value}>
+                  <dt className="sr-only">{st.label}</dt>
+                  <dd className="font-display text-5xl uppercase leading-none text-accent sm:text-6xl">
+                    {st.value}
+                  </dd>
+                  <p aria-hidden="true" className="mt-1 max-w-[16rem] text-sm text-muted">
+                    {st.label}
+                  </p>
+                </div>
+              ))}
+            </dl>
           )}
 
           <ul className="mt-6 flex flex-wrap gap-2">

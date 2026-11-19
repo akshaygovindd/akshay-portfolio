@@ -13,8 +13,8 @@ export type Project = {
   impact: string;
   tags: string[];
   githubUrl: string;
-  /** One big verified number on the card (omit when there isn't one). */
-  metric?: { value: string; label: string };
+  /** Big verified numbers on the card. Only use figures that appear in your resume. */
+  stats?: { value: string; label: string }[];
   /**
    * Optional screenshot for the card's image area. Put the file in /public (e.g.
    * "/projects/foodlens.webp"). Until you add one, a gradient placeholder is shown.
@@ -128,6 +128,7 @@ export const site = {
         "Medallion-architecture pipeline ingesting Chicago and Dallas food inspection data into Power BI.",
       tags: ["Databricks", "PySpark", "Airflow", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
+      stats: [{ value: "387K+", label: "inspection records unified from Chicago and Dallas" }],
       // image: { src: "/projects/foodlens.webp", alt: "FoodLens dashboard" },
     },
     {
@@ -137,7 +138,7 @@ export const site = {
         "Analyzed 33.8M rows across 3M+ real Instacart orders using advanced SQL, with a Streamlit dashboard on top.",
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
-      metric: { value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" },
+      stats: [{ value: "33.8M rows", label: "analyzed across 3M+ real Instacart orders" }],
     },
     {
       title: "JobPulse",
@@ -162,7 +163,10 @@ export const site = {
         "Compared 5 ML models on 24 years of USDA fire data, handling class imbalance. Best model: tuned Random Forest, F1 = 0.9598.",
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
-      metric: { value: "F1 0.96", label: "best model: tuned Random Forest" },
+      stats: [
+        { value: "F1 0.96", label: "tuned Random Forest, strongest of 5 models" },
+        { value: "ROC-AUC 0.9579", label: "same tuned Random Forest" },
+      ],
     },
   ] satisfies Project[],
 

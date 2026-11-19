@@ -31,11 +31,13 @@ function geometry(): { hero: Geometry; corner: Geometry } {
   const vh = window.innerHeight;
   const phone = vw < 640;
   const tablet = vw >= 640 && vw < 1024; // hero copy is stacked above the avatar
-  const heroW = phone ? Math.min(vw * 0.62, 380) : tablet ? Math.min(vw * 0.86, 680) : Math.min(vw * 0.54, 840);
+  const heroW = phone ? Math.min(vw * 0.6, 380) : tablet ? Math.min(vw * 0.86, 680) : Math.min(vw * 0.54, 840);
   const cornerW = 160; // desktop/tablet only: phones hide the companion after the hero
   const margin = 16;
   return {
-    hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO },
+    // phones: sink the avatar 24px past the bottom edge (the bust is cropped there anyway)
+    // so its hat clears the hero button row above
+    hero: { w: heroW, x: (vw - heroW) / 2, y: vh - heroW * RATIO + (phone ? 24 : 0) },
     corner: { w: cornerW, x: vw - cornerW - margin, y: vh - cornerW * RATIO - margin },
   };
 }

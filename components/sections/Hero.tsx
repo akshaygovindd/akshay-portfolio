@@ -57,7 +57,7 @@ export default function Hero() {
         aria-hidden="true"
         width={1200}
         height={897}
-        className="hero-static-avatar absolute bottom-0 left-1/2 w-[62vw] max-w-[380px] -translate-x-1/2 sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
+        className="hero-static-avatar absolute -bottom-6 left-1/2 w-[60vw] max-w-[380px] -translate-x-1/2 sm:bottom-0 sm:w-[86vw] sm:max-w-[680px] lg:w-[54vw] lg:max-w-[840px]"
       />
 
       {/* Copy + buttons: stacked under the headline on small screens, anchored bottom on desktop */}
