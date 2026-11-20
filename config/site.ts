@@ -19,6 +19,8 @@ export type Project = {
   liveUrl?: string;
   /** Small note under the Live demo button (e.g. free-tier apps that sleep). */
   liveNote?: string;
+  /** A "Try it" button that scrolls to a section of this site (instead of an external Live demo). */
+  tryIt?: { href: string; label: string };
   /** Small label above the title (e.g. the course a project was built for). */
   label?: string;
   /** Things that are not built yet. Shown as "In progress: ...". */
@@ -33,7 +35,7 @@ export type Project = {
    * Optional screenshot for the card's image area. Put the file in /public (e.g.
    * "/projects/foodlens.webp"). Until you add one, a gradient placeholder is shown.
    */
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; /** Intrinsic pixel size of the file, so the browser reserves its space before it loads (no layout shift). */ width: number; height: number };
 };
 
 /** Page-level details for /projects/[slug]. The text itself is in content/case-studies/[slug].mdx. */
@@ -46,7 +48,7 @@ export type CaseStudy = {
   /** One line under the title: what kind of project it was. */
   context: string;
   /** Which architecture diagram the page uses (see config/diagrams.ts). */
-  diagram: "pipeline" | "emergency" | "instacart" | "wildfire";
+  diagram: "pipeline" | "emergency" | "instacart" | "wildfire" | "ask";
 };
 
 export type WorkBlock = {
@@ -201,7 +203,7 @@ export const site = {
       ],
       tags: ["Databricks", "PySpark", "Delta Lake", "Power BI"],
       githubUrl: "https://github.com/akshaygovindd/FoodLens-Databricks-Pipeline",
-      image: { src: "/projects/foodlens-crop.webp", alt: "FoodLens Power BI dashboard, cropped to the total inspections (279,603) and pass rate (79.53%) cards and the inspections-by-result bar chart" },
+      image: { src: "/projects/foodlens-crop.webp", alt: "FoodLens Power BI dashboard, cropped to the total inspections (279,603) and pass rate (79.53%) cards and the inspections-by-result bar chart", width: 548, height: 450 },
     },
     {
       title: "Emergency Response Multi-Agent System",
@@ -223,7 +225,28 @@ export const site = {
       githubUrl: "https://github.com/akshaygovindd/emergency-response-agents",
       liveUrl: "https://emergency-response-agents.streamlit.app",
       liveNote: "May take ~30 s to wake",
-      image: { src: "/projects/emergency-crop.webp", alt: "Emergency response dashboard map at minute 6, where two incidents both want Ambulance 1 and a conflict notice is showing" },
+      image: { src: "/projects/emergency-crop.webp", alt: "Emergency response dashboard map at minute 6, where two incidents both want Ambulance 1 and a conflict notice is showing", width: 790, height: 410 },
+    },
+    {
+      title: "Ask my portfolio",
+      label: "Personal project",
+      summary:
+        "A small RAG assistant that answers questions about my projects, experience and resume from this site's own content only, and links each answer to the section it used.",
+      stats: [
+        { value: "35/35", label: "questions with the right source in the top 5 (my own eval)" },
+        { value: "6/6", label: "off-topic and prompt-injection prompts refused" },
+        { value: "$0.0013", label: "per answer on average, at list price" },
+      ],
+      caseStudy: "ask-my-portfolio",
+      facts: [
+        "Keyword fallback fixed a recruiter-style miss: 9/10 to 10/10",
+        "Similarity gate skips the model for off-topic questions",
+        "10 questions an hour per hashed IP, 200 a day overall; no question text stored",
+      ],
+      tags: ["Next.js", "pgvector", "Neon", "OpenAI embeddings", "Vercel AI SDK"],
+      githubUrl: "https://github.com/akshaygovindd/akshay-portfolio",
+      tryIt: { href: "/#ask", label: "Try it" },
+      image: { src: "/projects/ask-crop.webp", alt: "The Ask my portfolio section after the question 'Has Akshay used dbt?': the answer says yes, with links to Skills: Data Engineering and Project: JobPulse", width: 476, height: 595 },
     },
     {
       title: "Instacart SQL Analytics Platform",
@@ -236,7 +259,7 @@ export const site = {
       tags: ["SQL", "PostgreSQL", "Python", "Streamlit"],
       githubUrl: "https://github.com/akshaygovindd/instacart-sql-analytics",
       liveUrl: "https://instacart-sql-dashboard.streamlit.app",
-      image: { src: "/projects/instacart-crop.webp", alt: "Instacart dashboard Overview page: bar chart of total orders by department, with produce and dairy eggs the largest, coloured by reorder percentage" },
+      image: { src: "/projects/instacart-crop.webp", alt: "Instacart dashboard Overview page: bar chart of total orders by department, with produce and dairy eggs the largest, coloured by reorder percentage", width: 1100, height: 517 },
     },
     {
       title: "JobPulse",
@@ -261,7 +284,7 @@ export const site = {
       facts: ["F1 0.96 human-caused / 0.78 lightning-caused", "1.88M rows · 83.8% class imbalance handled"],
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
-      image: { src: "/projects/wildfire-crop.webp", alt: "US map of wildfire locations coloured by cause, human (red) or natural (blue), with longitude and latitude axes" },
+      image: { src: "/projects/wildfire-crop.webp", alt: "US map of wildfire locations coloured by cause, human (red) or natural (blue), with longitude and latitude axes", width: 690, height: 425 },
     },
   ] satisfies Project[],
 
@@ -281,6 +304,14 @@ export const site = {
         "Four LLM agents negotiate over ambulances and hospital beds in a simulation. Python validates every action. What the experiments showed, with numbers.",
       context: "Course project · CSYE 7380 midterm, Northeastern University",
       diagram: "emergency",
+    },
+    {
+      slug: "ask-my-portfolio",
+      metaTitle: "Ask my portfolio case study",
+      description:
+        "A small RAG assistant over my own case studies and resume: Neon pgvector, a similarity gate, rate limits and a 35-question eval, with the numbers.",
+      context: "Personal project · built in November 2026",
+      diagram: "ask",
     },
     {
       slug: "instacart",

@@ -173,7 +173,9 @@ export default function SqlPlayground() {
             )}
             Run
           </button>
-          <span className="font-mono text-xs text-muted">
+          {/* On phones the three status texts wrap differently, which changed this section's height
+              when the engine loaded. A full-width, two-line slot keeps the height the same in every state. */}
+          <span className="min-h-8 basis-full font-mono text-xs text-muted sm:min-h-0 sm:basis-auto">
             {status === "idle" && "Scroll here to start the engine…"}
             {status === "loading" && "Loading DuckDB-WASM (first load downloads ~several MB)…"}
             {status === "ready" && "Ctrl/⌘ + Enter to run"}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import { ArrowDown, ArrowLeft, ExternalLink, Github } from "lucide-react";
 import { site } from "@/config/site";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -81,6 +81,16 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
           )}
 
           <div className="mt-6 flex flex-wrap items-start gap-3">
+            {project.tryIt && (
+              <TrackedLink
+                href={project.tryIt.href}
+                event="live_demo_click"
+                eventProps={{ project: project.title }}
+                className="btn btn-primary"
+              >
+                <ArrowDown size={16} aria-hidden="true" /> {project.tryIt.label}
+              </TrackedLink>
+            )}
             {project.liveUrl && (
               <div className="flex flex-col items-start gap-1.5">
                 <TrackedLink

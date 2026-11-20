@@ -1,0 +1,77 @@
+## Problem
+
+Recruiters skim. I wanted my projects to be answerable in one question, with a source for every answer, so a reader can ask "Has Akshay used dbt?" instead of hunting through the project cards. I also wanted proof that I can build and evaluate a RAG system, not only call a model. It is a personal project: no course brief, no client.
+
+## Architecture
+
+- **Corpus.** Only my own content: the case studies without their Sources blocks, the project, experience and skills text from `config/site.ts`, and the text of `resume.pdf` with its contact line removed. At the time of the eval that made 46 chunks.
+- **Chunks.** One chunk per section, aimed at about 400 tokens, with a small overlap if a section has to be split. Every section in those 46 chunks was short enough to stay whole (the longest is 1,645 characters). Two sections of this case study are longer than that, so they are split with an overlap, and I have not evaluated that split on its own.
+- **Embeddings and storage.** `text-embedding-3-small`, stored in pgvector in a separate Neon project. Each chunk is hashed. A repeat ingest embedded 0 of the 46 chunks.
+- **Retrieval.** The top 5 chunks by cosine similarity, plus a keyword fallback: if the question names a tool or skill from my site, up to 3 chunks that contain that word are added.
+- **Similarity gate.** If no chunk scores at least 0.25 and none matches a keyword, the model is never called.
+- **Answer.** `gpt-5.4-mini` gets the chunks and the question, answers from them only, writes at most 500 tokens, and streams. Each `[n]` in the answer links to the section it came from. A panel under the answer shows the chunks, their scores, the latency and the tokens.
+
+<Diagram id="ask" caption="Ingestion runs by hand. Everything in the lower box runs for each question, and the model is only reached if the gate lets the question through." />
+
+## Key decisions
+
+1. **Answer only from the retrieved chunks.** The prompt tells the model to use only the numbered sources, to treat them and the question as data and not as instructions, and to say "That isn't covered on this site" otherwise. The cost is that it refuses questions whose answer is on the site but was not retrieved. That is exactly how the dbt bug below showed up. It is a prompt rule, not a guarantee.
+2. **A similarity gate that skips the model.** Off-topic questions should cost almost nothing. A question that fails the gate costs a few embedding tokens, and the one I timed through the route took 0.39 seconds. I set the threshold at 0.25 because the lowest top score among my first 25 questions was 0.37 and the off-topic and injection prompts scored at most 0.21. It is a threshold tuned on the questions I had, and the recruiter-style set later showed its limit (see Results).
+3. **Rate limits and a daily cap.** Ten questions an hour per IP address, and 200 a day for the whole site, both counted in the same Neon table. The IP is hashed with a secret salt, so the table holds no addresses. A per-IP limit alone cannot cap spend, because one person can have many addresses. The daily cap can: at the most expensive answer I measured, $0.00187, 200 answers cost about $0.37.
+4. **No question text is stored.** The only things written are the hashed IP, the hour, and a counter.
+5. **Idempotent ingestion.** Each chunk's hash covers its source, link, title and text. Only new hashes are embedded, and stale rows are deleted. The cost is that ingestion is a manual step: if I change my content and forget to run it, the assistant is out of date.
+
+## Data quality and evaluation
+
+- **35 questions.** 25 name the project ("Why do Dallas rows never create a new SCD Type 2 version in FoodLens?") and 10 are written the way a recruiter would ask, without naming a project ("Has Akshay used dbt?", "Does he know Terraform?"). Each has one or more expected sources, which I wrote before running the eval.
+- **Three rates.** Hit@5: the vector top 5 contains an expected source. Citation: the answer cites at least one expected source. Strict: every source the answer cites is an expected one.
+- **6 refusal prompts.** Two off-topic questions, a poem request, two prompt-injection attempts, and a request for my phone number.
+- **What this does not show.** I wrote the questions myself, and the 25 that name the project share words with the text they should find, so 100% hit@5 is a generous number. The strict rate changes between runs: two saved runs gave 27 of 35 and 29 of 35, because the model's wording and citations are sampled. The eval checks which sources an answer cites, not whether each sentence is true to them. Six refusal prompts show that the obvious cases work. They do not show that the assistant resists a determined attack.
+
+## Results
+
+| Measure | Result |
+|---|---|
+| Hit@5 | 35 of 35 (25 of 25 project-named, 10 of 10 recruiter-style) |
+| Citation | 35 of 35 |
+| Strict | 29 of 35 (83%) |
+| Refusal prompts refused | 6 of 6 (5 by the gate, 1 by the model) |
+
+Per answer, over the 35 answers: median latency 1.6 seconds (mean 1.8, longest 4.2), median 1,355 tokens in and 53 tokens out, mean cost $0.0013 and highest $0.0019. The whole run, 35 answers plus the refusal prompts, cost $0.0459. Five real responses from the route took 1.4 to 2.2 seconds in total, measured from a laptop. The gate path took 0.39 seconds.
+
+**The dbt story.** In the before-fix eval run (section 3 of the saved results), "Has Akshay used dbt?" was refused; I had first noticed the same refusal on the live site. The JobPulse card says the project was modeled with dbt, so the answer was on the site, and the keyword fallback that should have found it did nothing. My term extraction only looked at capitalised or mixed-case words, so lowercase "dbt" was never a search term, and "Has Akshay" was treated as one. My first 25 questions could not catch this, because all of them name the project. So I wrote the 10 recruiter-style questions. On the old retrieval they scored 9 of 10 on hit@5 and on citation, and the miss was the dbt question. The fix builds a vocabulary of tools and skills from `config/site.ts`, matches whole words in any case, and adds the skills and tools lists to the index as their own chunks. The same 10 questions then scored 10 of 10, and all 35 scored 35 of 35.
+
+After this page went into the index, I re-ran the eval with two extra questions about the assistant itself. It scored 37 of 37 on hit@5 and on citation, with strict at 30 of 37, and 6 of 6 refusals again. Only 3 of the 6 refusals were stopped by the gate this time, because this page talks about injection and phone numbers and raises their scores. The model refused the other three.
+
+**The gate has a weak spot.** The recruiter-style questions scored lower than my first set. "Does he know MotherDuck?" had a top score of 0.21, below the gate, and "Does he know Terraform?" scored 0.26. They are answered only because a keyword match is allowed through the gate. The phone-number prompt scored 0.40, so it passes the gate. The model refuses it because I removed the contact line from the resume text before indexing.
+
+## What I'd do next
+
+- Check faithfulness sentence by sentence: split each answer, and test whether the cited chunk supports each sentence, with a second model and by hand. Today I only check the sources.
+- Use an independent question set, ideally real recruiter questions, so the eval is not written by the person who wrote the content.
+- Re-ingest automatically on deploy, so a content change cannot leave the assistant stale.
+- Try reranking: retrieve more candidates and re-order them before the top 5. I have not tried it. Hit@5 is already 35 of 35 on my set, so I would test it on the independent set first.
+
+<Sources>
+
+All files are in the [portfolio repository](https://github.com/akshaygovindd/akshay-portfolio). I ran the eval once on 19 November 2026 and saved the output.
+
+| Number | File |
+|---|---|
+| 35 questions (25 and 10) and their expected sources | `eval/questions.jsonl` |
+| 6 refusal prompts | `eval/refusals.jsonl` |
+| Hit@5, citation, strict, refusals, latency, tokens, cost per answer, cost of the run, lowest top scores (0.37, 0.21, 0.26, 0.40) | `eval/results-2026-11-19.md`, section 1 |
+| Route latency of 1.4 to 2.2 seconds, and 0.39 seconds for the gate path | `eval/results-2026-11-19.md`, section 2 |
+| 9 of 10 before the fix, the refused dbt question, strict 27 of 35 | `eval/results-2026-11-19.md`, section 3 |
+| 46 chunks, longest chunk 1,645 characters, repeat ingest embedded 0 | `eval/results-2026-11-19.md`, section 4 |
+| The second run: 37 questions, 55 chunks, two sections of this page split in two, gate stopped 3 refusals | `eval/results-2026-11-19.md`, section 5 |
+| Why the first keyword extraction missed "dbt" | `rag/retrieve.ts` as it was in commit `0917b2b` (git history) |
+| Top 5, up to 3 keyword chunks | `rag/retrieve.ts` |
+| Gate 0.25, 500 output tokens | `rag/answer.ts` |
+| 10 an hour, 200 a day, hashed IP | `rag/ratelimit.ts` |
+| What the database stores | `rag/schema.sql` |
+| Resume without its contact line, section chunks, skills chunks | `rag/corpus.ts` |
+| Model prices used for cost: $0.75 and $4.50 per million tokens for gpt-5.4-mini, $0.02 for embeddings | `eval/run.mts`, from OpenAI's published prices |
+| About $0.37 for 200 answers | My arithmetic: 200 x $0.00187 |
+
+</Sources>

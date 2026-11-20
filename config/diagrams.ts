@@ -40,7 +40,7 @@ export type DiagramSpec = {
   edges: DEdge[];
 };
 
-export const diagrams: Record<"emergency" | "instacart" | "wildfire", DiagramSpec> = {
+export const diagrams: Record<"emergency" | "instacart" | "wildfire" | "ask", DiagramSpec> = {
   emergency: {
     w: 480,
     h: 600,
@@ -128,6 +128,38 @@ export const diagrams: Record<"emergency" | "instacart" | "wildfire", DiagramSpe
       { from: "n4", to: "models", fs: "b", ts: "t" },
       { from: "models", to: "n6", fs: "b", ts: "t", label: "best F1 and AUC" },
       { from: "n6", to: "n7", fs: "b", ts: "t" },
+    ],
+  },
+  ask: {
+    w: 480,
+    h: 556,
+    title: "Ask my portfolio architecture",
+    desc:
+      "Ingestion, run by hand: my content is split into heading chunks, embedded with text-embedding-3-small (only chunks whose hash is new) and stored in pgvector on Neon. For each question: rate limits are checked, retrieval takes the top 5 chunks by cosine similarity plus a keyword fallback, a similarity gate skips the model when nothing is relevant, and gpt-5.4-mini answers from the chunks only. The answer streams to the page with citations.",
+    groups: [
+      { id: "ing", x: 0, y: 0, w: 480, h: 206, label: "Ingestion: npm run rag:ingest" },
+      { id: "ask", x: 0, y: 234, w: 480, h: 314, label: "Each question: /api/ask" },
+    ],
+    nodes: [
+      { id: "corpus", x: 14, y: 32, w: 222, h: 66, title: "My content", sub: ["case studies, project, experience", "and skills text, resume"] },
+      { id: "chunks", x: 254, y: 32, w: 212, h: 66, title: "Heading chunks", sub: ["one per section,", "about 400 tokens"] },
+      { id: "store", x: 14, y: 124, w: 222, h: 66, title: "pgvector on Neon", sub: ["chunks table with", "a cosine index"] },
+      { id: "embed", x: 254, y: 124, w: 212, h: 66, title: "Embeddings", sub: ["text-embedding-3-small,", "new content hashes only"] },
+      { id: "limit", x: 14, y: 266, w: 222, h: 66, title: "Rate limits", sub: ["10 an hour per hashed IP,", "200 a day for the site"] },
+      { id: "retr", x: 254, y: 266, w: 212, h: 66, title: "Retrieval", sub: ["top 5 by cosine plus", "a keyword fallback"] },
+      { id: "gate", x: 14, y: 354, w: 222, h: 66, title: "Similarity gate", sub: ["nothing relevant:", "no model call"] },
+      { id: "llm", x: 254, y: 354, w: 212, h: 66, title: "gpt-5.4-mini", sub: ["answers from the chunks", "only, 500 tokens at most"] },
+      { id: "out", x: 10, y: 460, w: 460, h: 66, title: "Streamed answer with citations", sub: ["[n] links to the section it came from;", "a panel shows chunks, scores, tokens"], tone: "accent" },
+    ],
+    edges: [
+      { from: "corpus", to: "chunks", fs: "r", ts: "l" },
+      { from: "chunks", to: "embed", fs: "b", ts: "t" },
+      { from: "embed", to: "store", fs: "l", ts: "r" },
+      { from: "store", to: "retr", fs: "b", ts: "t", label: "nearest chunks" },
+      { from: "limit", to: "retr", fs: "r", ts: "l" },
+      { from: "retr", to: "gate", fs: "b", ts: "t" },
+      { from: "gate", to: "llm", fs: "r", ts: "l" },
+      { from: "llm", to: "out", fs: "b", ts: "t", ta: 0.761 },
     ],
   },
 };

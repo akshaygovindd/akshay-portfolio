@@ -1,4 +1,4 @@
-import { ExternalLink, Github } from "lucide-react";
+import { ArrowDown, ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/config/site";
 import TrackedLink from "@/components/TrackedLink";
 import CaseStudyLink from "@/components/case-study/CaseStudyLink";
@@ -98,6 +98,16 @@ export default function ProjectCard({
 
           <div className="mt-5 flex flex-wrap items-start gap-3">
             {project.caseStudy && <CaseStudyLink slug={project.caseStudy} project={project.title} />}
+            {project.tryIt && (
+              <TrackedLink
+                href={project.tryIt.href}
+                event="live_demo_click"
+                eventProps={{ project: project.title }}
+                className="btn btn-primary"
+              >
+                <ArrowDown size={16} aria-hidden="true" /> {project.tryIt.label}
+              </TrackedLink>
+            )}
             {project.liveUrl && (
               <div className="flex flex-col items-start gap-1.5">
                 <TrackedLink
@@ -136,6 +146,8 @@ export default function ProjectCard({
             <img
               src={project.image.src}
               alt={project.image.alt}
+              width={project.image.width}
+              height={project.image.height}
               loading="lazy"
               className="relative h-auto w-full rounded-lg border border-border shadow-2xl"
             />

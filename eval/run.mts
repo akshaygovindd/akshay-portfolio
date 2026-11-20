@@ -17,6 +17,7 @@ const read = (f: string) =>
     .map((l) => JSON.parse(l));
 const withChat = !process.argv.includes("--retrieval-only");
 
+const perQ: { ms: number; inT: number; outT: number; cost: number }[] = [];
 let inTok = 0,
   outTok = 0,
   embTok = 0;
@@ -30,6 +31,7 @@ let hit5 = 0,
   noCite = 0;
 const questions = read("eval/questions.jsonl");
 
+let lastUsage = { inT: 0, outT: 0 };
 async function chat(q: string, chunks: Awaited<ReturnType<typeof retrieve>>["chunks"]) {
   const out = await generateText({
     model: openai(CHAT_MODEL),
@@ -39,12 +41,14 @@ async function chat(q: string, chunks: Awaited<ReturnType<typeof retrieve>>["chu
   });
   inTok += out.usage.inputTokens ?? 0;
   outTok += out.usage.outputTokens ?? 0;
+  lastUsage = { inT: out.usage.inputTokens ?? 0, outT: out.usage.outputTokens ?? 0 };
   return out.text;
 }
 
 for (const { id, q, expected, set = "original" } of questions) {
   const T = (sets[set] ??= { n: 0, hit5: 0, hitAny: 0, cited: 0, strict: 0, noCite: 0 });
   T.n++;
+  const t0 = Date.now();
   const r = await retrieve(q);
   embTok += r.embedTokens;
   const vec = r.chunks.filter((c) => c.via === "vector");
@@ -65,7 +69,8 @@ for (const { id, q, expected, set = "original" } of questions) {
     strict += +oks;
     T.cited += +okc;
     T.strict += +oks;
-    note = `cites ${[...new Set(urls)].join(" ") || "NONE"}${text.startsWith("That isn't covered") ? "  (REFUSED)" : ""}`;
+    perQ.push({ ms: Date.now() - t0, inT: lastUsage.inT, outT: lastUsage.outT, cost: (lastUsage.inT * PRICE.chatIn + lastUsage.outT * PRICE.chatOut + r.embedTokens * PRICE.embed) / 1e6 });
+    note = `cites ${[...new Set(urls)].join(" ")  || "NONE"}${text.startsWith("That isn't covered") ? "  (REFUSED)" : ""}`;
   }
   rows.push(`${h5 ? "HIT " : hAny ? "kw  " : "MISS"} #${String(id).padStart(2)} top=${vec[0].score.toFixed(2)} ${q.slice(0, 62).padEnd(62)} ${note}`);
 }
@@ -96,6 +101,16 @@ for (const { q } of refusals) {
 const n = questions.length;
 console.log(rows.join("\n"));
 console.log("\nrefusals / off-topic / injection:\n" + rrows.join("\n"));
+const med = (a: number[]) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
+const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+const perQLine = perQ.length
+  ? `
+per question (${perQ.length} answers, retrieval + full non-streamed generation, run from a laptop):
+  latency ms   median ${med(perQ.map((x) => x.ms))}  mean ${mean(perQ.map((x) => x.ms)).toFixed(0)}  max ${Math.max(...perQ.map((x) => x.ms))}
+  tokens in    median ${med(perQ.map((x) => x.inT))}  mean ${mean(perQ.map((x) => x.inT)).toFixed(0)}
+  tokens out   median ${med(perQ.map((x) => x.outT))}  mean ${mean(perQ.map((x) => x.outT)).toFixed(0)}  max ${Math.max(...perQ.map((x) => x.outT))}
+  cost USD     median ${med(perQ.map((x) => x.cost)).toFixed(5)}  mean ${mean(perQ.map((x) => x.cost)).toFixed(5)}  max ${Math.max(...perQ.map((x) => x.cost)).toFixed(5)}`
+  : "";
 const cost = (inTok * PRICE.chatIn + outTok * PRICE.chatOut + embTok * PRICE.embed) / 1e6;
 console.log("\nper set:  n  hit@5  +keyword  citation  strict  no-cite");
 for (const [k, t] of Object.entries(sets))
@@ -112,5 +127,5 @@ answers with no citation: ${noCite}`
     : ""
 }
 refusal handling: ${refused}/${refusals.length} refused (${gated} stopped by the gate)
-tokens: chat in ${inTok}, chat out ${outTok}, embedding ${embTok}
+tokens: chat in ${inTok}, chat out ${outTok}, embedding ${embTok}${perQLine}
 cost: $${cost.toFixed(4)} (gpt-5.4-mini $${PRICE.chatIn}/$${PRICE.chatOut} per 1M in/out; embeddings $${PRICE.embed}/1M)`);
