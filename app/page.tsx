@@ -12,6 +12,7 @@ import Demos from "@/components/sections/Demos";
 import Ask from "@/components/sections/Ask";
 import Contact from "@/components/sections/Contact";
 import PersonJsonLd from "@/components/PersonJsonLd";
+import HashScroll from "@/components/HashScroll";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
         Skip to projects
       </a>
       <PersonJsonLd />
+      <HashScroll />
       <Navbar />
       <Companion />
       <ScrollEffects />

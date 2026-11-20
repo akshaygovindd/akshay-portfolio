@@ -46,7 +46,7 @@ function caseStudies(): Chunk[] {
   return out;
 }
 
-/** config/site.ts: project cards, the experience blocks, the skills groups and the tools list. */
+/** config/site.ts: project cards, the experience blocks, the About hobbies line, the skills groups and the tools list. */
 function siteText(): Chunk[] {
   const out: Chunk[] = [];
   for (const p of site.projects) {
@@ -66,6 +66,8 @@ function siteText(): Chunk[] {
   const lines = [`${w.role} at ${w.company}, ${w.location} (${w.dates}).`];
   for (const b of w.blocks) lines.push(`- ${b.title} (${b.value}): ${b.description}${b.tag ? ` ${b.tag}.` : ""}`);
   out.push(...make("site:experience", `Experience: ${w.role}, ${w.company}`, "/#experience", lines.join("\n")));
+  // About: the line about life outside work, as its own small chunk so it matches "what does Akshay do outside work?".
+  out.push(...make("site:about:hobbies", "About: outside work", "/#about", site.about.hobbies));
   // Skills groups (one chunk each) and the tools list, so "has he used X" questions can be answered.
   // Entries marked "(coursework)" keep that label: the assistant must not present them as work experience.
   for (const g of site.skills)

@@ -155,6 +155,9 @@ for (const [w, h, name] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
     const opened = await q2.evaluate((sel) => ({ editor: document.getElementById("sql-input").value, ran: /\d+ rows? · \d+ ms/.test(document.querySelector(sel).innerText), top: Math.round(document.getElementById("playground").getBoundingClientRect().top), note: document.getElementById("playground").innerText.includes("Nothing has run yet") }), RESULT);
     ok(opened.editor === "SELECT department FROM instacart_sample LIMIT 3", `${tag}: opening a link pre-fills the editor`);
     ok(!opened.ran && opened.note, `${tag}: ...but nothing has run until Run is pressed, and it says so`);
+    // no example button may look selected when the editor came from a link (the editor no longer matches any example)
+    const ex = await q2.evaluate(() => [...document.querySelectorAll("#playground button.tag")].map((x) => { const c = getComputedStyle(x); return { style: `${c.borderColor}|${c.color}|${c.backgroundColor}|${c.outlineStyle}`, marked: x.hasAttribute("aria-pressed") || x.hasAttribute("aria-current") || x.getAttribute("data-selected") !== null, focused: x === document.activeElement }; }));
+    ok(ex.length === 5 && new Set(ex.map((e) => e.style)).size === 1 && !ex.some((e) => e.marked || e.focused), `${tag}: no example button looks selected, focused or marked when opened from a link (${new Set(ex.map((e) => e.style)).size} distinct style(s) across ${ex.length} buttons)`);
     ok(Math.abs(opened.top) < 160, `${tag}: ...and it scrolls to the playground (top ${opened.top}px)`);
     await q2.evaluate(() => [...document.querySelectorAll("#playground button")].find((x) => x.textContent.trim() === "Run").click());
     await q2.waitForFunction(() => /\b3 rows\b/.test(document.getElementById("playground").innerText), { timeout: 15000 });

@@ -92,6 +92,7 @@ const checks = [
   ["case-study pages (casestudies)", "casestudies.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["Ask my portfolio (ask)", "ask.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["SQL playground upgrades (sql)", "sql.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
+  ["About hobbies + 404 page (about404)", "about404.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["content + Copy email (content9)", "content9.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About alignment (about-m)", "about-m.mjs", [BASE, "qa"], (t) => {
     const rows = t.split("\n").filter((l) => /card offset/.test(l));
@@ -157,6 +158,32 @@ if (wanted("lighthouse")) {
       if (cls > 0.01) bad.push(`CLS ${cls.toFixed(3)}`);
       record(`Lighthouse ${label}${tag}`, !bad.length, bad.length ? bad.join(", ") : `perf ${s.performance} a11y ${s.accessibility} bp ${s["best-practices"]} seo ${s.seo}, CLS ${cls.toFixed(3)}`);
     } catch (e) { record(`Lighthouse ${label}${tag}`, false, "no report: " + e.message); }
+  }
+}
+
+if (wanted("lighthouse")) {
+  // The 404 page: Lighthouse refuses non-200 pages unless told to ignore the status. Its SEO category is left out on purpose:
+  // a 404 that is noindex fails "has a successful HTTP status" and "is crawlable" by design.
+  for (const [label, extra] of [["desktop", ["--preset=desktop"]], ["mobile", []]]) {
+    const file = path.join(OUT, `lh-${label}-404.json`);
+    sh(path.join(QA, "node_modules/.bin/lighthouse"), [BASE + "/this-page-does-not-exist", ...extra, "--ignore-status-code", "--chrome-flags=--headless=new --no-sandbox", "--output=json", `--output-path=${file}`, "--quiet"]);
+    try {
+      const r = JSON.parse(fs.readFileSync(file, "utf8"));
+      const sc = Object.fromEntries(Object.entries(r.categories).map(([k, v]) => [k, Math.round(v.score * 100)]));
+      const cls = r.audits["cumulative-layout-shift"].numericValue;
+      const bad = [];
+      if (sc.performance < 95) bad.push(`performance ${sc.performance}`);
+      if (sc.accessibility < 100) bad.push(`accessibility ${sc.accessibility}`);
+      // best-practices: every audit must pass, except "errors in console" when its only entries are the browser logging
+      // the 404 response for the page's own URL (that is what a real 404 status does, so it cannot be avoided).
+      const failing = r.categories["best-practices"].auditRefs.map((x) => r.audits[x.id]).filter((a) => a.score !== null && a.score < 1);
+      for (const a of failing) {
+        const own404 = a.id === "errors-in-console" && (a.details?.items ?? []).every((it) => /404/.test(it.description || "") && String(it.sourceLocation?.url || "").endsWith("/this-page-does-not-exist"));
+        if (!own404) bad.push(`best-practices: ${a.id}`);
+      }
+      if (cls > 0.01) bad.push(`CLS ${cls.toFixed(3)}`);
+      record(`Lighthouse ${label} /404 (SEO left out: a noindex 404)`, !bad.length, bad.length ? bad.join(", ") : `perf ${sc.performance} a11y ${sc.accessibility}, best-practices clean apart from the browser logging the 404 itself (score ${sc["best-practices"]}), seo ${sc.seo} (a noindex 404, expected), CLS ${cls.toFixed(3)}`);
+    } catch (e) { record(`Lighthouse ${label} /404`, false, "no report: " + e.message); }
   }
 }
 

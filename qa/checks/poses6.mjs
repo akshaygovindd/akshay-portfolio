@@ -5,7 +5,7 @@ const pose=(p)=>p.evaluate(()=>[...document.querySelector("[data-companion]").qu
 const Y=(p,id,off=100)=>p.evaluate((id,off)=>document.getElementById(id).getBoundingClientRect().top+scrollY-off,id,off);
 const order=await (async()=>{const p=await b.newPage();await p.goto("http://localhost:3100",{waitUntil:"networkidle2"});const o=await p.evaluate(()=>[...document.querySelectorAll("main > *")].map(e=>e.id||e.tagName.toLowerCase()+(e.getAttribute("aria-label")?"("+e.getAttribute("aria-label").slice(0,5)+")":"")));await p.close();return o})();
 console.log("DOM section order:",order.join(" -> "));
-const expected={experience:"typing",projects:"think",demos:"point",skills:"music",about:"music (continues Skills; About has no pose of its own)",contact:"wave"};
+const expected={experience:"typing",projects:"think",demos:"point",skills:"music",about:"pizza (About has its own pose)",contact:"wave"};
 const seq=["experience","projects","demos","skills","about","contact"];
 for (const [name,w,h] of [["desktop 1440",1440,900],["tablet 1024",1024,768]]) {
   const p=await b.newPage(); await p.setViewport({width:w,height:h}); await p.goto("http://localhost:3100",{waitUntil:"networkidle2"}); await p.evaluate(()=>{document.documentElement.style.scrollBehavior="auto"}); await sleep(900);

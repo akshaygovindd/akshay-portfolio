@@ -14,6 +14,20 @@ export default function About() {
           <div className="space-y-4 md:col-span-3">
             <p className="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{pitch}</p>
             <p className="text-lg leading-relaxed text-muted">{about.summary}</p>
+            <p className="text-lg leading-relaxed text-muted">{about.hobbies}</p>
+            {/* Pizza pose. On desktop and tablet the corner companion shows it while About is in view. Phones
+                (no companion after the hero) and reduced motion (the companion stays on one static pose) get
+                it here instead, so every visitor sees it. Hidden otherwise (see .about-pose in globals.css). */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/avatar/desk-pizza.webp"
+              alt=""
+              width={600}
+              height={448}
+              loading="lazy"
+              draggable={false}
+              className="about-pose h-auto w-44 select-none"
+            />
             <p className="font-mono text-sm text-accent">{about.seeking}</p>
           </div>
 

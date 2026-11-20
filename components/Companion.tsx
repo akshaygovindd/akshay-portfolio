@@ -9,21 +9,21 @@ gsap.registerPlugin(ScrollTrigger);
 const RATIO = 897 / 1200; // height / width of every image (avatar and desk poses)
 const FADE = 0.25;
 
-const POSES = ["typing", "think", "point", "music", "wave"] as const;
+const POSES = ["typing", "think", "point", "music", "wave", "pizza"] as const;
 type Pose = (typeof POSES)[number];
 
 /**
  * Which desk pose to show for each section, listed in page order.
  * The active section is the last one whose top has passed 60% of the viewport height, so the
  * pose depends only on scroll position (same answer scrolling down, up, or jumping from a link).
- * About has no pose of its own: it keeps Skills' pose.
+ * About has its own pose: pizza (it goes with the hobbies line). The corner pose never changes under reduced motion.
  */
 const SECTION_POSES: { id: string; pose: Pose }[] = [
   { id: "experience", pose: "typing" },
   { id: "projects", pose: "think" },
   { id: "demos", pose: "point" },
   { id: "skills", pose: "music" },
-  { id: "about", pose: "music" },
+  { id: "about", pose: "pizza" },
   { id: "contact", pose: "wave" },
 ];
 

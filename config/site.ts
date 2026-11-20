@@ -179,6 +179,16 @@ export const site = {
     ],
     experience: "2+ years as a Business Intelligence Analyst",
     seeking: "Seeking Data Engineer, Data Analyst and AI Engineer co-op roles.",
+    /** One line about life outside work; shown in About with the pizza pose, and indexed for the assistant. */
+    hobbies: "When I'm not building pipelines, I'm in the kitchen, eating pizza, or at a pool table chasing the 8-ball.",
+  },
+
+  /** The 404 page (app/not-found.tsx): pool pose, a short line and two ways back. */
+  notFound: {
+    /** Two fixed lines (the first is large, the second sized to fit the width without wrapping). */
+    heading: ["Scratch!", "This page isn't on the table"],
+    text: "The link may be old or mistyped. Here are two ways back to the game.",
+    imageAlt: "Cartoon avatar holding an 8-ball and a pool cue next to a desk",
   },
 
   projects: [

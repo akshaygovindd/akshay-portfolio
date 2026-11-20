@@ -35,3 +35,4 @@
 {"id":35,"set":"recruiter","q":"Does he have any experience with Snowflake?","expected":["/#skills","/resume.pdf"]}
 {"id":36,"set":"about-this","q":"How is the Ask my portfolio assistant evaluated?","expected":["/projects/ask-my-portfolio#data-quality-and-evaluation","/projects/ask-my-portfolio#results","/#projects"]}
 {"id":37,"set":"about-this","q":"What stops the portfolio assistant from running up a big bill?","expected":["/projects/ask-my-portfolio#key-decisions","/#projects"]}
+{"id":38,"set":"recruiter","q":"What does Akshay do outside work?","expected":["/#about"]}

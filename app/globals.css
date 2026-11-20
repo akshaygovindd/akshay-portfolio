@@ -318,3 +318,14 @@ body {
     transition: none;
   }
 }
+
+/* About's pizza pose: the corner companion shows it on desktop and tablet. Phones hide the companion after the
+   hero, and reduced motion keeps it on one static pose, so there the pose is shown inline in About instead. */
+.about-pose {
+  display: none;
+}
+@media (max-width: 639px), (prefers-reduced-motion: reduce) {
+  .about-pose {
+    display: block;
+  }
+}
