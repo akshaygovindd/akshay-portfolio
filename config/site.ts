@@ -152,7 +152,7 @@ export const site = {
       "A small assistant that answers from this site's own content only: the four case studies, the project and experience text, and the resume. Answers cite their sources, and the panel under each answer shows exactly which passages were used.",
     chips: [
       "How does the FoodLens pipeline use SCD Type 2?",
-      "What F1 score did the wildfire model reach?",
+      "What guardrails did the emergency response agents use?",
       "What did the reporting automation at Vaishnav achieve?",
     ],
   },

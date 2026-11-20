@@ -30,5 +30,5 @@ export function buildUserMessage(question: string, chunks: Retrieved[]): string 
 
 /** Whether retrieval found anything worth sending to the chat model. */
 export function isAnswerable(chunks: Retrieved[]): boolean {
-  return chunks.some((c) => c.via === "keyword" || c.score >= MIN_SIMILARITY);
+  return chunks.some((c) => c.via === "keyword" || c.keywordMatch || c.score >= MIN_SIMILARITY);
 }

@@ -21,6 +21,8 @@ let inTok = 0,
   outTok = 0,
   embTok = 0;
 const rows: string[] = [];
+type Tally = { n: number; hit5: number; hitAny: number; cited: number; strict: number; noCite: number };
+const sets: Record<string, Tally> = {};
 let hit5 = 0,
   hitAny = 0,
   cited = 0,
@@ -40,7 +42,9 @@ async function chat(q: string, chunks: Awaited<ReturnType<typeof retrieve>>["chu
   return out.text;
 }
 
-for (const { id, q, expected } of questions) {
+for (const { id, q, expected, set = "original" } of questions) {
+  const T = (sets[set] ??= { n: 0, hit5: 0, hitAny: 0, cited: 0, strict: 0, noCite: 0 });
+  T.n++;
   const r = await retrieve(q);
   embTok += r.embedTokens;
   const vec = r.chunks.filter((c) => c.via === "vector");
@@ -48,14 +52,19 @@ for (const { id, q, expected } of questions) {
   const hAny = r.chunks.some((c) => expected.includes(c.url));
   hit5 += +h5;
   hitAny += +hAny;
+  T.hit5 += +h5;
+  T.hitAny += +hAny;
   let note = "";
   if (withChat) {
     const text = await chat(q, r.chunks);
     const nums = [...text.matchAll(/\[(\d+)\]/g)].map((m) => Number(m[1]));
     const urls = nums.map((n) => r.chunks[n - 1]?.url).filter(Boolean) as string[];
-    if (!urls.length) noCite++;
-    cited += +urls.some((u) => expected.includes(u));
-    strict += +(urls.length > 0 && urls.every((u) => expected.includes(u)));
+    if (!urls.length) (noCite++, T.noCite++);
+    const okc = urls.some((u) => expected.includes(u)), oks = urls.length > 0 && urls.every((u) => expected.includes(u));
+    cited += +okc;
+    strict += +oks;
+    T.cited += +okc;
+    T.strict += +oks;
     note = `cites ${[...new Set(urls)].join(" ") || "NONE"}${text.startsWith("That isn't covered") ? "  (REFUSED)" : ""}`;
   }
   rows.push(`${h5 ? "HIT " : hAny ? "kw  " : "MISS"} #${String(id).padStart(2)} top=${vec[0].score.toFixed(2)} ${q.slice(0, 62).padEnd(62)} ${note}`);
@@ -88,6 +97,9 @@ const n = questions.length;
 console.log(rows.join("\n"));
 console.log("\nrefusals / off-topic / injection:\n" + rrows.join("\n"));
 const cost = (inTok * PRICE.chatIn + outTok * PRICE.chatOut + embTok * PRICE.embed) / 1e6;
+console.log("\nper set:  n  hit@5  +keyword  citation  strict  no-cite");
+for (const [k, t] of Object.entries(sets))
+  console.log(`${k.padEnd(10)} ${String(t.n).padStart(2)}  ${t.hit5}/${t.n}   ${t.hitAny}/${t.n}      ${withChat ? `${t.cited}/${t.n}      ${t.strict}/${t.n}    ${t.noCite}` : "-"}`);
 console.log(`
 questions: ${n}   similarity gate: ${MIN_SIMILARITY}
 hit@5 (vector top-5 has an expected source): ${hit5}/${n} = ${((100 * hit5) / n).toFixed(0)}%

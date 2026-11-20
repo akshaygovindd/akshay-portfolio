@@ -23,3 +23,13 @@
 {"id":23,"q":"What are the limits of the wildfire model evaluation?","expected":["/projects/wildfire#data-quality-and-evaluation","/projects/wildfire#what-id-do-next"]}
 {"id":24,"q":"What did the reporting automation at Vaishnav Publications achieve?","expected":["/#experience","/resume.pdf"]}
 {"id":25,"q":"What degree is Akshay studying and what is the GPA?","expected":["/resume.pdf"]}
+{"id":26,"set":"recruiter","q":"Has Akshay used dbt?","expected":["/#projects","/#skills"]}
+{"id":27,"set":"recruiter","q":"Does he know Terraform?","expected":["/#projects"]}
+{"id":28,"set":"recruiter","q":"Has he built anything with LLM agents?","expected":["/projects/emergency-response#architecture","/#projects","/resume.pdf"]}
+{"id":29,"set":"recruiter","q":"Has he worked with Databricks?","expected":["/projects/foodlens#architecture","/#skills","/#projects","/resume.pdf"]}
+{"id":30,"set":"recruiter","q":"What BI tools does he use?","expected":["/#skills","/resume.pdf","/#experience"]}
+{"id":31,"set":"recruiter","q":"Has he done data quality checks?","expected":["/projects/foodlens#data-quality-and-evaluation","/#experience","/resume.pdf","/#projects"]}
+{"id":32,"set":"recruiter","q":"Does he have experience with Streamlit?","expected":["/#skills","/#projects","/resume.pdf","/projects/instacart#architecture","/projects/emergency-response#architecture"]}
+{"id":33,"set":"recruiter","q":"Has Akshay worked with PySpark?","expected":["/#skills","/resume.pdf","/#projects"]}
+{"id":34,"set":"recruiter","q":"Does he know MotherDuck?","expected":["/#projects","/#skills"]}
+{"id":35,"set":"recruiter","q":"Does he have any experience with Snowflake?","expected":["/#skills","/resume.pdf"]}
