@@ -76,6 +76,13 @@ export default function Hero() {
           <p className="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base lg:text-sm">
             {hero.credentials}
           </p>
+          {/* Small secondary link: a text link, so it never competes with the two buttons */}
+          <a
+            href="#playground"
+            className="mt-1 inline-flex min-h-11 items-center font-mono text-xs text-[#9B7AFF] underline decoration-[#9B7AFF]/40 underline-offset-4 transition-colors hover:decoration-[#9B7AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF] sm:text-sm lg:text-xs"
+          >
+            {hero.sqlLink}
+          </a>
         </div>
 
         <div className="mt-6 lg:mt-0 lg:w-56">

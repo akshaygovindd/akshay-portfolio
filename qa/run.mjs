@@ -91,6 +91,7 @@ const checks = [
   ["SEO / JSON-LD / head (seo8)", "seo8.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : ["SEO check failed"])],
   ["case-study pages (casestudies)", "casestudies.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["Ask my portfolio (ask)", "ask.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
+  ["SQL playground upgrades (sql)", "sql.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["content + Copy email (content9)", "content9.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About alignment (about-m)", "about-m.mjs", [BASE, "qa"], (t) => {
     const rows = t.split("\n").filter((l) => /card offset/.test(l));
@@ -115,6 +116,7 @@ const checks = [
 if (wanted("static")) {
   const tsc = sh("npx", ["tsc", "--noEmit"]); save("tsc", tsc.out); record("Static: TypeScript (tsc --noEmit)", tsc.code === 0, tsc.code ? tsc.out.split("\n")[0] : "");
   const lint = sh("npm", ["run", "lint", "--silent"]); save("lint", lint.out); record("Static: ESLint", lint.code === 0, lint.code ? lint.out.split("\n")[0] : "");
+  const unit = sh("npm", ["run", "test:unit", "--silent"]); save("unit-tests", unit.out); record("Static: unit tests (SQL validator, share links, chart rules)", unit.code === 0, unit.code ? (unit.out.split("\n").find((l) => /not ok|✖/.test(l)) || "see qa/out/unit-tests.txt") : (unit.out.match(/ℹ pass (\d+)/) || [])[0] || "");
   const audit = sh("npm", ["audit", "--audit-level=low"]); save("audit", audit.out); record("Static: npm audit", audit.code === 0, audit.code ? "vulnerabilities found" : "0 vulnerabilities");
 }
 

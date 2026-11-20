@@ -2,7 +2,19 @@ import type { AsyncDuckDB, AsyncDuckDBConnection } from "@duckdb/duckdb-wasm";
 
 export const TABLE_NAME = "instacart_sample";
 
-export type QueryResult = { columns: string[]; rows: string[][]; rowCount: number };
+export type ColumnKind = "number" | "text" | "date" | "other";
+export type QueryResult = {
+  columns: string[];
+  /** What each column holds, from its Arrow type (used to decide whether a chart makes sense). */
+  kinds: ColumnKind[];
+  /** Display strings for the table (first 200 rows). */
+  rows: string[][];
+  /** Raw values, only kept for small results (50 rows or fewer), for the chart. */
+  values: unknown[][];
+  rowCount: number;
+};
+
+export type TableInfo = { name: string; rowCount: number; columns: { name: string; type: string }[] };
 
 type Engine = { db: AsyncDuckDB; conn: AsyncDuckDBConnection };
 let enginePromise: Promise<Engine> | null = null;
@@ -42,16 +54,44 @@ async function start(): Promise<Engine> {
   return { db, conn };
 }
 
+/** Reads the tables, columns and types from DuckDB itself (information_schema), plus a row count per table. */
+export async function getSchema(): Promise<TableInfo[]> {
+  const { conn } = await getEngine();
+  const cols = (
+    await conn.query(
+      "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'main' ORDER BY table_name, ordinal_position",
+    )
+  ).toArray();
+  const tables = new Map<string, TableInfo>();
+  for (const c of cols) {
+    const name = String(c.table_name);
+    if (!tables.has(name)) tables.set(name, { name, rowCount: 0, columns: [] });
+    tables.get(name)!.columns.push({ name: String(c.column_name), type: String(c.data_type) });
+  }
+  for (const t of tables.values()) {
+    const n = (await conn.query(`SELECT count(*) AS n FROM "${t.name.replace(/"/g, '""')}"`)).toArray()[0].n;
+    t.rowCount = Number(n);
+  }
+  return [...tables.values()];
+}
+
+function kindOf(arrowType: string): ColumnKind {
+  if (/^(Int|Uint|Float|Decimal)/.test(arrowType)) return "number";
+  if (/^(Utf8|LargeUtf8|Dictionary)/.test(arrowType)) return "text";
+  if (/^(Date|Timestamp)/.test(arrowType)) return "date";
+  return "other";
+}
+
 export async function runQuery(sql: string, maxRows = 200): Promise<QueryResult> {
   const { conn } = await getEngine();
   const table = await conn.query(sql);
   const columns = table.schema.fields.map((f) => f.name);
+  const kinds = table.schema.fields.map((f) => kindOf(String(f.type)));
   const all = table.toArray();
-  const rows = all.slice(0, maxRows).map((r) => {
-    const obj = r.toJSON() as Record<string, unknown>;
-    return columns.map((c) => formatCell(obj[c]));
-  });
-  return { columns, rows, rowCount: all.length };
+  const objs = all.slice(0, maxRows).map((r) => r.toJSON() as Record<string, unknown>);
+  const rows = objs.map((obj) => columns.map((c) => formatCell(obj[c])));
+  const values = all.length <= 50 ? objs.map((obj) => columns.map((c) => obj[c])) : [];
+  return { columns, kinds, rows, values, rowCount: all.length };
 }
 
 function formatCell(v: unknown): string {

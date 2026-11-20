@@ -11,7 +11,9 @@
     "qa:install": "npm --prefix qa install && npx --prefix qa playwright install webkit",
     "rag:schema": "tsx --env-file=.env.local scripts/schema.mts",
     "rag:ingest": "tsx --env-file=.env.local scripts/ingest.mts",
-    "rag:eval": "tsx --env-file=.env.local eval/run.mts"
+    "rag:eval": "tsx --env-file=.env.local eval/run.mts",
+    "test:unit": "tsx --test sqlgen/validate.test.mts lib/share.test.mts eval/compare.test.mts",
+    "sql:eval": "tsx --env-file=.env.local eval/sql-run.mts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.121",

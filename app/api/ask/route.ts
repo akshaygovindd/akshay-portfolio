@@ -3,7 +3,7 @@ import type { UIMessageChunk } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { retrieve } from "@/rag/retrieve";
 import { CHAT_MODEL, MAX_OUTPUT_TOKENS, MAX_QUESTION_CHARS, NOT_ON_SITE, SYSTEM, buildUserMessage, isAnswerable } from "@/rag/answer";
-import { checkLimits } from "@/rag/ratelimit";
+import { checkLimits, clientIp } from "@/rag/ratelimit";
 import type { AskMessage, AskMetadata } from "@/rag/types";
 
 export const runtime = "nodejs";
@@ -11,10 +11,6 @@ export const maxDuration = 30;
 
 const json = (error: "unavailable" | "rate_limited" | "bad_request", status: number) =>
   Response.json({ error }, { status, headers: { "Cache-Control": "no-store" } });
-
-function clientIp(req: Request): string {
-  return req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-}
 
 export async function POST(req: Request) {
   const started = Date.now();

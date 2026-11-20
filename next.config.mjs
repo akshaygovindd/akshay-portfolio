@@ -43,6 +43,8 @@ const nextConfig = {
   reactStrictMode: true,
   // The QA runner builds into its own folder so it never fights a running `next dev` over .next
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  // /api/sql reads the sample CSV at runtime to describe the table to the model; make sure it ships with the function
+  outputFileTracingIncludes: { "/api/sql": ["./public/data/sample.csv"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

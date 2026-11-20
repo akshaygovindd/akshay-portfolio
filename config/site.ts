@@ -97,6 +97,8 @@ export const site = {
     roles: "Data Engineer · Data Analyst · AI Engineer",
     credentials:
       "MS Information Systems @ Northeastern University · Dec\u00A02027 · 2+ yrs BI experience",
+    /** Small secondary link under the credentials; scrolls to the SQL playground. */
+    sqlLink: "Run SQL in your browser \u2192",
   },
 
   work: {
