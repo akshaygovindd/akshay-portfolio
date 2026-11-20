@@ -9,6 +9,7 @@ import Projects from "@/components/sections/Projects";
 import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Demos from "@/components/sections/Demos";
+import Ask from "@/components/sections/Ask";
 import Contact from "@/components/sections/Contact";
 import PersonJsonLd from "@/components/PersonJsonLd";
 
@@ -29,6 +30,7 @@ export default function Home() {
         <Experience />
         <Projects />
         <Demos />
+        <Ask />
         <Skills />
         <About />
         <Contact />

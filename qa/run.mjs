@@ -90,6 +90,7 @@ const checks = [
   }],
   ["SEO / JSON-LD / head (seo8)", "seo8.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : ["SEO check failed"])],
   ["case-study pages (casestudies)", "casestudies.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
+  ["Ask my portfolio (ask)", "ask.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["content + Copy email (content9)", "content9.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About alignment (about-m)", "about-m.mjs", [BASE, "qa"], (t) => {
     const rows = t.split("\n").filter((l) => /card offset/.test(l));

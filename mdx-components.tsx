@@ -7,11 +7,16 @@ import Sources from "@/components/case-study/Sources";
  * Styles for the case-study MDX (content/case-studies/*.mdx), in the site's design system:
  * Anton for headings, Inter body text, JetBrains Mono for code, violet accent, orange bullets.
  */
+const slugify = (s: string) =>
+  s.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
 const components: MDXComponents = {
+  // id = slug of the heading text, so the assistant (and anyone) can link to a section: /projects/foodlens#key-decisions
   h2: (props) => (
     <h2
+      id={typeof props.children === "string" ? slugify(props.children) : undefined}
       {...props}
-      className="mb-4 mt-14 font-display text-3xl uppercase leading-[1.05] after:mt-3 after:block after:h-1 after:w-12 after:rounded-full after:bg-accent sm:text-4xl"
+      className="scroll-mt-24 mb-4 mt-14 font-display text-3xl uppercase leading-[1.05] after:mt-3 after:block after:h-1 after:w-12 after:rounded-full after:bg-accent sm:text-4xl"
     />
   ),
   h3: (props) => <h3 {...props} className="mb-2 mt-8 text-lg font-semibold" />,

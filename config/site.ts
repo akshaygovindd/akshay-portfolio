@@ -145,6 +145,18 @@ export const site = {
     location: "Boston or remote",
   },
 
+  /** "Ask my portfolio" section (RAG assistant, see rag/ and app/api/ask). */
+  ask: {
+    title: "Ask my portfolio",
+    intro:
+      "A small assistant that answers from this site's own content only: the four case studies, the project and experience text, and the resume. Answers cite their sources, and the panel under each answer shows exactly which passages were used.",
+    chips: [
+      "How does the FoodLens pipeline use SCD Type 2?",
+      "What F1 score did the wildfire model reach?",
+      "What did the reporting automation at Vaishnav achieve?",
+    ],
+  },
+
   about: {
     summary:
       "Data professional with 2+ years as a Business Intelligence Analyst, now pursuing an MS in Information Systems at Northeastern and building end-to-end data pipelines and analytics.",

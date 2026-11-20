@@ -1,0 +1,25 @@
+{"id":1,"q":"How many rows did the Chicago and Dallas CSV files have in the FoodLens pipeline?","expected":["/projects/foodlens#architecture"]}
+{"id":2,"q":"Why do Dallas rows never create a new SCD Type 2 version in FoodLens?","expected":["/projects/foodlens#key-decisions"]}
+{"id":3,"q":"How many Dallas rows failed validation because of invalid zip codes?","expected":["/projects/foodlens#results"]}
+{"id":4,"q":"Which tables make up the Gold star schema in FoodLens?","expected":["/projects/foodlens#architecture","/projects/foodlens#results"]}
+{"id":5,"q":"Is the quarantine table in FoodLens actually used?","expected":["/projects/foodlens#data-quality-and-evaluation","/projects/foodlens#what-id-do-next"]}
+{"id":6,"q":"Why do the Power BI dashboards show more inspections than the Gold table?","expected":["/projects/foodlens#what-id-do-next"]}
+{"id":7,"q":"How many infeasible proposals did the validator block in the emergency response system?","expected":["/projects/emergency-response#data-quality-and-evaluation","/resume.pdf"]}
+{"id":8,"q":"How did agents with negotiation compare with the greedy baseline on critical service rate?","expected":["/projects/emergency-response#results"]}
+{"id":9,"q":"What does each of the four agents in the emergency response system do?","expected":["/projects/emergency-response#architecture"]}
+{"id":10,"q":"How much does one agent run cost in the emergency response simulation?","expected":["/projects/emergency-response#results"]}
+{"id":11,"q":"Why were the baselines deliberately given ground truth, and what are paired seeds?","expected":["/projects/emergency-response#key-decisions"]}
+{"id":12,"q":"How many pytest tests does the emergency response project run in CI?","expected":["/projects/emergency-response#data-quality-and-evaluation","/resume.pdf","/#projects"]}
+{"id":13,"q":"What limitations does the emergency response study admit to?","expected":["/projects/emergency-response#what-id-do-next"]}
+{"id":14,"q":"How many rows does the order_products table have in the Instacart project?","expected":["/projects/instacart#results","/resume.pdf","/#projects"]}
+{"id":15,"q":"Why did the Instacart dashboard use materialized views?","expected":["/projects/instacart#key-decisions"]}
+{"id":16,"q":"Why is there no speed-up number for the Instacart indexes?","expected":["/projects/instacart#data-quality-and-evaluation","/projects/instacart#results","/projects/instacart#what-id-do-next"]}
+{"id":17,"q":"What proxies replaced money and recency in the RFM analysis?","expected":["/projects/instacart#key-decisions"]}
+{"id":18,"q":"What would be improved next in the Instacart project?","expected":["/projects/instacart#what-id-do-next"]}
+{"id":19,"q":"Why did the wildfire project not use accuracy as its metric?","expected":["/projects/wildfire#key-decisions","/projects/wildfire#problem"]}
+{"id":20,"q":"Which of the five models performed best on the wildfire data before tuning?","expected":["/projects/wildfire#key-decisions","/projects/wildfire#results"]}
+{"id":21,"q":"What were the most important features in the wildfire Random Forest?","expected":["/projects/wildfire#results"]}
+{"id":22,"q":"How was the wildfire data split into training and test sets?","expected":["/projects/wildfire#architecture","/projects/wildfire#data-quality-and-evaluation"]}
+{"id":23,"q":"What are the limits of the wildfire model evaluation?","expected":["/projects/wildfire#data-quality-and-evaluation","/projects/wildfire#what-id-do-next"]}
+{"id":24,"q":"What did the reporting automation at Vaishnav Publications achieve?","expected":["/#experience","/resume.pdf"]}
+{"id":25,"q":"What degree is Akshay studying and what is the GPA?","expected":["/resume.pdf"]}
