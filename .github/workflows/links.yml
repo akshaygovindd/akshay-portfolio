@@ -1,0 +1,56 @@
+name: Link check
+
+on:
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check the live site and the repo's markdown
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # --exclude: LinkedIn answers bots with HTTP 999 and several hosts rate-limit or
+          # block automated clients; those would be false alarms every week. Sleeping
+          # Streamlit demos wake on a browser visit, so a bot hitting them is not a reliable signal.
+          args: >-
+            --no-progress --max-retries 3 --retry-wait-time 5 --timeout 30
+            --accept 200..=299,429
+            --exclude '^https?://([a-z]+\.)?linkedin\.com'
+            --exclude '^https?://[a-z0-9-]+\.streamlit\.app'
+            --exclude '^https?://localhost'
+            --format markdown --output lychee/out.md
+            https://akshaygovind.vercel.app/
+            './**/*.md'
+          fail: false
+          jobSummary: true
+      - name: Open or update the "Broken links" issue
+        if: steps.lychee.outputs.exit_code != 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.lychee.outputs.exit_code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "Weekly link check found problems (lychee exit code $EXIT_CODE). Run: $RUN_URL"
+            echo
+            if [ -s lychee/out.md ]; then cat lychee/out.md; else echo "No report file was written: lychee itself failed. See the run log."; fi
+          } > body.md
+          n=$(gh issue list --state open --label link-check --json number --jq '.[0].number // empty')
+          if [ -n "$n" ]; then
+            gh issue edit "$n" --body-file body.md
+          else
+            gh label create link-check --color d93f0b --description "Weekly link check" 2>/dev/null || true
+            gh issue create --title "Broken links found by the weekly link check" --label link-check --body-file body.md
+          fi
+          # Fail the job too, so the failure also shows in the Actions tab and the badge turns red.
+          exit 1
