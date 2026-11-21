@@ -2,6 +2,7 @@ import { Download, Github, Linkedin, Mail } from "lucide-react";
 import { site } from "@/config/site";
 import FitLine from "@/components/FitLine";
 import TrackedLink from "@/components/TrackedLink";
+import HeroFlow from "@/components/HeroFlow";
 
 // font-size / container-width that makes each line span the full width (measured for Anton)
 const R_FULL = 0.1963;
@@ -18,15 +19,18 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-ink text-ink-fg lg:h-[100svh] lg:min-h-[640px]"
     >
+      {/* Pipeline stream behind everything (first positioned child, so later positioned siblings paint above it) */}
+      <HeroFlow />
+
       {/* Label (left) + availability badge (right), just under the nav */}
-      <div className={`${COLUMN} pt-[4.25rem]`}>
+      <div className={`${COLUMN} relative pt-[4.25rem]`}>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted sm:text-xs">
             {hero.label}
           </p>
-          <p className="flex items-center gap-2.5 rounded-full border border-[#9B7AFF] bg-[#9B7AFF]/15 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-fg sm:text-sm">
+          <p className="flex items-center gap-2.5 rounded-full border border-ink-accent bg-ink-accent/15 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-fg sm:text-sm">
             <span
-              className="pulse-dot h-2.5 w-2.5 shrink-0 rounded-full bg-[#FF9B55]"
+              className="pulse-dot h-2.5 w-2.5 shrink-0 rounded-full bg-ink-warm"
               aria-hidden="true"
             />
             {hero.badge}
@@ -36,16 +40,22 @@ export default function Hero() {
 
       {/* Headline stays full-bleed: it sits behind the avatar */}
       <h1
-        className="px-3 pb-[3vw] pt-[3svh] sm:px-5 lg:absolute lg:inset-x-0 lg:top-[17svh] lg:pb-0 lg:pt-0"
+        className="relative px-3 pb-[3vw] pt-[3svh] sm:px-5 lg:absolute lg:inset-x-0 lg:top-[17svh] lg:pb-0 lg:pt-0"
         aria-label="Hi, I'm Akshay"
       >
         <span aria-hidden="true">
           <span className="hidden sm:block">
-            <FitLine ratio={R_FULL}>HI, I&apos;M AKSHAY</FitLine>
+            <FitLine ratio={R_FULL} reveal>
+              {"HI, I'M AKSHAY"}
+            </FitLine>
           </span>
           <span className="block space-y-6 sm:hidden">
-            <FitLine ratio={R_TOP}>HI, I&apos;M</FitLine>
-            <FitLine ratio={R_BOTTOM}>AKSHAY</FitLine>
+            <FitLine ratio={R_TOP} reveal>
+              {"HI, I'M"}
+            </FitLine>
+            <FitLine ratio={R_BOTTOM} reveal delay={140}>
+              AKSHAY
+            </FitLine>
           </span>
         </span>
       </h1>
@@ -70,7 +80,7 @@ export default function Hero() {
           <p className="text-lg font-semibold leading-snug sm:text-2xl lg:text-2xl">
             {hero.subheadline}
           </p>
-          <p className="mt-2 font-mono text-[11px] uppercase tracking-normal text-[#9B7AFF] sm:text-sm sm:tracking-wider lg:tracking-normal">
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-normal text-ink-accent sm:text-sm sm:tracking-wider lg:tracking-normal">
             {hero.roles}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base lg:text-sm">
@@ -79,7 +89,7 @@ export default function Hero() {
           {/* Small secondary link: a text link, so it never competes with the two buttons */}
           <a
             href="#playground"
-            className="mt-1 inline-flex min-h-11 items-center font-mono text-xs text-[#9B7AFF] underline decoration-[#9B7AFF]/40 underline-offset-4 transition-colors hover:decoration-[#9B7AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF] sm:text-sm lg:text-xs"
+            className="mt-1 inline-flex min-h-11 items-center font-mono text-xs text-ink-accent underline decoration-ink-accent/40 underline-offset-4 transition-colors hover:decoration-ink-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-accent sm:text-sm lg:text-xs"
           >
             {hero.sqlLink}
           </a>
@@ -90,7 +100,7 @@ export default function Hero() {
           <div className="flex flex-wrap items-start gap-3 lg:flex-col lg:items-stretch">
             <a
               href="#projects"
-              className="btn justify-center !border-transparent !bg-[#9B7AFF] !text-[#101014] hover:!brightness-110"
+              className="btn justify-center !border-transparent !bg-ink-accent !text-ink hover:!brightness-110"
             >
               View my work
             </a>
@@ -101,7 +111,7 @@ export default function Hero() {
                   download
                   event="resume_download"
                   eventProps={{ location: "hero" }}
-                  className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-[#9B7AFF]"
+                  className="btn justify-center !border-ink-border !bg-transparent !text-ink-fg hover:!border-ink-accent"
                 >
                   <Download size={16} /> Download resume
                 </TrackedLink>
@@ -134,14 +144,14 @@ export default function Hero() {
                     href={href}
                     aria-label={label}
                     {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-[#9B7AFF] hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9B7AFF]"
+                    className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-ink-border text-ink-muted transition-colors hover:border-ink-accent hover:text-ink-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-accent"
                   >
                     <Icon size={20} />
                     {/* Tooltip: visual only (the link already has an aria-label). Shows on hover
                         and on keyboard focus, sits below the icon so it never covers the buttons. */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#F3F1F7] px-2.5 py-1 text-xs font-medium text-[#101014] opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                      className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-ink-fg px-2.5 py-1 text-xs font-medium text-ink opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
                     >
                       {label}
                     </span>

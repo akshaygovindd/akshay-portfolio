@@ -70,7 +70,7 @@ export const site = {
   description:
     "Data Engineer, Data Analyst & AI Engineer building the data pipelines analytics and AI run on. MS Information Systems at Northeastern, open to co-ops.",
   /** Theme colour for the browser UI, the web manifest and splash screens. */
-  themeColor: "#101014",
+  themeColor: "#101014", // = PALETTE.ink (lib/palette.ts); written out because the QA runner loads this file with plain Node, and lib/palette.test.mts keeps them equal
   pitch:
     "I make messy data reliable enough for dashboards and for LLMs: tested, documented and monitored.",
 

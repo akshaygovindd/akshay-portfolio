@@ -92,6 +92,7 @@ const checks = [
   ["case-study pages (casestudies)", "casestudies.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["Ask my portfolio (ask)", "ask.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["SQL playground upgrades (sql)", "sql.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
+  ["Motion and polish (motion)", "motion.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About hobbies + 404 page (about404)", "about404.mjs", [BASE], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["content + Copy email (content9)", "content9.mjs", [], (t) => (/ALL PASS/.test(t) ? [] : t.split("\n").filter((l) => /FAIL/.test(l)))],
   ["About alignment (about-m)", "about-m.mjs", [BASE, "qa"], (t) => {

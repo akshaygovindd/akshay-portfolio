@@ -9,7 +9,19 @@ import { useEffect, useRef } from "react";
  * container query units, so the headline is correct on first paint with no JS.
  * The effect then re-measures after fonts load as a safety net.
  */
-export default function FitLine({ children, ratio }: { children: string; ratio: number }) {
+export default function FitLine({
+  children,
+  ratio,
+  reveal = false,
+  delay = 0,
+}: {
+  children: string;
+  ratio: number;
+  /** Rise and wipe the whole line into view on load (the `reveal-line` animation in globals.css). */
+  reveal?: boolean;
+  /** Milliseconds before the line's reveal starts (so a second line can follow the first). */
+  delay?: number;
+}) {
   const boxRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
 
@@ -34,8 +46,8 @@ export default function FitLine({ children, ratio }: { children: string; ratio: 
     <div ref={boxRef} className="w-full" style={{ containerType: "inline-size" }}>
       <span
         ref={textRef}
-        className="inline-block whitespace-nowrap font-display uppercase leading-[0.88] tracking-tight"
-        style={{ fontSize: `${ratio * 100}cqw` }}
+        className={`inline-block whitespace-nowrap font-display uppercase leading-[0.88] tracking-tight${reveal ? " reveal-line" : ""}`}
+        style={{ fontSize: `${ratio * 100}cqw`, ...(reveal && delay ? { animationDelay: `${delay}ms` } : {}) }}
       >
         {children}
       </span>

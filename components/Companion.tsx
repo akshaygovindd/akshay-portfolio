@@ -236,30 +236,44 @@ export default function Companion() {
           });
         }
 
-        // 3D tilt toward the cursor (fine pointers only), smoothed with quickTo.
+        // 3D tilt and a little parallax toward the cursor while the big hero avatar is showing (fine pointers only: off on touch
+        // screens; the reduced-motion branch above never gets here). Smoothed with quickTo. The angles are capped at
+        // TILT_Y degrees sideways and TILT_X up and down, and the avatar drifts at most PARALLAX_X / PARALLAX_Y pixels the other way.
+        const TILT_Y = 8;
+        const TILT_X = 5;
+        const PARALLAX_X = 10;
+        const PARALLAX_Y = 6;
         const canTilt = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
         if (canTilt) {
-          const rotY = gsap.quickTo(tilt, "rotationY", { duration: 0.7, ease: "power3.out" });
-          const rotX = gsap.quickTo(tilt, "rotationX", { duration: 0.7, ease: "power3.out" });
+          const opts = { duration: 0.7, ease: "power3.out" };
+          const rotY = gsap.quickTo(tilt, "rotationY", opts);
+          const rotX = gsap.quickTo(tilt, "rotationX", opts);
+          const moveX = gsap.quickTo(tilt, "x", opts);
+          const moveY = gsap.quickTo(tilt, "y", opts);
+          const rest = () => {
+            rotY(0);
+            rotX(0);
+            moveX(0);
+            moveY(0);
+          };
           const onMove = (e: PointerEvent) => {
             if (window.innerWidth < 640 || progress > 0.05) return;
-            const nx = (e.clientX / window.innerWidth - 0.5) * 2;
-            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-            rotY(nx * 16);
-            rotX(-ny * 10);
+            const nx = Math.max(-1, Math.min(1, (e.clientX / window.innerWidth - 0.5) * 2));
+            const ny = Math.max(-1, Math.min(1, (e.clientY / window.innerHeight - 0.5) * 2));
+            rotY(nx * TILT_Y);
+            rotX(-ny * TILT_X);
+            moveX(-nx * PARALLAX_X);
+            moveY(-ny * PARALLAX_Y);
           };
           const onScrollReset = () => {
-            if (progress > 0.05) {
-              rotY(0);
-              rotX(0);
-            }
+            if (progress > 0.05) rest();
           };
           window.addEventListener("pointermove", onMove);
           window.addEventListener("scroll", onScrollReset, { passive: true });
           cleanups.push(() => {
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("scroll", onScrollReset);
-            gsap.set(tilt, { rotationX: 0, rotationY: 0 });
+            gsap.set(tilt, { rotationX: 0, rotationY: 0, x: 0, y: 0 });
           });
         }
 

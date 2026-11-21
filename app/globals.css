@@ -12,6 +12,21 @@
   --accent: 109 66 230; /* purple, darkened for light backgrounds */
   --warm: 168 64 10; /* orange, darkened for light backgrounds (>=4.5:1 on tinted tag) */
   --on-accent: 255 255 255;
+
+  /* Always-dark surfaces (hero, nav, footer, tools chips) and the shape-shading ramps. These do not change with the theme.
+     --accent-ink / --warm-ink are the one purple and the one orange as they look on those surfaces (and in dark mode);
+     the -hi / -lo values are the highlight and shadow ends of the 3D shape gradients. Mirrored in lib/palette.ts. */
+  --ink: 16 16 20;
+  --ink-fg: 243 241 247;
+  --ink-muted: 180 177 190;
+  --ink-border: 52 50 61;
+  --ink-surface: 25 25 31;
+  --accent-ink: 155 122 255;
+  --warm-ink: 255 155 85;
+  --accent-ink-hi: 205 189 255;
+  --accent-ink-lo: 74 47 176;
+  --warm-ink-hi: 255 192 143;
+  --warm-ink-lo: 216 104 42;
 }
 
 .dark {
@@ -156,8 +171,8 @@ body {
 }
 .shape-sphere {
   border-radius: 9999px;
-  background: radial-gradient(circle at 32% 28%, #cdbdff, #9b7aff 48%, #4a2fb0 100%);
-  box-shadow: 0 24px 60px rgb(155 122 255 / 0.35);
+  background: radial-gradient(circle at 32% 28%, rgb(var(--accent-ink-hi)), rgb(var(--accent-ink)) 48%, rgb(var(--accent-ink-lo)) 100%);
+  box-shadow: 0 24px 60px rgb(var(--accent-ink) / 0.35);
   opacity: 0.9;
 }
 .shape-ring {
@@ -166,16 +181,16 @@ body {
 }
 .shape-cube {
   border-radius: 26%;
-  background: linear-gradient(135deg, #ffc08f, #ff9b55 52%, #d8682a);
-  box-shadow: 0 24px 50px rgb(255 155 85 / 0.3);
+  background: linear-gradient(135deg, rgb(var(--warm-ink-hi)), rgb(var(--warm-ink)) 52%, rgb(var(--warm-ink-lo)));
+  box-shadow: 0 24px 50px rgb(var(--warm-ink) / 0.3);
   opacity: 0.9;
 }
 
 /* Project card image placeholder (until a screenshot is set in config) */
 .img-placeholder {
   background:
-    radial-gradient(60% 80% at 20% 15%, rgb(155 122 255 / 0.55), transparent 60%),
-    radial-gradient(55% 70% at 85% 85%, rgb(255 155 85 / 0.4), transparent 60%),
+    radial-gradient(60% 80% at 20% 15%, rgb(var(--accent-ink) / 0.55), transparent 60%),
+    radial-gradient(55% 70% at 85% 85%, rgb(var(--warm-ink) / 0.4), transparent 60%),
     linear-gradient(rgb(var(--border) / 0.35) 1px, transparent 1px) 0 0 / 100% 28px,
     linear-gradient(90deg, rgb(var(--border) / 0.35) 1px, transparent 1px) 0 0 / 28px 100%,
     rgb(var(--bg));
@@ -188,10 +203,10 @@ body {
 @keyframes pulse-dot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(255 155 85 / 0.6);
+    box-shadow: 0 0 0 0 rgb(var(--warm-ink) / 0.6);
   }
   50% {
-    box-shadow: 0 0 0 7px rgb(255 155 85 / 0);
+    box-shadow: 0 0 0 7px rgb(var(--warm-ink) / 0);
   }
 }
 
@@ -301,8 +316,8 @@ body {
   transform: translateY(-250%);
   padding: 0.7rem 1.25rem;
   border-radius: 9999px;
-  background: #9b7aff;
-  color: #101014;
+  background: rgb(var(--accent-ink));
+  color: rgb(var(--ink));
   font-size: 0.875rem;
   font-weight: 600;
   box-shadow: 0 8px 30px rgb(0 0 0 / 0.4);
@@ -310,7 +325,7 @@ body {
 }
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline: 2px solid #f3f1f7;
+  outline: 2px solid rgb(var(--ink-fg));
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -327,5 +342,127 @@ body {
 @media (max-width: 639px), (prefers-reduced-motion: reduce) {
   .about-pose {
     display: block;
+  }
+}
+
+/* ---------- Hero name reveal ----------
+   Each headline line rises into place (transform only). The line is ONE text element (not split into letters) and nothing
+   about it fades or is clipped, so it is painted from the first frame and stays the page's Largest Contentful Paint
+   candidate on every screen size. Measured on the production build: a transform rise (or no animation) keeps the headline
+   as the LCP element, while splitting the text into letters, or ANY clip-path or mask on it (even one that clips nothing),
+   hands the LCP to the avatar image. So do not add a wipe here. The fitted widths keep their original kerned measurements.
+   The h1 has an aria-label and the visible text is aria-hidden, so screen readers read the name whole. */
+.reveal-line {
+  animation: line-reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes line-reveal {
+  from {
+    transform: translateY(0.22em);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-line {
+    animation: none;
+  }
+}
+
+/* ---------- Hero pipeline stream ----------
+   Small dashes and dots ("records") drifting left to right in thin lanes behind the hero text. Each lane layers three patterns
+   whose tiles (160px, 80px, 40px) all divide 160px, so sliding the lane by exactly 160px loops seamlessly. transform only.
+   Faint on purpose: at most 12% of the accent over the dark hero, which keeps the muted hero text above 7:1
+   (checked in qa/checks/motion.mjs). */
+.hero-flow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+}
+.hero-flow-lane {
+  position: absolute;
+  left: 0;
+  top: var(--y);
+  width: calc(100% + 160px);
+  height: 6px;
+  opacity: var(--o);
+  background-image:
+    linear-gradient(90deg, rgb(var(--c)) 0 22px, transparent 22px),
+    linear-gradient(90deg, transparent 0 68px, rgb(var(--c)) 68px 78px, transparent 78px),
+    radial-gradient(circle at 20px 50%, rgb(var(--c)) 0 2.5px, transparent 3px);
+  background-size: 160px 100%, 80px 100%, 40px 100%;
+  background-repeat: repeat-x;
+  will-change: transform;
+  animation: hero-flow var(--dur) linear infinite;
+}
+@keyframes hero-flow {
+  from {
+    transform: translate3d(-160px, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+.hero-flow[data-paused="true"] .hero-flow-lane {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-flow {
+    display: none;
+  }
+}
+
+/* ---------- Count-up stats ----------
+   The real text stays in place; while counting it is transparent and an aria-hidden copy is drawn over it. */
+.count-up {
+  position: relative;
+  display: block;
+}
+.count-up[data-counting] .count-real {
+  opacity: 0;
+}
+.count-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Card lift ----------
+   Project cards and the case-study link cards rise a little and glow in the accent colour on hover, and the same for keyboard
+   users when anything inside takes focus-visible. Reduced motion keeps the border and glow (a state, not a movement). */
+.card-lift {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.card-lift:has(:focus-visible) {
+  transform: translateY(-4px);
+  border-color: rgb(var(--accent) / 0.75);
+  box-shadow:
+    0 18px 48px -18px rgb(var(--accent) / 0.5),
+    0 0 0 1px rgb(var(--accent) / 0.3);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-lift:hover {
+    transform: translateY(-4px);
+    border-color: rgb(var(--accent) / 0.75);
+    box-shadow:
+      0 18px 48px -18px rgb(var(--accent) / 0.5),
+      0 0 0 1px rgb(var(--accent) / 0.3);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-lift {
+    transition: none;
+  }
+  .card-lift:hover,
+  .card-lift:has(:focus-visible) {
+    transform: none;
   }
 }

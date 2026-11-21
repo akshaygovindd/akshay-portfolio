@@ -2,6 +2,7 @@ import { ArrowDown, ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/config/site";
 import TrackedLink from "@/components/TrackedLink";
 import CaseStudyLink from "@/components/case-study/CaseStudyLink";
+import CountUp from "@/components/CountUp";
 
 /**
  * Big project card. On tall desktop screens the cards stack: each is sticky, and ScrollEffects
@@ -28,7 +29,7 @@ export default function ProjectCard({
       }`}
       style={{ top: `calc(4.5rem + ${index * 10}px)` }}
     >
-      <div className="card grid gap-6 p-6 sm:p-8 lg:grid-cols-5 lg:gap-x-10 lg:gap-y-6">
+      <div className="card card-lift grid gap-6 p-6 sm:p-8 lg:grid-cols-5 lg:gap-x-10 lg:gap-y-6">
         <div className="flex flex-col lg:col-span-3">
           {project.label && (
             <p className="mb-2 self-start rounded-full border border-border bg-bg px-2.5 py-0.5 font-mono text-[11px] text-muted">
@@ -58,7 +59,7 @@ export default function ProjectCard({
                 <div key={st.value}>
                   <dt className="sr-only">{st.label}</dt>
                   <dd className="font-display text-3xl uppercase leading-none text-accent sm:text-4xl">
-                    {st.value}
+                    <CountUp value={st.value} />
                   </dd>
                   <p aria-hidden="true" className="mt-1 max-w-[13rem] text-xs leading-snug text-muted">
                     {st.label}

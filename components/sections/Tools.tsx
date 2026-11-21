@@ -4,7 +4,7 @@ import { site } from "@/config/site";
 export default function Tools() {
   const list = site.tools;
   const Badge = ({ t }: { t: string }) => (
-    <li className="shrink-0 rounded-full border border-ink-border bg-[#19191F] px-5 py-2.5 font-mono text-sm text-ink-fg">
+    <li className="shrink-0 rounded-full border border-ink-border bg-ink-surface px-5 py-2.5 font-mono text-sm text-ink-fg">
       {t}
     </li>
   );

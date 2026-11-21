@@ -1,9 +1,9 @@
 import { site } from "@/config/site";
 import FitLine from "@/components/FitLine";
 
-const P = "#9B7AFF";
-const O = "#FF9B55";
-const W = "#F3F1F7";
+const P = "rgb(var(--accent-ink))";
+const O = "rgb(var(--warm-ink))";
+const W = "rgb(var(--ink-fg))";
 
 /** Bold geometric shapes, purple / orange / off-white. Purely decorative. */
 const shapes: React.CSSProperties[] = [

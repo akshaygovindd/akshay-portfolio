@@ -6,6 +6,7 @@ import { site } from "@/config/site";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TrackedLink from "@/components/TrackedLink";
+import CountUp from "@/components/CountUp";
 
 type Params = { slug: string };
 
@@ -71,7 +72,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
               {project.stats.map((st) => (
                 <div key={st.value}>
                   <dt className="sr-only">{st.label}</dt>
-                  <dd className="font-display text-3xl uppercase leading-none text-accent sm:text-4xl">{st.value}</dd>
+                  <dd className="font-display text-3xl uppercase leading-none text-accent sm:text-4xl">
+                    <CountUp value={st.value} />
+                  </dd>
                   <p aria-hidden="true" className="mt-1 max-w-[13rem] text-xs leading-snug text-muted">
                     {st.label}
                   </p>
@@ -128,7 +131,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
           <ul className="mt-3 grid gap-3 sm:grid-cols-3">
             {others.map((o) => (
               <li key={o.slug}>
-                <Link href={`/projects/${o.slug}`} className="card block min-h-11 p-4 text-sm font-medium">
+                <Link href={`/projects/${o.slug}`} className="card card-lift block min-h-11 p-4 text-sm font-medium">
                   {site.projects.find((p) => "caseStudy" in p && p.caseStudy === o.slug)?.title}
                 </Link>
               </li>

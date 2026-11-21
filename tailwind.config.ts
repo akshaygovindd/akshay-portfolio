@@ -20,7 +20,16 @@ const config: Config = {
         accent: "rgb(var(--accent) / <alpha-value>)",
         warm: "rgb(var(--warm) / <alpha-value>)",
         // Always-dark surfaces (hero, nav) that stay dark in light mode too
-        ink: { DEFAULT: "#101014", fg: "#F3F1F7", muted: "#B4B1BE", border: "#34323D" },
+        // (values live in app/globals.css; lib/palette.ts mirrors them for the Open Graph image)
+        ink: {
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          fg: "rgb(var(--ink-fg) / <alpha-value>)",
+          muted: "rgb(var(--ink-muted) / <alpha-value>)",
+          border: "rgb(var(--ink-border) / <alpha-value>)",
+          surface: "rgb(var(--ink-surface) / <alpha-value>)",
+          accent: "rgb(var(--accent-ink) / <alpha-value>)",
+          warm: "rgb(var(--warm-ink) / <alpha-value>)",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
