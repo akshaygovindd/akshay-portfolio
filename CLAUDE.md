@@ -55,3 +55,13 @@ Palette: bg `#101014`, surface `#19191F`, text `#F3F1F7`, muted `#B4B1BE`, accen
 
 ## QA (`npm run qa`)
 One-time: `npm run qa:install` (installs `qa/` deps and Playwright WebKit; needs Google Chrome, or set `CHROME_PATH`). Then `npm run qa` builds into `.next-qa`, serves it on :3100 and runs everything: tsc, ESLint, npm audit, Lighthouse desktop + mobile on the home page and on every case-study page (performance must be >= 95), axe in both themes, CLS incl. jump-to-Contact, avatar overlap and poses, shapes vs text, stacking fit, nav at 129 widths, 24px targets, links, SEO/JSON-LD, content + Copy email, case-study pages (`casestudies.mjs`: head tags, OG image, sitemap, one h1 and the six sections, diagram, no avatar, back link, axe in both themes and on a phone, CLS, overflow, targets, links), About hobbies line, pizza pose and the 404 page (`about404.mjs`: real 404 status, noindex, no canonical, no pool-image preload on the home page, image size attributes, buttons, axe in both themes, CLS, phone and reduced motion, and hash links landing on their section), WebKit + CSP + DuckDB. Options: `-- --skip-build`, `-- --only=lighthouse,poses`. Raw output goes to `qa/out/` (git-ignored); exit code 1 on any failure. LinkedIn (HTTP 999) and sleeping Streamlit demos show as warnings, not failures. Checks read text in the page (e.g. the pitch and seeking line), so update `qa/checks/content9.mjs` when copy changes on purpose.
+
+## Token budget (keep usage low)
+- Read only what you need: use grep/rg and line ranges, not whole large files. Don't re-read a file you just edited.
+- Keep command output short: pipe through tail, head, grep or cut. Never print full logs, build output, or Lighthouse JSON.
+- QA: run targeted checks (npm run qa -- --only=...) while iterating. Run the full npm run qa once at the end, plus once more only if something changed after it.
+- No polling or wait loops. Run long commands in the foreground with a timeout, or in the background and check once.
+- Stop and ask after 2 failed attempts at the same problem, instead of trying variations. Explain what you tried.
+- Small regressions: if a metric is within its limit (for example Lighthouse ≥95, CLS ≤0.01), report it rather than chasing it to perfection, unless I ask.
+- Reports: short. What changed, the results, the decisions needed. No restating the plan.
+- Don't fix unrelated things without asking first. Mention them in one line instead.
