@@ -17,3 +17,5 @@ qa-screenshots/
 qa/node_modules
 qa/out
 .next-qa
+lhci/out-*/
+.lighthouseci/
