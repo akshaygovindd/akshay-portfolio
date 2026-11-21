@@ -15,6 +15,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+      - name: List every page in the live sitemap
+        run: |
+          mkdir -p lychee
+          curl -fsS https://akshaygovind.vercel.app/sitemap.xml | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' > lychee/pages.txt
+          echo "Pages in the sitemap: $(wc -l < lychee/pages.txt)"
+          [ -s lychee/pages.txt ] # fail loudly if the sitemap is empty or unreachable
       - name: Check the live site and the repo's markdown
         id: lychee
         continue-on-error: true
@@ -30,6 +36,7 @@ jobs:
             --exclude '^https?://[a-z0-9-]+\.streamlit\.app'
             --exclude '^https?://localhost'
             https://akshaygovind.vercel.app/
+            lychee/pages.txt
             './**/*.md'
           fail: false
           format: markdown
