@@ -65,10 +65,12 @@ export type SkillGroup = { category: string; skills: string[] };
 
 export const site = {
   name: "Akshay Govind",
-  title: "Data Engineer, Data Analyst & AI Engineer",
+  title: "Data Engineer · Analytics · Applied AI",
+  /** schema.org jobTitle in the JSON-LD (the tab title above is the longer positioning line). */
+  jobTitle: "Data Engineer",
   /** Used for the meta description, Open Graph / Twitter cards and the web manifest. */
   description:
-    "Data Engineer, Data Analyst & AI Engineer building the data pipelines analytics and AI run on. MS Information Systems at Northeastern, open to co-ops.",
+    "Data engineer building the pipelines that analytics and applied AI run on. MS Information Systems at Northeastern, open to co-ops.",
   /** Theme colour for the browser UI, the web manifest and splash screens. */
   themeColor: "#101014", // = PALETTE.ink (lib/palette.ts); written out because the QA runner loads this file with plain Node, and lib/palette.test.mts keeps them equal
   pitch:
@@ -94,7 +96,7 @@ export const site = {
     label: "AKSHAY GOVIND / PORTFOLIO",
     badge: "OPEN TO CO-OP & INTERNSHIPS",
     subheadline: "I build the data pipelines that analytics and AI run on.",
-    roles: "Data Engineer · Data Analyst · AI Engineer",
+    roles: "Data Engineer · Analytics · Applied AI",
     credentials:
       "MS Information Systems @ Northeastern University · Dec\u00A02027 · 2+ yrs BI experience",
     /** Small secondary link under the credentials; scrolls to the SQL playground. */
@@ -178,7 +180,7 @@ export const site = {
       },
     ],
     experience: "2+ years as a Business Intelligence Analyst",
-    seeking: "Seeking Data Engineer, Data Analyst and AI Engineer co-op roles.",
+    seeking: "Seeking Data Engineer and Analytics Engineer co-op roles.",
     /** One line about life outside work; shown in About with the pizza pose, and indexed for the assistant. */
     hobbies: "When I'm not building pipelines, I'm in the kitchen, eating pizza, or at a pool table chasing the 8-ball.",
   },
@@ -245,7 +247,7 @@ export const site = {
       summary:
         "A small RAG assistant that answers questions about my projects, experience and resume from this site's own content only, and links each answer to the section it used.",
       stats: [
-        { value: "35/35", label: "questions with the right source in the top 5 (my own eval)" },
+        { value: "38/38", label: "questions with the right source in the top 5 (my own eval)" },
         { value: "6/6", label: "off-topic and prompt-injection prompts refused" },
         { value: "$0.0013", label: "per answer on average, at list price" },
       ],
@@ -321,7 +323,7 @@ export const site = {
       slug: "ask-my-portfolio",
       metaTitle: "Ask my portfolio case study",
       description:
-        "A small RAG assistant over my own case studies and resume: Neon pgvector, a similarity gate, rate limits and a 35-question eval, with the numbers.",
+        "A small RAG assistant over my own case studies and resume: Neon pgvector, a similarity gate, rate limits and a 38-question eval, with the numbers.",
       context: "Personal project · built in November 2026",
       diagram: "ask",
     },

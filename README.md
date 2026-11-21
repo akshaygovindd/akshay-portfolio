@@ -5,7 +5,7 @@
 
 Live: **https://akshaygovind.vercel.app**. Auto-deployed by Vercel from `main`.
 
-**Data Engineer · Data Analyst · AI Engineer.** This is the site I use to show data engineering, analytics and applied AI work: the RAG assistant and English-to-SQL, both with evals. It is a case study in itself: besides the project pages, it has two things you can use in the browser, a SQL playground and an assistant that answers questions about my work with sources. Every number on the site is checked against the project repositories, and the rule for this README is the same: each number below links to the file it comes from.
+**Data Engineer · Analytics · Applied AI.** This is the site I use to show data engineering, analytics and applied AI work: the RAG assistant and English-to-SQL, both with evals. It is a case study in itself: besides the project pages, it has two things you can use in the browser, a SQL playground and an assistant that answers questions about my work with sources. Every number on the site is checked against the project repositories, and the rule for this README is the same: each number below links to the file it comes from.
 
 ## What is on it
 

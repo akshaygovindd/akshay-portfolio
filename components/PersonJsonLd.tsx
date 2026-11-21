@@ -10,7 +10,7 @@ export function personJsonLd() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: site.name,
-    jobTitle: site.title,
+    jobTitle: site.jobTitle,
     description: site.description,
     url: SITE_URL,
     alumniOf: site.about.education.map((e) => ({

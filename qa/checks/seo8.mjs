@@ -22,7 +22,7 @@ let ld; try{ ld=JSON.parse(blocks[0]); console.log("  PASS parses as JSON"); }ca
 const chk=(n,ok,detail="")=>{ if(!ok)bad++; console.log(`  ${ok?"PASS":"FAIL"} ${n}${detail?"  "+detail:""}`)};
 chk("@context + @type",ld["@context"]==="https://schema.org"&&ld["@type"]==="Person");
 chk("name from config",ld.name===site.name,JSON.stringify(ld.name));
-chk("jobTitle from config",ld.jobTitle===site.title,JSON.stringify(ld.jobTitle));
+chk("jobTitle from config",ld.jobTitle===site.jobTitle,JSON.stringify(ld.jobTitle));
 chk("url from NEXT_PUBLIC_SITE_URL",ld.url===expectBase,ld.url);
 chk("alumniOf = config education",JSON.stringify(ld.alumniOf.map(a=>a.name))===JSON.stringify(site.about.education.map(e=>e.school))&&ld.alumniOf.every(a=>a["@type"]==="CollegeOrUniversity"),JSON.stringify(ld.alumniOf.map(a=>a.name)));
 chk("sameAs = LinkedIn + GitHub",JSON.stringify(ld.sameAs)===JSON.stringify([site.links.linkedin,site.links.github]),JSON.stringify(ld.sameAs));

@@ -170,7 +170,7 @@ ok(finals.length === 9, `home HTML: ${finals.length} stat values are in the page
   const cs = await open("/projects/ask-my-portfolio", 1440, 900);
   await sleep(2600);
   const csr = await cs.evaluate(() => ({ texts: [...document.querySelectorAll("header dd")].map((d) => d.textContent), overlays: document.querySelectorAll(".count-overlay").length, ran: window.__overlays }));
-  ok(csr.overlays === 0 && csr.ran >= 3 && csr.texts.join("|") === "35/35|6/6|$0.0013", `case study: the three header stats counted up and ended on exactly ${JSON.stringify(csr.texts)}`);
+  ok(csr.overlays === 0 && csr.ran >= 3 && csr.texts.join("|") === "38/38|6/6|$0.0013", `case study: the three header stats counted up and ended on exactly ${JSON.stringify(csr.texts)}`);
   await cs.close();
 }
 
