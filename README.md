@@ -103,3 +103,6 @@ The site, the playground and the case studies work without any keys. The assista
 ## Licence and fonts
 
 Anton (headings) is under the SIL Open Font License, see [`assets/fonts/Anton-OFL.txt`](assets/fonts/Anton-OFL.txt). The site code has no licence file yet.
+
+<!-- link-check test -->
+[test](https://akshaygovind.vercel.app/this-link-is-dead-test)
