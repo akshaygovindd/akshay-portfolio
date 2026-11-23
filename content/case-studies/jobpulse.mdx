@@ -1,0 +1,108 @@
+## Problem
+
+I wanted to know what data and AI jobs are open, what they pay and which employers have a public record of H-1B filings, and I wanted the answer to come from a pipeline I could trust day after day, not from a one-off scrape. So I built a daily data platform. It is a personal project: no course brief, no client. Every number on this page is as of 20 Nov 2026, the day of the latest snapshot, and the pipeline has only run since 10 Nov 2026.
+
+The hard part is not fetching job boards. It is deciding what a missing posting means, keeping the warehouse small, paying a language model only for what it needs to read, and giving a public app the data without giving it a key.
+
+## Architecture
+
+- **Sources.** The public job boards of 43 hand-picked employers: 35 on Greenhouse, 5 on Ashby, 3 on Lever. GitHub Actions runs the ingest every day at 09:17 UTC, and one failing company never stops the run.
+- **S3 first.** Each fetch is written to S3 as an append-only attempt. One authoritative pointer per company and day names the attempt that downstream code may use, and it is written only when the fetch is complete.
+- **MotherDuck and dbt.** A loader puts the pointed-to snapshots into bronze tables. dbt builds 28 models (2 staging, 6 silver, 20 gold) and 1 snapshot on top of them.
+- **LLM extraction.** A title filter keeps data and AI roles. `gpt-6-luna` reads each one, escalates once to `gpt-6.1-terra` if the answer fails validation, caches by content hash and stops at a spend cap.
+- **H-1B evidence.** Public Department of Labor filing files are matched to employers by name, using reviewed aliases, and joined in gold.
+- **Publish.** The daily run exports an allow-listed set of gold tables to one DuckDB file on a public GitHub Release. The Streamlit app opens that file read-only.
+- **Infrastructure.** Terraform, and GitHub reaches AWS through OIDC pinned to one repository environment, so there are no AWS access keys anywhere.
+
+<Diagram id="jobpulse" caption="Data flows from top to bottom. The app at the bottom sees only the allow-listed gold tables in the exported file." />
+
+<Figure src="/projects/jobpulse-lineage.webp" alt="The dbt lineage graph of JobPulse: source tables on the left feed staging, silver and gold models, ending in fct_postings, dim_company and the aggregate tables on the right" width={1400} height={520} caption="The dbt lineage graph, left to right from the bronze sources to the gold tables." />
+
+## Key decisions
+
+1. **Close a posting only after two complete snapshots miss it.** A posting is closed when it is missing from two consecutive complete daily snapshots. A failed, rate-limited or truncated fetch writes no pointer, so it can never count as "gone". One test walks through it: a posting is seen on day 1, absent on day 2, the board is rate limited on day 3, and the posting is still active. The cost is that closures show up a day late.
+2. **Append-only attempts and an authoritative pointer.** Retries and manual re-runs add attempts and never overwrite one. The pointer decides which attempt counts, so a re-run can replace a day's data cleanly. The same idea saved me when MotherDuck access stopped (see Data quality): S3 still held the complete record.
+3. **Version by content hash.** Most postings do not change from one day to the next. Bronze now keeps the description and raw payload once per posting and content hash, and keeps only a small row per day. On a local copy of the first 10 days (82,849 observation rows, 10,568 distinct contents) that cut the database from 1,541.8 MiB to 320.2 MiB, which is 79% less. The extraction cache uses the same hash, so an unchanged posting is never read twice.
+4. **Cache and spend caps.** The cache key is the content hash plus the schema and prompt versions, so changing the prompt correctly misses the cache. A run stops at $0.25 and queues the rest for the next run, and a backfill stops at $1.50. A reply must pass validation, and quoted salary or sponsorship text must appear in the posting. If it still fails after one escalation, it is quarantined instead of retried.
+5. **Prefer the job board's own fields to an AI reading.** Ashby and Lever give workplace type and pay as structured fields. Gold uses them first and keeps the model's reading only where the board states nothing. For the 515 analyzed roles that raised advertised-salary coverage from 73% to 79% at no cost, with no re-extraction.
+6. **The public app holds no secrets.** The app has no database token. It downloads the exported file and opens it read-only. Only allow-listed gold tables are in that file. The resume page never saves, logs or sends a resume to an AI, and tests enforce it. I show visa data as evidence and never as a promise.
+
+## Data quality and evaluation
+
+- **Tests.** The dbt project has 146 tests, 16 of them on the raw sources. They run inside the daily pipeline on the real warehouse, not in per-push CI. The Python side has 596 pytest tests, run with ruff and mypy on every push; 3 more live tests that call the real job-board APIs are run by hand.
+- **Freshness.** The pipeline-health page checks that every board's newest snapshot is under 30 hours old, and on 20 Nov all of them were.
+- **An outage I did not cause.** The MotherDuck trial ended on 16 or 17 Nov, and the warehouse step failed in the daily runs of 17, 18 and 19 Nov. Ingest was unaffected: S3 still held 43 of 43 pointers for every day. After I restored access, one load put in 129 pointers and 24,753 postings with 0 failures, and no data was lost. That load was also the first time the content-hash migration ran on MotherDuck.
+- **Employer matching.** The match between job-board names and H-1B filing names scored 100% precision on the 35 labeled matched pairs (95% interval 90.1% to 100%). I did not measure recall.
+- **Extraction accuracy, measured honestly.** I hand-labeled 38 postings, and stopped there; I had planned 200. On that pilot:
+
+| Field (38 postings) | Result |
+|---|---|
+| Salary minimum, maximum and currency | 96.4% precision and recall |
+| Role family | 71.1% precision, 75.0% recall |
+| Seniority, exact label | 55.3% precision |
+| Seniority, staff and above counted as senior | 81.6% precision |
+| Skills, recall | about 45% (43.6% by exact name, 45.7% after normalizing names) |
+
+  These are field-level figures. There is no single overall accuracy number. A separate check had the two models label 100 postings: they agree on role family 96% of the time and on seniority 88%, which measures consistency and not accuracy.
+
+<Figure src="/projects/jobpulse-pipeline-health.webp" alt="The Pipeline health page: a green banner saying all sources have a snapshot newer than 30 hours, a freshness table for Ashby, Greenhouse and Lever, and a data-quality table of field coverage" width={1100} height={781} caption="The app's own Pipeline health page, showing freshness per source and the coverage of key fields." />
+
+## Results
+
+All figures are as of 20 Nov 2026.
+
+| Figure | Value |
+|---|---|
+| Employers ingested daily | 43 (35 Greenhouse, 5 Ashby, 3 Lever) |
+| Daily ingest runs with 43 of 43 companies complete | 11 of 11 days since 10 Nov |
+| Postings seen since 10 Nov / open now | 9,681 / 8,445 |
+| Open data and AI roles, and how many the LLM read | 515, all 515 (100%) |
+| LLM cost | $0.25 across 656 production calls, $0.39 per 1,000 postings |
+| Escalation to the stronger model / quarantined | 2.3% / 0.0% |
+| A re-run on unchanged postings | 0 model calls |
+| Advertised salary, of the 515 analyzed roles | 79% |
+| Apply link, of the 515 analyzed roles / all 8,445 open postings | 94% / 98% |
+| Open postings with a parsed city | 63.4% |
+| Canonical skills | 2,612 |
+| Certified H-1B filings matched (FY2025 and FY2026) | 9,874, with 42 of the 43 employers matched |
+
+## What I'd do next
+
+The limits come first, because they decide what the numbers mean.
+
+- **The evaluation is small.** 38 hand-labeled postings are not enough to claim an accuracy. Role family at about 71% and seniority at 55% exact are weak, and skill recall of about 45% means the skills lists miss more than half. The next step is a larger labeled set, with the same fields scored again.
+- **The history is short.** Data starts on 10 Nov 2026, and closing a posting needs two snapshots, so trends are thin and early numbers are baselines.
+- **It is not the whole market.** The 43 employers are hand-picked and sit on three job-board systems, and only titles that look like data and AI roles are read by the model.
+- **Visa data is evidence, not a promise.** A filing shows that an employer has filed, not that a given role is sponsored.
+- **Resume "skill coverage" is overlap, not fit.** It looks skills up in a vocabulary built from the postings, so unknown spellings and synonyms are missed, and a short posting that lists few skills can score high.
+
+After the evaluation, I would try skill synonyms or embeddings for the resume match, add more employers and sources, and build a guarded text-to-SQL layer over the postings with a benchmark that includes refusals.
+
+<Sources>
+
+All files are in the [JobPulse repository](https://github.com/akshaygovindd/jobpulse), at commit `9f65f88`. The live app is [jobpulse-insights.streamlit.app](https://jobpulse-insights.streamlit.app), and the dbt docs are at [akshaygovindd.github.io/jobpulse](https://akshaygovindd.github.io/jobpulse/).
+
+| Number | File |
+|---|---|
+| 43 employers: 35 Greenhouse, 5 Ashby, 3 Lever | `config/employers.yaml` |
+| 09:17 UTC daily, OIDC, release upload | `.github/workflows/daily_ingest.yml` |
+| 28 models (2 staging, 6 silver, 20 gold) and 1 snapshot | `dbt/models/staging`, `dbt/models/silver`, `dbt/models/gold`, `dbt/snapshots/snap_postings.sql` |
+| 146 dbt tests; 16 on the raw sources | `README.md` (Design points); `dbt/models/staging/sources.yml` |
+| 596 pytest tests, 3 live deselected | `uv run pytest --collect-only -q` |
+| Two-snapshot closure and the failed-fetch drill | `tests/unit/test_bronze_silver.py` (`test_b_absent_from_two_consecutive_snapshots_is_closed`, `test_c_failed_fetch_day_has_no_pointer_and_does_not_count`) |
+| Pointer written only when complete | `docs/ARCHITECTURE.md` |
+| Models, escalation once, $0.25 a run, $1.50 a backfill | `config/extraction.yaml` |
+| Re-run makes 0 calls | `tests/unit/test_extraction.py` (`test_second_run_makes_zero_calls`) |
+| Storage 1,541.8 MiB to 320.2 MiB (79%); 82,849 and 10,568 rows | `docs/NOTES.md` (storage mitigation), measured with `scripts/storage_projection.py` on a local copy |
+| ATS fields first; salary coverage 73% to 79% | `docs/NOTES.md` and `docs/QA_REPORT.md` (B-P1-16) |
+| MotherDuck trial end, 43 of 43 pointers, 129 pointers and 24,753 postings loaded | `docs/NOTES.md` (Actions history and the 2026-11-19 live run) |
+| Resume privacy tests | `tests/unit/test_resume.py` |
+| 656 calls, $0.25, $0.39 per 1,000, 2.3% escalation, 0.0% quarantined | `scripts/report_extraction_cost.py` (README "Key numbers") |
+| 43, 9,681 / 8,445, 515 read, 79%, 94% / 98%, 63.4%, 2,612, 11 of 11 days, 42 of 43, 9,874 | `scripts/gold_report.py`, `scripts/extraction_counts.py` (README "Key numbers") |
+| Employer-match precision: 100% on 35 pairs, interval 90.1% to 100% | `eval/employer_match_score.py` |
+| Pilot of 38: salary 96.4%, role family 71.1% / 75.0%, seniority 55.3% / 81.6%, skills about 45% | `eval/score.py`, `eval/reports/extraction_report.md` |
+| Two models agree on 100 postings: 96% / 88% | `eval/agreement.py`, `eval/reports/agreement_report.md` |
+| Freshness under 30 hours; the Pipeline health page | `dbt/models/gold/fct_snapshot_freshness.sql`, `docs/screenshots/pipeline_health.png` |
+| Lineage graph | `docs/screenshots/lineage.png` |
+
+</Sources>

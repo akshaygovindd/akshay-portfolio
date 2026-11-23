@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import { site } from "../config/site";
+import { site, type Project } from "../config/site";
 import { splitSection } from "./chunk";
 
 export type Chunk = { hash: string; source: string; title: string; url: string; content: string };
@@ -34,7 +34,7 @@ function caseStudies(): Chunk[] {
     const name = project?.title ?? cs.slug;
     let text = fs.readFileSync(path.join(ROOT, "content/case-studies", `${cs.slug}.mdx`), "utf8");
     text = text.replace(/<Sources>[\s\S]*?<\/Sources>/g, "");
-    text = text.replace(/^<(Diagram|ImportanceChart)\b[^>]*\/>\s*$/gm, "");
+    text = text.replace(/^<(Diagram|Figure|ImportanceChart)\b[^>]*\/>\s*$/gm, "");
     for (const section of text.split(/^## /m).slice(1)) {
       const nl = section.indexOf("\n");
       const heading = section.slice(0, nl).trim();
@@ -49,7 +49,7 @@ function caseStudies(): Chunk[] {
 /** config/site.ts: project cards, the experience blocks, the About hobbies line, the skills groups and the tools list. */
 function siteText(): Chunk[] {
   const out: Chunk[] = [];
-  for (const p of site.projects) {
+  for (const p of site.projects as readonly Project[]) {
     const lines = [
       p.label && `Context: ${p.label}`,
       p.summary,

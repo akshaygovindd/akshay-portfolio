@@ -40,7 +40,7 @@ export type DiagramSpec = {
   edges: DEdge[];
 };
 
-export const diagrams: Record<"emergency" | "instacart" | "wildfire" | "ask", DiagramSpec> = {
+export const diagrams: Record<"emergency" | "instacart" | "wildfire" | "ask" | "jobpulse", DiagramSpec> = {
   emergency: {
     w: 480,
     h: 600,
@@ -160,6 +160,36 @@ export const diagrams: Record<"emergency" | "instacart" | "wildfire" | "ask", Di
       { from: "retr", to: "gate", fs: "b", ts: "t" },
       { from: "gate", to: "llm", fs: "r", ts: "l" },
       { from: "llm", to: "out", fs: "b", ts: "t", ta: 0.761 },
+    ],
+  },
+  jobpulse: {
+    w: 480,
+    h: 712,
+    title: "JobPulse architecture",
+    desc:
+      "Every day the public job boards of 43 employers (Greenhouse, Ashby, Lever) are fetched into append-only S3 attempts, with one authoritative pointer per company and day, written only when the fetch is complete. A loader puts them into MotherDuck bronze, keeping description and payload once per content hash. dbt staging and silver models track identity, observations and closure. A title filter sends data and AI roles to the LLM extraction, which uses gpt-6-luna, escalates once to gpt-6.1-terra, caches by content hash and stops at a spend cap. dbt gold models combine the postings with public H-1B filings from the Department of Labor. The allow-listed gold tables are exported to one DuckDB file on a public GitHub Release, which the Streamlit app opens read-only with no database token.",
+    nodes: [
+      { id: "ats", x: 10, y: 8, w: 460, h: 50, title: "ATS public job boards", sub: "Greenhouse 35 \u00b7 Ashby 5 \u00b7 Lever 3 employers" },
+      { id: "s3", x: 10, y: 92, w: 460, h: 60, title: "S3 raw and snapshots", sub: ["append-only attempts, one authoritative pointer", "per company and day, written only when complete"] },
+      { id: "bronze", x: 10, y: 186, w: 460, h: 60, title: "MotherDuck bronze", sub: ["one row per posting per snapshot day;", "description and payload stored once per content hash"] },
+      { id: "silver", x: 14, y: 280, w: 222, h: 60, title: "dbt staging and silver", sub: ["identity, observations, closure", "(two complete snapshots)"] },
+      { id: "filter", x: 254, y: 280, w: 212, h: 60, title: "Title filter", sub: ["data and AI roles", "go to the model"] },
+      { id: "llm", x: 10, y: 374, w: 460, h: 60, title: "LLM extraction", sub: ["gpt-6-luna, one escalation to gpt-6.1-terra", "cache by hash \u00b7 caps $0.25 a run, $1.50 a backfill"] },
+      { id: "gold", x: 14, y: 468, w: 222, h: 60, title: "dbt gold", sub: ["facts, dimensions, aggregates,", "snapshot history"] },
+      { id: "dol", x: 254, y: 468, w: 212, h: 60, title: "DOL H-1B filings", sub: ["public LCA files, matched to", "employers by reviewed name"] },
+      { id: "rel", x: 10, y: 562, w: 460, h: 50, title: "GitHub Release export", sub: "allow-listed gold tables in one public DuckDB file" },
+      { id: "app", x: 10, y: 646, w: 460, h: 58, title: "Streamlit app", sub: ["opens the file read-only;", "no database token, no secrets"], tone: "accent" },
+    ],
+    edges: [
+      { from: "ats", to: "s3", fs: "b", ts: "t" },
+      { from: "s3", to: "bronze", fs: "b", ts: "t" },
+      { from: "bronze", to: "silver", fs: "b", ts: "t", fa: 0.25 },
+      { from: "silver", to: "filter", fs: "r", ts: "l" },
+      { from: "filter", to: "llm", fs: "b", ts: "t", fa: 0.5, ta: 0.761 },
+      { from: "llm", to: "gold", fs: "b", ts: "t", fa: 0.25, label: "extractions" },
+      { from: "dol", to: "gold", fs: "l", ts: "r" },
+      { from: "gold", to: "rel", fs: "b", ts: "t", ta: 0.25 },
+      { from: "rel", to: "app", fs: "b", ts: "t" },
     ],
   },
 };

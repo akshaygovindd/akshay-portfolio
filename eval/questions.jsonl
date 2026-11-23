@@ -36,3 +36,5 @@
 {"id":36,"set":"about-this","q":"How is the Ask my portfolio assistant evaluated?","expected":["/projects/ask-my-portfolio#data-quality-and-evaluation","/projects/ask-my-portfolio#results","/#projects"]}
 {"id":37,"set":"about-this","q":"What stops the portfolio assistant from running up a big bill?","expected":["/projects/ask-my-portfolio#key-decisions","/#projects"]}
 {"id":38,"set":"recruiter","q":"What does Akshay do outside work?","expected":["/#about"]}
+{"id":39,"set":"jobpulse","q":"How does JobPulse decide that a job posting has closed?","expected":["/projects/jobpulse#key-decisions"]}
+{"id":40,"set":"jobpulse","q":"How accurate is the LLM extraction in JobPulse?","expected":["/projects/jobpulse#data-quality-and-evaluation"]}

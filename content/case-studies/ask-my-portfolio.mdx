@@ -23,21 +23,24 @@ Recruiters skim. I wanted my projects to be answerable in one question, with a s
 
 ## Data quality and evaluation
 
-- **38 questions.** 25 name the project ("Why do Dallas rows never create a new SCD Type 2 version in FoodLens?"), 11 are written the way a recruiter would ask, without naming a project ("Has Akshay used dbt?", "Does he know Terraform?"), and 2 ask about this assistant itself. The first run, on 19 November, had 35 (the 25 and 10 of the recruiter-style); I added questions as the site grew, and the latest run, on 20 November, has 38. Each has one or more expected sources, which I wrote before running the eval.
+- **40 questions.** 25 name the project ("Why do Dallas rows never create a new SCD Type 2 version in FoodLens?"), 11 are written the way a recruiter would ask, without naming a project ("Has Akshay used dbt?", "Does he know Terraform?"), 2 ask about this assistant itself, and 2 ask about JobPulse. The first run, on 19 November, had 35 (the 25 and 10 of the recruiter-style); I added questions as the site grew, and the latest run, on 23 November, has 40. The 40 include 2 about JobPulse. Each has one or more expected sources, which I wrote before running the eval.
 - **Three rates.** Hit@5: the vector top 5 contains an expected source. Citation: the answer cites at least one expected source. Strict: every source the answer cites is an expected one.
 - **6 refusal prompts.** Two off-topic questions, a poem request, two prompt-injection attempts, and a request for my phone number.
-- **What this does not show.** I wrote the questions myself, and the 25 that name the project share words with the text they should find, so 100% hit@5 is a generous number. The strict rate changes between runs: the saved runs gave 27 of 35, 29 of 35, 30 of 37 and 30 of 38, because the model's wording and citations are sampled. The eval checks which sources an answer cites, not whether each sentence is true to them. Six refusal prompts show that the obvious cases work. They do not show that the assistant resists a determined attack.
+- **What this does not show.** I wrote the questions myself, and the 25 that name the project share words with the text they should find, so a near-perfect hit@5 is a generous number. The strict rate changes between runs: the saved runs gave 27 of 35, 29 of 35, 30 of 37, 30 of 38 and 29 of 40, because the model's wording and citations are sampled. The eval checks which sources an answer cites, not whether each sentence is true to them. Six refusal prompts show that the obvious cases work. They do not show that the assistant resists a determined attack.
 
 ## Results
 
 | Measure | Result |
 |---|---|
-| Hit@5 | 38 of 38 (25 of 25 project-named, 11 of 11 recruiter-style, 2 of 2 about the assistant) |
-| Citation | 38 of 38 |
-| Strict | 30 of 38 (79%) |
-| Refusal prompts refused | 6 of 6 (4 by the gate, 2 by the model) |
+| Hit@5 (vector top 5) | 39 of 40 (25 of 25 project-named, 10 of 11 recruiter-style, 2 of 2 about the assistant, 2 of 2 about JobPulse) |
+| Hit@5 with the keyword fallback | 40 of 40 |
+| Citation | 40 of 40 |
+| Strict | 29 of 40 (73%) |
+| Refusal prompts refused | 6 of 6 (3 by the gate, 3 by the model) |
 
-Latest run, 20 November 2026. Per answer, over the 38 answers: median latency 1.6 seconds (mean 1.6, longest 3.7), median 1,362 tokens in and 59 tokens out, mean cost $0.0013 and highest $0.0019. The whole run, 38 answers plus the refusal prompts, cost $0.0530.
+Latest run, 23 November 2026, after the JobPulse case study and card were added to the index (65 chunks). Per answer, over the 40 answers: median latency 1.4 seconds (mean 1.5, longest 3.1), median 1,442 tokens in and 59 tokens out, mean cost $0.0015 and highest $0.0025. The whole run, 40 answers plus the refusal prompts, cost $0.0618. The run before it, on 20 November, had 38 of 38 on hit@5 and on citation, strict 30 of 38, a mean cost of $0.0013 and a run cost of $0.0530.
+
+Adding the JobPulse content pushed "Does he know Terraform?" out of the vector top 5, because JobPulse chunks now outrank the one that answers it. The keyword fallback still brought the right chunk in, and the answer cited the right source. That is the only vector miss, and I did not tune retrieval to hide it.
 
 First run, 19 November 2026, 35 questions: hit@5 35 of 35 (25 of 25 project-named, 10 of 10 recruiter-style), citation 35 of 35, strict 29 of 35, 6 of 6 refusals (5 by the gate, 1 by the model). Median latency 1.6 seconds (mean 1.8, longest 4.2), mean cost $0.0013 and highest $0.0019, and the run cost $0.0459. Five real responses from the route took 1.4 to 2.2 seconds in total, measured from a laptop. The gate path took 0.39 seconds.
 
@@ -52,17 +55,18 @@ After this page went into the index, I re-ran the eval with two extra questions 
 - Check faithfulness sentence by sentence: split each answer, and test whether the cited chunk supports each sentence, with a second model and by hand. Today I only check the sources.
 - Use an independent question set, ideally real recruiter questions, so the eval is not written by the person who wrote the content.
 - Re-ingest automatically on deploy, so a content change cannot leave the assistant stale.
-- Try reranking: retrieve more candidates and re-order them before the top 5. I have not tried it. Hit@5 is already 38 of 38 on my set, so I would test it on the independent set first.
+- Try reranking: retrieve more candidates and re-order them before the top 5. I have not tried it. Hit@5 is already 40 of 40 on my set with the keyword fallback, so I would test it on the independent set first.
 
 <Sources>
 
-All files are in the [portfolio repository](https://github.com/akshaygovindd/akshay-portfolio). I ran the eval on 19 November 2026 and again on 20 November 2026, and saved the output each time.
+All files are in the [portfolio repository](https://github.com/akshaygovindd/akshay-portfolio). I ran the eval on 19, 20 and 23 November 2026, and saved the output each time.
 
 | Number | File |
 |---|---|
-| 38 questions (25, 11 and 2) and their expected sources | `eval/questions.jsonl` |
+| 40 questions (25, 11, 2 and 2) and their expected sources | `eval/questions.jsonl` |
 | 6 refusal prompts | `eval/refusals.jsonl` |
-| Latest run: hit@5 38 of 38, citation 38 of 38, strict 30 of 38, refusals 6 of 6 (4 by the gate), latency, tokens, cost per answer, cost of the run ($0.0530), 56 chunks | `eval/results-2026-11-20.md` |
+| Latest run: 40 questions, hit@5 39 of 40 (40 of 40 with keywords), citation 40 of 40, strict 29 of 40, refusals 6 of 6 (3 by the gate), latency, tokens, cost per answer, cost of the run ($0.0618), 65 chunks, the Terraform miss | `eval/results-2026-11-23.md` |
+| The run before it: 38 questions, hit@5 38 of 38, strict 30 of 38, cost of the run ($0.0530), 56 chunks | `eval/results-2026-11-20.md` |
 | First run, 35 questions: hit@5, citation, strict, refusals, latency, tokens, cost per answer, cost of the run ($0.0459), lowest top scores (0.37, 0.21, 0.26, 0.40) | `eval/results-2026-11-19.md`, section 1 |
 | Route latency of 1.4 to 2.2 seconds, and 0.39 seconds for the gate path | `eval/results-2026-11-19.md`, section 2 |
 | 9 of 10 before the fix, the refused dbt question, strict 27 of 35 | `eval/results-2026-11-19.md`, section 3 |

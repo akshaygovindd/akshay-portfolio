@@ -28,7 +28,7 @@ const edu=await p.evaluate(()=>{const lis=[...document.querySelectorAll("#about 
 console.log("\n== project facts ==");
 const facts=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll("[data-stack]")].map(a=>[a.querySelector("h3").textContent.trim().slice(0,12),[...a.querySelectorAll("ul li span:last-child")].map(s=>s.textContent)])));
 chk("FoodLens facts",JSON.stringify(facts["FoodLens ELT"])===JSON.stringify(["4 Power BI dashboards","Idempotent Gold MERGE loads"]),JSON.stringify(facts["FoodLens ELT"]));
-chk("JobPulse facts",JSON.stringify(facts["JobPulse"])===JSON.stringify(["38 employers · 50 dbt tests","LLM extraction at $0.39 per 1K postings","OIDC-secured Terraform + GitHub Actions"]),JSON.stringify(facts["JobPulse"]));
+chk("JobPulse facts",JSON.stringify(facts["JobPulse"])===JSON.stringify(["Figures as of 20 Nov 2026"]),JSON.stringify(facts["JobPulse"]));
 console.log("\n== contact ==");
 const avail=await p.evaluate(()=>{const c=document.getElementById("contact");const h=c.querySelector("h2");const line=[...c.querySelectorAll("p")].find(p=>p.textContent.trim()==="Boston or remote");const R=e=>e.getBoundingClientRect();return{text:line?.textContent.trim(),belowHeading:line&&R(line).top>=R(h).bottom-4,bodyHasPrefix:/Co-op:/.test(c.innerText)}});
 chk("availability line shows just 'Boston or remote' while dates are empty, under the heading, no 'Co-op:' prefix",avail.text==="Boston or remote"&&avail.belowHeading&&!avail.bodyHasPrefix,JSON.stringify(avail));

@@ -48,7 +48,7 @@ export type CaseStudy = {
   /** One line under the title: what kind of project it was. */
   context: string;
   /** Which architecture diagram the page uses (see config/diagrams.ts). */
-  diagram: "pipeline" | "emergency" | "instacart" | "wildfire" | "ask";
+  diagram: "pipeline" | "emergency" | "instacart" | "wildfire" | "ask" | "jobpulse";
 };
 
 export type WorkBlock = {
@@ -247,9 +247,9 @@ export const site = {
       summary:
         "A small RAG assistant that answers questions about my projects, experience and resume from this site's own content only, and links each answer to the section it used.",
       stats: [
-        { value: "38/38", label: "questions with the right source in the top 5 (my own eval)" },
+        { value: "39/40", label: "questions with the right source in the top 5 (my own eval)" },
         { value: "6/6", label: "off-topic and prompt-injection prompts refused" },
-        { value: "$0.0013", label: "per answer on average, at list price" },
+        { value: "$0.0015", label: "per answer on average, at list price" },
       ],
       caseStudy: "ask-my-portfolio",
       facts: [
@@ -277,16 +277,23 @@ export const site = {
     },
     {
       title: "JobPulse",
+      label: "Personal project",
       summary:
-        "Daily pipeline ingesting postings from 38 employers (Greenhouse, Lever, Ashby) into S3 via Terraform + GitHub Actions, modeled with dbt on MotherDuck, with LLM extraction of job details.",
-      facts: [
-        "38 employers · 50 dbt tests",
-        "LLM extraction at $0.39 per 1K postings",
-        "OIDC-secured Terraform + GitHub Actions",
+        "A daily pipeline for data and AI job postings: S3, MotherDuck and dbt, a small LLM reading the postings, H-1B filings as visa evidence, a Streamlit app on top.",
+      stats: [
+        { value: "43", label: "employers ingested daily, dbt warehouse with 146 tests" },
+        { value: "515/515", label: "data and AI roles read by the LLM, $0.39 per 1,000" },
+        { value: "9,874", label: "certified H-1B filings, 42 of 43 employers matched" },
       ],
-      inProgress: "visa evidence and resume matching",
+      caseStudy: "jobpulse",
+      facts: [
+        "Figures as of 20 Nov 2026",
+      ],
       tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
       githubUrl: "https://github.com/akshaygovindd/jobpulse",
+      liveUrl: "https://jobpulse-insights.streamlit.app",
+      liveNote: "May take a few seconds to wake",
+      image: { src: "/projects/jobpulse-crop.webp", alt: "JobPulse home page: 515 open data and AI roles, Python the most requested skill, a median advertised pay of $219K and 42 of 43 companies with H-1B filings", width: 1100, height: 524 },
     },
     {
       title: "Wildfire Cause Prediction",
@@ -323,7 +330,7 @@ export const site = {
       slug: "ask-my-portfolio",
       metaTitle: "Ask my portfolio case study",
       description:
-        "A small RAG assistant over my own case studies and resume: Neon pgvector, a similarity gate, rate limits and a 38-question eval, with the numbers.",
+        "A small RAG assistant over my own case studies and resume: Neon pgvector, a similarity gate, rate limits and a 40-question eval, with the numbers.",
       context: "Personal project · built in November 2026",
       diagram: "ask",
     },
@@ -342,6 +349,14 @@ export const site = {
         "Classifying 1.7M US wildfires as human or lightning caused: five models, class imbalance, a tuned Random Forest and per-class results.",
       context: "Course project · INFO 6105, Northeastern University, Spring 2026 · team of two",
       diagram: "wildfire",
+    },
+    {
+      slug: "jobpulse",
+      metaTitle: "JobPulse case study",
+      description:
+        "A daily pipeline over 43 employers' job boards: S3 snapshots, MotherDuck, dbt, a cached and capped LLM extraction, H-1B evidence and a keyless public app.",
+      context: "Personal project · running daily since 10 November 2026",
+      diagram: "jobpulse",
     },
   ] satisfies CaseStudy[],
 

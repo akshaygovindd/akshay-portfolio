@@ -33,14 +33,14 @@ The write-up of the assistant is on the site at `/projects/ask-my-portfolio`.
 
 Both evals are run by hand (they call OpenAI), and the raw output is saved as dated files that I never overwrite. The model's output is sampled, so the SQL eval reports the median of 3 runs.
 
-**Ask my portfolio** ([`eval/run.mts`](eval/run.mts), questions in [`eval/questions.jsonl`](eval/questions.jsonl), 38 questions plus 6 prompts that must be refused in [`eval/refusals.jsonl`](eval/refusals.jsonl)). Latest run: [`eval/results-2026-11-20.md`](eval/results-2026-11-20.md).
+**Ask my portfolio** ([`eval/run.mts`](eval/run.mts), questions in [`eval/questions.jsonl`](eval/questions.jsonl), 40 questions plus 6 prompts that must be refused in [`eval/refusals.jsonl`](eval/refusals.jsonl)). Latest run: [`eval/results-2026-11-23.md`](eval/results-2026-11-23.md).
 
 | Measure | Result | File |
 |---|---|---|
-| Vector top-5 contains an expected source (hit@5) | 38 of 38 | [`results-2026-11-20.md`](eval/results-2026-11-20.md) |
-| Answer cites an expected source | 38 of 38 | same |
-| Every cited source is an expected one (strict) | 30 of 38 (79%) | same |
-| Off-topic and injection prompts refused | 6 of 6 (4 stopped by the similarity gate) | same |
+| Vector top-5 contains an expected source (hit@5) | 39 of 40 (40 of 40 with the keyword fallback) | [`results-2026-11-23.md`](eval/results-2026-11-23.md) |
+| Answer cites an expected source | 40 of 40 | same |
+| Every cited source is an expected one (strict) | 29 of 40 (73%) | same |
+| Off-topic and injection prompts refused | 6 of 6 (3 stopped by the similarity gate) | same |
 
 The questions were written by me, the expected sources are my own list, and the eval does not check whether each sentence is true to its sources. [`results-2026-11-19.md`](eval/results-2026-11-19.md) holds the first run (35 questions: hit@5 35 of 35, strict 29 of 35), the run before a keyword-fallback fix, and the index listings.
 

@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Diagram from "@/components/case-study/Diagram";
+import Figure from "@/components/case-study/Figure";
 import ImportanceChart from "@/components/case-study/ImportanceChart";
 import Sources from "@/components/case-study/Sources";
 
@@ -57,6 +58,7 @@ const components: MDXComponents = {
   td: (props) => <td {...props} className="border-t border-border px-3 py-2 align-top" />,
   hr: () => <hr className="my-10 border-border" />,
   Diagram,
+  Figure,
   ImportanceChart,
   Sources,
 };

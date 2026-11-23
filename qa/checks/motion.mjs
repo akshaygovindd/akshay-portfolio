@@ -36,7 +36,7 @@ ok((html.match(/class="hero-flow-lane"/g) || []).length === 9, "home HTML: the p
 ok((html.match(/reveal-line/g) || []).length === 3 && !/reveal-letter/.test(html), "home HTML: the headline is three whole lines (one on wide screens, two on phones), each ONE text element with the reveal class from the server, and it is not split into letters");
 ok(/aria-label="Hi, I(&#x27;|')m Akshay"/.test(html), "home HTML: the h1 keeps its aria-label, so screen readers read the name whole");
 const finals = [...html.matchAll(/<span class="count-real">([^<]*)<\/span>/g)].map((m) => m[1].replace(/&#x27;|&amp;/g, (x) => ({ "&#x27;": "'", "&amp;": "&" }[x])));
-ok(finals.length === 9, `home HTML: ${finals.length} stat values are in the page as real text (final values): ${JSON.stringify(finals)}`);
+ok(finals.length === 12, `home HTML: ${finals.length} stat values are in the page as real text (final values): ${JSON.stringify(finals)}`);
 
 // ---------- reduced motion: every effect is off ----------
 {
@@ -146,7 +146,7 @@ ok(finals.length === 9, `home HTML: ${finals.length} stat values are in the page
   const cards = await p.evaluate(() => document.querySelectorAll("[data-stack]").length);
   const expected = await p.evaluate(() => [...document.querySelectorAll("[data-stack]")].map((c) => [...c.querySelectorAll("dd .count-real")].map((e) => e.textContent)));
   const missing = expected.flat().filter((v) => !finals.includes(v));
-  ok(expected.flat().length === 9 && missing.length === 0, `count-up: ${expected.flat().length} stat values on ${cards} cards, all present in the server HTML as real text${missing.length ? ` (not in the HTML: ${JSON.stringify(missing)}; HTML has ${JSON.stringify(finals)})` : ""}`);
+  ok(expected.flat().length === 12 && missing.length === 0, `count-up: ${expected.flat().length} stat values on ${cards} cards, all present in the server HTML as real text${missing.length ? ` (not in the HTML: ${JSON.stringify(missing)}; HTML has ${JSON.stringify(finals)})` : ""}`);
   // mid-count on the card with several numbers ("+10.9 to +23.3 pts")
   await p.evaluate(() => document.querySelectorAll("[data-stack]")[1].scrollIntoView({ block: "center" }));
   await sleep(350);
@@ -170,7 +170,7 @@ ok(finals.length === 9, `home HTML: ${finals.length} stat values are in the page
   const cs = await open("/projects/ask-my-portfolio", 1440, 900);
   await sleep(2600);
   const csr = await cs.evaluate(() => ({ texts: [...document.querySelectorAll("header dd")].map((d) => d.textContent), overlays: document.querySelectorAll(".count-overlay").length, ran: window.__overlays }));
-  ok(csr.overlays === 0 && csr.ran >= 3 && csr.texts.join("|") === "38/38|6/6|$0.0013", `case study: the three header stats counted up and ended on exactly ${JSON.stringify(csr.texts)}`);
+  ok(csr.overlays === 0 && csr.ran >= 3 && csr.texts.join("|") === "39/40|6/6|$0.0015", `case study: the three header stats counted up and ended on exactly ${JSON.stringify(csr.texts)}`);
   await cs.close();
 }
 
