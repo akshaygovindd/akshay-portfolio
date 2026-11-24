@@ -50,6 +50,7 @@ function caseStudies(): Chunk[] {
 function siteText(): Chunk[] {
   const out: Chunk[] = [];
   for (const p of site.projects as readonly Project[]) {
+    if (p.card === false) continue; // no card on the site; its case study is indexed instead
     const lines = [
       p.label && `Context: ${p.label}`,
       p.summary,

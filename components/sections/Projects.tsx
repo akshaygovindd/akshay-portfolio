@@ -4,6 +4,7 @@ import ScrollTitle from "@/components/ScrollTitle";
 import FloatingShapes from "@/components/FloatingShapes";
 
 export default function Projects() {
+  const cards = site.projects.filter((p) => !("card" in p && p.card === false));
   return (
     <section id="projects" className="relative">
       <FloatingShapes
@@ -15,8 +16,8 @@ export default function Projects() {
       <div className="section relative z-10">
         <ScrollTitle>Projects</ScrollTitle>
         <div>
-          {site.projects.map((p, i) => (
-            <ProjectCard key={p.title} project={p} index={i} last={i === site.projects.length - 1} />
+          {cards.map((p, i) => (
+            <ProjectCard key={p.title} project={p} index={i} last={i === cards.length - 1} />
           ))}
         </div>
       </div>

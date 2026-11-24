@@ -54,7 +54,8 @@ for (const cs of site.caseStudies) {
   chk("twitter:image is set and matches", attr(/<meta name="twitter:image" content="([^"]+)"/) === ogImg);
   if (ogImg) { const r = await fetch(B + new URL(ogImg).pathname + new URL(ogImg).search); chk("OG image serves a PNG", r.status === 200 && /image\/png/.test(r.headers.get("content-type") || ""), `${r.status} ${r.headers.get("content-type")}`); }
   chk("listed in sitemap.xml", sitemap.includes(`<loc>${expectBase}${url}</loc>`));
-  chk("card on the home page links here (\"Read case study\")", homeLinks.some((l) => l.href === url && /Read case study/.test(l.text) && l.h >= 44), JSON.stringify(homeLinks.find((l) => l.href === url)));
+  if (project.card === false) chk("no project card, but the Ask section links here (\"How it's built\")", homeLinks.some((l) => l.href === url && /How it's built/.test(l.text) && l.h >= 44) && !homeLinks.some((l) => l.href === url && /Read case study/.test(l.text)), JSON.stringify(homeLinks.find((l) => l.href === url)));
+  else chk("card on the home page links here (\"Read case study\")", homeLinks.some((l) => l.href === url && /Read case study/.test(l.text) && l.h >= 44), JSON.stringify(homeLinks.find((l) => l.href === url)));
 
   // ---- desktop: structure ----
   let p = await open(url);

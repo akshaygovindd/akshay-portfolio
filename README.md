@@ -10,7 +10,7 @@ Live: **https://akshaygovind.vercel.app**. Auto-deployed by Vercel from `main`.
 ## What is on it
 
 - A one-page portfolio (hero, experience, projects, demos, skills, about, contact) with scroll animation, a dark and a light theme, and a reduced-motion mode.
-- Six project cards. Five have a case study page at `/projects/<slug>` (text in [`content/case-studies/`](content/case-studies), page metadata in [`config/site.ts`](config/site.ts)); JobPulse has none yet. "Ask my portfolio" is one of the five.
+- Five project cards, each with a case study page at `/projects/<slug>` (text in [`content/case-studies/`](content/case-studies), page metadata in [`config/site.ts`](config/site.ts)). A sixth case study, "Ask my portfolio", has no card: it is linked from the Ask section.
 - **SQL playground** (Demos): DuckDB runs in your browser on a 873-row synthetic sample ([`public/data/sample.csv`](public/data/sample.csv)).
 - **Ask my portfolio**: a retrieval assistant that answers from my own content and cites the section each sentence came from.
 

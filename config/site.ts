@@ -21,6 +21,8 @@ export type Project = {
   liveNote?: string;
   /** A "Try it" button that scrolls to a section of this site (instead of an external Live demo). */
   tryIt?: { href: string; label: string };
+  /** false = no card in the Projects section (the case study page still uses this entry). */
+  card?: false;
   /** Small label above the title (e.g. the course a project was built for). */
   label?: string;
   /** Things that are not built yet. Shown as "In progress: ...". */
@@ -155,7 +157,8 @@ export const site = {
   ask: {
     title: "Ask my portfolio",
     intro:
-      "A small assistant that answers from this site's own content only: the four case studies, the project and experience text, and the resume. Answers cite their sources, and the panel under each answer shows exactly which passages were used.",
+      "A small assistant that answers from this site's own content only: the case studies, the project and experience text, and the resume. Answers cite their sources, and the panel under each answer shows exactly which passages were used.",
+    howLink: "How it's built",
     chips: [
       "How does the FoodLens pipeline use SCD Type 2?",
       "What guardrails did the emergency response agents use?",
@@ -194,6 +197,26 @@ export const site = {
   },
 
   projects: [
+    {
+      title: "JobPulse",
+      label: "Personal project",
+      summary:
+        "A daily pipeline for data and AI job postings: S3, MotherDuck and dbt, a small LLM reading the postings, H-1B filings as visa evidence, a Streamlit app on top.",
+      stats: [
+        { value: "43", label: "employers ingested daily, dbt warehouse with 146 tests" },
+        { value: "515/515", label: "data and AI roles read by the LLM, $0.39 per 1,000" },
+        { value: "9,874", label: "certified H-1B filings, 42 of 43 employers matched" },
+      ],
+      caseStudy: "jobpulse",
+      facts: [
+        "Figures as of 20 Nov 2026",
+      ],
+      tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
+      githubUrl: "https://github.com/akshaygovindd/jobpulse",
+      liveUrl: "https://jobpulse-insights.streamlit.app",
+      liveNote: "May take a few seconds to wake",
+      image: { src: "/projects/jobpulse-crop.webp", alt: "JobPulse home page: 515 open data and AI roles, Python the most requested skill, a median advertised pay of $219K and 42 of 43 companies with H-1B filings", width: 1100, height: 524 },
+    },
     {
       title: "FoodLens ELT Pipeline",
       summary:
@@ -242,27 +265,6 @@ export const site = {
       image: { src: "/projects/emergency-crop.webp", alt: "Emergency response dashboard map at minute 6, where two incidents both want Ambulance 1 and a conflict notice is showing", width: 790, height: 410 },
     },
     {
-      title: "Ask my portfolio",
-      label: "Personal project",
-      summary:
-        "A small RAG assistant that answers questions about my projects, experience and resume from this site's own content only, and links each answer to the section it used.",
-      stats: [
-        { value: "39/40", label: "questions with the right source in the top 5 (my own eval)" },
-        { value: "6/6", label: "off-topic and prompt-injection prompts refused" },
-        { value: "$0.0015", label: "per answer on average, at list price" },
-      ],
-      caseStudy: "ask-my-portfolio",
-      facts: [
-        "Keyword fallback fixed a recruiter-style miss: 9/10 to 10/10",
-        "Similarity gate skips the model for off-topic questions",
-        "10 questions an hour per hashed IP, 200 a day overall; no question text stored",
-      ],
-      tags: ["Next.js", "pgvector", "Neon", "OpenAI embeddings", "Vercel AI SDK"],
-      githubUrl: "https://github.com/akshaygovindd/akshay-portfolio",
-      tryIt: { href: "/#ask", label: "Try it" },
-      image: { src: "/projects/ask-crop.webp", alt: "The Ask my portfolio section after the question 'Has Akshay used dbt?': the answer says yes, with links to Skills: Data Engineering and Project: JobPulse", width: 476, height: 595 },
-    },
-    {
       title: "Instacart SQL Analytics Platform",
       summary: "End-to-end grocery retail analytics platform.",
       impact:
@@ -276,26 +278,6 @@ export const site = {
       image: { src: "/projects/instacart-crop.webp", alt: "Instacart dashboard Overview page: bar chart of total orders by department, with produce and dairy eggs the largest, coloured by reorder percentage", width: 1100, height: 517 },
     },
     {
-      title: "JobPulse",
-      label: "Personal project",
-      summary:
-        "A daily pipeline for data and AI job postings: S3, MotherDuck and dbt, a small LLM reading the postings, H-1B filings as visa evidence, a Streamlit app on top.",
-      stats: [
-        { value: "43", label: "employers ingested daily, dbt warehouse with 146 tests" },
-        { value: "515/515", label: "data and AI roles read by the LLM, $0.39 per 1,000" },
-        { value: "9,874", label: "certified H-1B filings, 42 of 43 employers matched" },
-      ],
-      caseStudy: "jobpulse",
-      facts: [
-        "Figures as of 20 Nov 2026",
-      ],
-      tags: ["Python", "AWS S3", "Terraform", "GitHub Actions", "dbt", "MotherDuck"],
-      githubUrl: "https://github.com/akshaygovindd/jobpulse",
-      liveUrl: "https://jobpulse-insights.streamlit.app",
-      liveNote: "May take a few seconds to wake",
-      image: { src: "/projects/jobpulse-crop.webp", alt: "JobPulse home page: 515 open data and AI roles, Python the most requested skill, a median advertised pay of $219K and 42 of 43 companies with H-1B filings", width: 1100, height: 524 },
-    },
-    {
       title: "Wildfire Cause Prediction",
       summary: "Predicts whether a wildfire was human-caused or lightning-caused.",
       impact:
@@ -306,6 +288,28 @@ export const site = {
       tags: ["Python", "scikit-learn", "Pandas", "Jupyter"],
       githubUrl: "https://github.com/akshaygovindd/Wildfire-Cause-Prediction",
       image: { src: "/projects/wildfire-crop.webp", alt: "US map of wildfire locations coloured by cause, human (red) or natural (blue), with longitude and latitude axes", width: 690, height: 425 },
+    },
+    {
+      title: "Ask my portfolio",
+      label: "Personal project",
+      summary:
+        "A small RAG assistant that answers questions about my projects, experience and resume from this site's own content only, and links each answer to the section it used.",
+      stats: [
+        { value: "39/40", label: "questions with the right source in the top 5 (my own eval)" },
+        { value: "6/6", label: "off-topic and prompt-injection prompts refused" },
+        { value: "$0.0015", label: "per answer on average, at list price" },
+      ],
+      caseStudy: "ask-my-portfolio",
+      card: false,
+      facts: [
+        "Keyword fallback fixed a recruiter-style miss: 9/10 to 10/10",
+        "Similarity gate skips the model for off-topic questions",
+        "10 questions an hour per hashed IP, 200 a day overall; no question text stored",
+      ],
+      tags: ["Next.js", "pgvector", "Neon", "OpenAI embeddings", "Vercel AI SDK"],
+      githubUrl: "https://github.com/akshaygovindd/akshay-portfolio",
+      tryIt: { href: "/#ask", label: "Try it" },
+      image: { src: "/projects/ask-crop.webp", alt: "The Ask my portfolio section after the question 'Has Akshay used dbt?': the answer says yes, with links to Skills: Data Engineering and Project: JobPulse", width: 476, height: 595 },
     },
   ] satisfies Project[],
 
